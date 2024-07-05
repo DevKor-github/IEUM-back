@@ -55,13 +55,12 @@ export class AuthService {
     //refreshToken이 해당 유저의 refreshtoken이 맞는지 체크
     const isRefreshTokenMatch = jti == user.jti;
     if (!isRefreshTokenMatch) {
-      throw new NotValidRefreshException();
+      throw new NotValidRefreshException('refresh 토큰이 유효하지 않습니다.');
     }
     const newAccessToken = this.getAccessToken(user);
 
     return {
-      message: 'Access Token 재발급 성공',
-      AccessToken: newAccessToken,
+      accessToken: newAccessToken,
     };
   }
 

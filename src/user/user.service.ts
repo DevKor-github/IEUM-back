@@ -26,7 +26,7 @@ export class UserService {
   async fillUserInfo(firstLoginDto: FirstLoginDto, id: number) {
     const user = await this.userRepository.findUserById(id);
     if (!user) {
-      throw new NotValidUserException();
+      throw new NotValidUserException('해당 유저가 존재하지 않아요.');
     }
     await this.userRepository.fillUserInfo(firstLoginDto, id);
     await this.preferenceRepository.fillUserPreference(
@@ -41,7 +41,7 @@ export class UserService {
   async deleteUser(id: number) {
     const user = await this.userRepository.findUserById(id);
     if (!user) {
-      throw new NotValidUserException('존재하지 않는 계정이에요.');
+      throw new NotValidUserException('해당 유저가 존재하지 않아요.');
     }
     await this.userRepository.softDeleteUser(id);
   }
