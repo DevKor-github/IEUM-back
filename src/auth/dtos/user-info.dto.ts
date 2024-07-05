@@ -2,7 +2,7 @@ import { IsBoolean, IsEmail, IsString } from 'class-validator';
 
 export class UserInfoDto {
   @IsString()
-  oAuthId: string;
+  uuid: string;
 
   @IsString()
   accessToken: string;
@@ -14,12 +14,12 @@ export class UserInfoDto {
   initialLogin: boolean;
 
   static fromCreation(
-    oAuthId: string,
+    uuid: string,
     accessToken: string,
     refreshToken: string,
   ): UserInfoDto {
     const dto = new UserInfoDto();
-    dto.oAuthId = oAuthId;
+    dto.uuid = uuid;
     dto.accessToken = accessToken;
     dto.refreshToken = refreshToken;
     return dto;

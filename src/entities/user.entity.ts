@@ -50,7 +50,7 @@ export class User extends BasicDate {
   instaGuestUser?: InstaGuestUser;
 
   @Column('varchar', { nullable: true })
-  refreshToken: string;
+  jti: string;
 
   @OneToMany(() => Trip, (trip) => trip.user)
   trips: Trip[];
