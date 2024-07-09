@@ -10,6 +10,8 @@ import {
 import { User } from './user.entity';
 import { InstaGuestCollection } from './insta-guest-collection.entity';
 import { InstaGuestFolder } from './insta-guest-folder.entity';
+import { InstaGuestUserCollection } from './insta-guest-user-collection.entity';
+import { InstaGuestCollectionPlace } from './insta-guest-collection-place.entity';
 
 @Entity()
 export class InstaGuestUser {
@@ -24,10 +26,10 @@ export class InstaGuestUser {
   uuid: string;
 
   @OneToMany(
-    () => InstaGuestCollection,
-    (instaGuestCollection) => instaGuestCollection.instaGuestUser,
+    () => InstaGuestUserCollection,
+    (instaGuestUserCollection) => instaGuestUserCollection.instaGuestUser,
   )
-  instaGuestCollections: InstaGuestCollection[];
+  instaGuestUserCollections: InstaGuestUserCollection[];
 
   @OneToOne(() => User, (user) => user.instaGuestUser)
   user?: User;

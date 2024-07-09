@@ -2,42 +2,33 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
 import { InstaGuestUser } from './insta-guest-user.entity';
 import { Place } from './place.entity';
+import { InstaGuestCollectionPlace } from './insta-guest-collection-place.entity';
+import { InstaGuestUserCollection } from './insta-guest-user-collection.entity';
 
 @Entity()
 export class InstaGuestCollection {
   @PrimaryGeneratedColumn()
   id: number;
 
-  //InstaGuestUser에 Many To One
-  @ManyToOne(
-    () => InstaGuestUser,
-    (instaGuestUser) => instaGuestUser.instaGuestCollections,
-    { onDelete: 'CASCADE' },
+  @OneToMany(
+    () => InstaGuestUserCollection,
+    (instaGuestUserCollection) => instaGuestUserCollection.instaGuestCollection,
   )
-  instaGuestUser: InstaGuestUser;
-
-  //연결된 entity를 load할 필요없이 ID에 직접 액세스 할 수 있도록 해줌.
-  @RelationId(
-    (instaGuestCollection: InstaGuestCollection) =>
-      instaGuestCollection.instaGuestUser,
-  )
-  @Column()
-  instaGuestUserId: number;
+  instaGuestUserCollections: InstaGuestUserCollection[];
 
   //Place에 Many To One
-  @ManyToOne(() => Place, (place) => place.instaGuestCollections)
-  place: Place;
-
-  @RelationId(
-    (instaGuestCollection: InstaGuestCollection) => instaGuestCollection.place,
+  @OneToMany(
+    () => InstaGuestCollectionPlace,
+    (instaGuestCollectionPlace) =>
+      instaGuestCollectionPlace.instaGuestCollection,
   )
-  @Column()
-  placeId: number;
+  instaGuestCollectionPlaces: InstaGuestCollectionPlace[];
 
   @Column({ nullable: true })
   content: string;

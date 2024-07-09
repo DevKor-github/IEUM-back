@@ -15,6 +15,7 @@ import { OpenHours } from './open-hours.entity';
 import { AddressComponents } from './address-components.entity';
 import { FolderPlace } from './folder-place.entity';
 import { InstaGuestFolder } from './insta-guest-folder.entity';
+import { InstaGuestCollectionPlace } from './insta-guest-collection-place.entity';
 
 @Entity()
 export class Place {
@@ -44,10 +45,10 @@ export class Place {
 
   //인스타 게스트 컬렉션
   @OneToMany(
-    () => InstaGuestCollection,
-    (instaGuestCollection) => instaGuestCollection.place,
+    () => InstaGuestCollectionPlace,
+    (instaGuestCollectionPlace) => instaGuestCollectionPlace.place,
   )
-  instaGuestCollections: InstaGuestCollection[];
+  instaGuestCollectionPlaces: InstaGuestCollectionPlace[];
 
   //장소 스케쥴
   @OneToMany(() => PlaceSchedule, (placeSchedule) => placeSchedule.place)
