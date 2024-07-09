@@ -68,6 +68,26 @@ export class PlaceService {
           'id,name,types,displayName,nationalPhoneNumber,formattedAddress,location,regularOpeningHours.weekdayDescriptions,displayName,primaryTypeDisplayName,addressComponents',
       },
     });
+    console.log(placeDetail.data);
+    console.log(
+      `${placeDetail.data.location.longitude},${placeDetail.data.location.latitude}`,
+    );
+    const juso = await axios.get(
+      'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc',
+      {
+        params: {
+          sourcecrs: 'epsg:4326',
+          orders: 'legalcode,addr,admcode,roadaddr',
+          output: 'json',
+          coords: `${placeDetail.data.location.longitude},${placeDetail.data.location.latitude}`,
+        },
+        headers: {
+          'X-NCP-APIGW-API-KEY-ID': process.env.NAVER_ID,
+          'X-NCP-APIGW-API-KEY': process.env.NAVER_SECRET,
+        },
+      },
+    );
+    console.log(juso.data);
 
     return placeDetail.data; //axios의 반환값에서 data만을 반환시켜야 한다.
   }
