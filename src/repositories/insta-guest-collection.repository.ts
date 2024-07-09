@@ -21,8 +21,6 @@ export class InstaGuestCollectionRepository extends Repository<InstaGuestCollect
     //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
     const instaGuestCollection = await this.findOne({
       where: {
-        instaGuestUserId: createInstaGuestCollectionDto.instaGuestUserId,
-        placeId: createInstaGuestCollectionDto.placeId,
         link: createInstaGuestCollectionDto.link,
       },
     });

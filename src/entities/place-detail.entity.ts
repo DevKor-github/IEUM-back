@@ -16,9 +16,9 @@ export class PlaceDetail {
   phoneNumber: string; //전화번호
 
   @Column({ nullable: true })
-  homepageUrl: string; //홈페이지
+  websiteUrl: string; //홈페이지
 
-  @Column({ nullable: true })
+  @Column('jsonb', { nullable: true })
   parkingOptions: JSON; //주차 여부.. json으로 저장?
 
   @Column({ nullable: true })

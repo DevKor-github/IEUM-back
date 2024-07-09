@@ -23,6 +23,8 @@ import {
   NotFoundInstaCollectionException,
   NotValidInstaGuestUserException,
 } from 'src/common/exceptions/insta.exception';
+import { InstaGuestUserCollectionRepository } from 'src/repositories/insta-guest-user-collection.repository';
+import { InstaGuestCollectionPlaceRepository } from 'src/repositories/insta-guest-collection-place.repository';
 
 @Injectable()
 export class InstagramService {
@@ -33,6 +35,8 @@ export class InstagramService {
     private readonly instaGuestCollectionRepository: InstaGuestCollectionRepository,
     private readonly instaGuestFolderRepository: InstaGuestFolderRepository,
     private readonly instaGuestFolderPlaceRepository: InstaGuestFolderPlaceRepository,
+    private readonly instaGuestUserCollectionRepository: InstaGuestUserCollectionRepository,
+    private readonly instaGuestCollectionPlaceRepository: InstaGuestCollectionPlaceRepository,
   ) {}
 
   async test(instaId: string) {
@@ -74,12 +78,18 @@ export class InstagramService {
         }
         const instaGuestCollection =
           await this.instaGuestCollectionRepository.createInstaGuestCollection({
-            instaGuestUserId: instaGuestUser.id,
-            placeId: placeInfo.id,
             link: dto.instagramLink,
             content: dto.instagramDescription,
             embeddedTag: dto.embeddedTag,
           });
+        await this.instaGuestUserCollectionRepository.createInstaGuestUserCollection(
+          instaGuestUser.id,
+          instaGuestCollection.id,
+        );
+        await this.instaGuestCollectionPlaceRepository.createInstaGuestCollectionPlace(
+          instaGuestCollection.id,
+          placeInfo.id,
+        );
         if (instaGuestCollection) {
           createdInstaGuestCollection.push(instaGuestCollection);
         }

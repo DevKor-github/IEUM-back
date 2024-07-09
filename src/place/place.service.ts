@@ -23,6 +23,8 @@ import { AddressComponentsRepository } from 'src/repositories/address-components
 import { Transactional } from 'typeorm-transactional';
 import { Category } from 'src/entities/category.entity';
 import { OpenHours } from 'src/entities/open-hours.entity';
+import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
+import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 
 @Injectable()
 export class PlaceService {
@@ -33,6 +35,7 @@ export class PlaceService {
     private readonly placeCategoryRepository: PlaceCategoryRepository,
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
+    private readonly placeDetailRepository: PlaceDetailRepository,
     private readonly addressComponentsRepository: AddressComponentsRepository,
   ) {}
 
@@ -58,36 +61,18 @@ export class PlaceService {
     return place.data;
   }
 
-  async getPlaceDetailByGooglePlaceId(googlePlaceId: string): Promise<any> {
+  async getPlaceDetailByGooglePlaceId(
+    googlePlaceId: string,
+  ): Promise<PlaceDetailByGoogle> {
     const placeDetail = await axios.get(SEARCH_BY_ID_URL + googlePlaceId, {
       params: { languageCode: 'ko' },
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
         'X-Goog-FieldMask':
-          'id,name,types,displayName,nationalPhoneNumber,formattedAddress,location,regularOpeningHours.weekdayDescriptions,displayName,primaryTypeDisplayName,addressComponents',
+          'id,name,types,displayName,nationalPhoneNumber,formattedAddress,location,regularOpeningHours.weekdayDescriptions,primaryTypeDisplayName,addressComponents,websiteUri,allowsDogs,goodForGroups,reservable,delivery,takeout',
       },
     });
-    console.log(placeDetail.data);
-    console.log(
-      `${placeDetail.data.location.longitude},${placeDetail.data.location.latitude}`,
-    );
-    const juso = await axios.get(
-      'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc',
-      {
-        params: {
-          sourcecrs: 'epsg:4326',
-          orders: 'legalcode,addr,admcode,roadaddr',
-          output: 'json',
-          coords: `${placeDetail.data.location.longitude},${placeDetail.data.location.latitude}`,
-        },
-        headers: {
-          'X-NCP-APIGW-API-KEY-ID': process.env.NAVER_ID,
-          'X-NCP-APIGW-API-KEY': process.env.NAVER_SECRET,
-        },
-      },
-    );
-    console.log(juso.data);
 
     return placeDetail.data; //axios의 반환값에서 data만을 반환시켜야 한다.
   }
@@ -100,10 +85,12 @@ export class PlaceService {
       where: { googlePlaceId: googlePlaceId },
     });
     if (existedPlace) return this.getPlaceDetailById(existedPlace.id);
+    console.log(existedPlace);
     const placeDetail = await this.getPlaceDetailByGooglePlaceId(googlePlaceId);
+    console.log(placeDetail);
     const createdPlace =
       await this.placeRepository.saveByGooglePlaceDetail(placeDetail);
-
+    console.log(createdPlace);
     let OpenHours: OpenHours;
     if (placeDetail.regularOpeningHours) {
       OpenHours = await this.openHoursRepository.save({
@@ -127,6 +114,11 @@ export class PlaceService {
       categories,
     );
 
+    const createdPlaceDetail =
+      await this.placeDetailRepository.saveByPlaceDetailByGoogle(
+        createdPlace.id,
+        placeDetail,
+      );
     return PlaceDetailResDto.fromCreation(createdPlace, OpenHours, categories);
   }
 

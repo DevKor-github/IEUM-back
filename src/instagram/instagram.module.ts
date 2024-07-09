@@ -10,6 +10,10 @@ import { PlaceModule } from 'src/place/place.module';
 import { InstaGuestFolderRepository } from 'src/repositories/insta-guest-folder.repository';
 import { InstaGuestFolderPlaceRepository } from 'src/repositories/insta-guest-folder-place.repository';
 import { FolderModule } from 'src/folder/folder.module';
+import { InstaGuestCollectionPlace } from 'src/entities/insta-guest-collection-place.entity';
+import { InstaGuestCollectionPlaceRepository } from 'src/repositories/insta-guest-collection-place.repository';
+import { InstaGuestUserCollection } from 'src/entities/insta-guest-user-collection.entity';
+import { InstaGuestUserCollectionRepository } from 'src/repositories/insta-guest-user-collection.repository';
 
 @Module({
   imports: [
@@ -24,6 +28,8 @@ import { FolderModule } from 'src/folder/folder.module';
     InstaGuestCollectionRepository,
     InstaGuestFolderRepository,
     InstaGuestFolderPlaceRepository,
+    InstaGuestCollectionPlaceRepository,
+    InstaGuestUserCollectionRepository,
   ],
 })
 export class InstagramModule {}
