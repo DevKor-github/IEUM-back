@@ -16,6 +16,7 @@ import { AddressComponents } from './address-components.entity';
 import { FolderPlace } from './folder-place.entity';
 import { InstaGuestFolder } from './insta-guest-folder.entity';
 import { InstaGuestCollectionPlace } from './insta-guest-collection-place.entity';
+import { PlaceDetail } from './place-detail.entity';
 
 @Entity()
 export class Place {
@@ -28,6 +29,9 @@ export class Place {
   @Column({ nullable: true })
   address: string;
 
+  @Column({ nullable: true })
+  depth2Address: string;
+
   @Column('decimal', { nullable: true })
   latitude: number; //위도
 
@@ -36,9 +40,6 @@ export class Place {
 
   @Column({ nullable: true })
   googlePlaceId: string; //googlePlaceId 필요
-
-  @Column({ nullable: true })
-  phoneNumber: string; //전화번호
 
   @Column({ nullable: true })
   primaryCategory: string; //주요 카테고리
@@ -90,4 +91,7 @@ export class Place {
     (instaGuestFolder) => instaGuestFolder.instaGuestFolderPlaces,
   )
   instaGuestFolderPlaces: InstaGuestFolder[];
+
+  @OneToOne(() => PlaceDetail, (placeDetail) => placeDetail.place)
+  placeDetail: PlaceDetail;
 }
