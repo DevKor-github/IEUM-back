@@ -12,12 +12,6 @@ export class PlaceDetail {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  phoneNumber: string; //전화번호
-
-  @Column({ nullable: true })
-  websiteUrl: string; //홈페이지
-
   @Column('jsonb', { nullable: true })
   parkingOptions: JSON; //주차 여부.. json으로 저장?
 
@@ -35,6 +29,9 @@ export class PlaceDetail {
 
   @Column({ nullable: true })
   takeout: string; //예약 가능 여부
+
+  @Column('varchar', { array: true })
+  opening: string[]; //영업시간
 
   @OneToOne(() => Place, (place) => place.placeDetail)
   @JoinColumn()

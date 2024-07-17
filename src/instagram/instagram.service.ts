@@ -4,7 +4,10 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InstaGuestUserRepository } from '../repositories/insta-guest-user.repository';
 import { InstaGuestCollectionRepository } from 'src/repositories/insta-guest-collection.repository';
 import { InstaGuestCollection } from 'src/entities/insta-guest-collection.entity';
-import { CrawledInstagramDto } from './dtos/crawled-instagram-dto';
+import {
+  CrawledInstagramByKeywordDto,
+  CrawledInstagramDto,
+} from './dtos/crawled-instagram-dto';
 import { PlaceService } from 'src/place/place.service';
 import {
   InstaCollectionMarkerDto,
@@ -46,7 +49,63 @@ export class InstagramService {
     });
     return instaGuestUser.user ? instaGuestUser.user : 'no user';
   }
+  async crawlToDBByKeyword(
+    crawledInstagramByKeywordDtos: CrawledInstagramByKeywordDto[],
+  ): Promise<InstaGuestCollection[]> {
+    const createdInstaGuestCollection = [];
 
+    for (const crawledInstagramKeyword of crawledInstagramByKeywordDtos) {
+      try {
+        const placeInfo = await this.placeService.createPlaceByKakao(
+          crawledInstagramKeyword.keyword,
+        );
+        const instaGuestUser =
+          await this.instaGuestUserRepository.createInstaGuestUser({
+            instaId: crawledInstagramKeyword.instagramId,
+          });
+        const instaGuestFolder =
+          await this.instaGuestFolderRepository.createInstaGuestFolder(
+            instaGuestUser,
+          );
+        const createdFolderPlace =
+          await this.instaGuestFolderPlaceRepository.createInstaGuestFolderPlace(
+            placeInfo.id,
+            instaGuestFolder.id,
+          );
+        if (createdFolderPlace.status === 'created' && instaGuestUser.user) {
+          await this.folderService.appendPlaceToInstaFolder(
+            instaGuestUser.user.id,
+            placeInfo.id,
+          );
+        }
+        const instaGuestCollection =
+          await this.instaGuestCollectionRepository.createInstaGuestCollection({
+            link: crawledInstagramKeyword.instagramLink,
+            content: crawledInstagramKeyword.instagramDescription,
+            embeddedTag: crawledInstagramKeyword.embeddedTag,
+          });
+        await this.instaGuestUserCollectionRepository.createInstaGuestUserCollection(
+          instaGuestUser.id,
+          instaGuestCollection.id,
+        );
+        await this.instaGuestCollectionPlaceRepository.createInstaGuestCollectionPlace(
+          instaGuestCollection.id,
+          placeInfo.id,
+        );
+        if (instaGuestCollection) {
+          createdInstaGuestCollection.push(instaGuestCollection);
+        }
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'crawled 데이터를 DB에 적재하는 과정에서 오류가 발생했습니다.',
+          error.stack,
+        );
+      }
+    }
+    return createdInstaGuestCollection;
+  }
+
+  //Deprecated
   async crawlToDB(
     crawledInstagramDto: CrawledInstagramDto[],
   ): Promise<InstaGuestCollection[]> {
@@ -191,6 +250,7 @@ export class InstagramService {
     return 'Others';
   }
 
+  //deprecated
   translateCategoryName(category: string): string {
     if (CATEGORIES_TRANSLATED[category]) {
       return CATEGORIES_TRANSLATED[category];

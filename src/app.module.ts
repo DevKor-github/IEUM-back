@@ -8,9 +8,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { InstagramModule } from './instagram/instagram.module';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
-import { CategoryModule } from './category/category.module';
 import { TagModule } from './tag/tag.module';
-import { ImageModule } from './image/image.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TripModule } from './trip/trip.module';
@@ -46,9 +44,7 @@ import { FolderModule } from './folder/folder.module';
     }),
     InstagramModule,
     PlaceModule,
-    CategoryModule,
     TagModule,
-    ImageModule,
     AuthModule,
     UserModule,
     TripModule,

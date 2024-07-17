@@ -1,3 +1,12 @@
+export const CATEGORIES_MAPPING_KAKAO = {
+  Restaurant: ['음식점'],
+  Cafe: ['카페'],
+  Bar: [],
+  Shopping: [],
+  Stay: ['숙박'],
+  Culture: ['문화시설', '관광명소'],
+};
+
 export const CATEGORIES_MAPPING = {
   Restaurant: [
     'american_restaurant',

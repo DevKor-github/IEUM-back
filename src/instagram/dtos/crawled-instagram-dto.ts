@@ -22,3 +22,25 @@ export class CrawledInstagramDto {
   @IsNotEmpty()
   embeddedTag: string;
 }
+
+export class CrawledInstagramByKeywordDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  keyword: string;
+
+  @ApiProperty()
+  @IsOptional()
+  instagramDescription: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  instagramId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  instagramLink: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  embeddedTag: string;
+}
