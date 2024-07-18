@@ -3,7 +3,6 @@ import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { InstaGuestUser } from 'src/entities/insta-guest-user.entity';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
 
 @Injectable()
@@ -38,15 +37,6 @@ export class UserRepository extends Repository<User> {
     user.sex = firstLoginDto.sex;
     user.mbti = firstLoginDto.mbti;
 
-    return await this.save(user);
-  }
-
-  async connectInstagram(userId: number, instaGuestUser: InstaGuestUser) {
-    const user = await this.findUserById(userId);
-    if (!user) {
-      throw new NotValidUserException('존재하지 않는 유저에요.');
-    }
-    user.instaGuestUser = instaGuestUser;
     return await this.save(user);
   }
 

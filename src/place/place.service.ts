@@ -86,7 +86,7 @@ export class PlaceService {
     googlePlaceId: string,
   ): Promise<PlaceDetailResDto> {
     const existedPlace = await this.placeRepository.findOne({
-      where: { googlePlaceId: googlePlaceId },
+      where: { kakaoId: googlePlaceId },
     });
     if (existedPlace) return this.getPlaceDetailById(existedPlace.id);
     console.log(existedPlace);

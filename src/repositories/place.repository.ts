@@ -13,13 +13,9 @@ export class PlaceRepository extends Repository<Place> {
 
   async getPlaceDetailById(placeId: number): Promise<Place> {
     return await this.createQueryBuilder('place')
-      .leftJoinAndSelect('place.openHours', 'openHours')
-      .leftJoinAndSelect('place.placeCategories', 'placeCategories')
-      .leftJoinAndSelect('placeCategories.category', 'category')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
       .leftJoinAndSelect('placeTags.tag', 'tag')
       .leftJoinAndSelect('place.placeImages', 'placeImages')
-      .leftJoinAndSelect('placeImages.image', 'image')
       .leftJoinAndSelect('place.placeDetail', 'placeDetail')
       .where('place.id = :placeId', { placeId })
       .getOne();

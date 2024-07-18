@@ -9,9 +9,8 @@ import { PlaceSchedule } from './place-schedule.entity';
 import { PlaceTag } from './place-tag.entity';
 import { PlaceImage } from './place-image.entity';
 import { FolderPlace } from './folder-place.entity';
-import { InstaGuestFolder } from './insta-guest-folder.entity';
-import { InstaGuestCollectionPlace } from './insta-guest-collection-place.entity';
 import { PlaceDetail } from './place-detail.entity';
+import { CollectionPlace } from './collection-place.entity';
 
 @Entity()
 export class Place {
@@ -45,13 +44,6 @@ export class Place {
   @Column('decimal', { nullable: true })
   longitude: number; //경도
 
-  //인스타 게스트 컬렉션
-  @OneToMany(
-    () => InstaGuestCollectionPlace,
-    (instaGuestCollectionPlace) => instaGuestCollectionPlace.place,
-  )
-  instaGuestCollectionPlaces: InstaGuestCollectionPlace[];
-
   //장소 스케쥴
   @OneToMany(() => PlaceSchedule, (placeSchedule) => placeSchedule.place)
   placeSchedules: PlaceSchedule[];
@@ -68,11 +60,8 @@ export class Place {
   @OneToMany(() => FolderPlace, (folderPlace) => folderPlace.place)
   folderPlaces: FolderPlace[];
 
-  @OneToMany(
-    () => InstaGuestFolder,
-    (instaGuestFolder) => instaGuestFolder.instaGuestFolderPlaces,
-  )
-  instaGuestFolderPlaces: InstaGuestFolder[];
+  @OneToMany(() => CollectionPlace, (collectionPlace) => collectionPlace.place)
+  collectionPlaces: CollectionPlace[];
 
   @OneToOne(() => PlaceDetail, (placeDetail) => placeDetail.place)
   placeDetail: PlaceDetail;

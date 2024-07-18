@@ -1,38 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { InstaGuestCollection } from 'src/entities/insta-guest-collection.entity';
-import { CreateInstaGuestCollectionDto } from 'src/instagram/dtos/create-insta-guest-collection-dto';
 import { INSTA_COLLECTIONS_TAKE } from 'src/common/constants/pagination.constant';
 import {
   RawInstaCollection,
   RawInstaCollectionDetail,
   RawInstaPlaceMarker,
 } from 'src/common/interfaces/raw-insta-collection.interface';
+import { Collection } from 'src/entities/collection.entity';
 
 @Injectable()
-export class InstaGuestCollectionRepository extends Repository<InstaGuestCollection> {
+export class CollectionRepository extends Repository<Collection> {
   constructor(dataSource: DataSource) {
-    super(InstaGuestCollection, dataSource.createEntityManager());
+    super(Collection, dataSource.createEntityManager());
   }
 
-  async createInstaGuestCollection(
-    createInstaGuestCollectionDto: CreateInstaGuestCollectionDto,
-  ): Promise<InstaGuestCollection> {
-    //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
-    const instaGuestCollection = await this.findOne({
-      where: {
-        link: createInstaGuestCollectionDto.link,
-      },
-    });
-    if (instaGuestCollection) {
-      return null;
-    }
-    const newInstaGuestCollection = this.create(createInstaGuestCollectionDto);
-    const saveNewInstaGuestCollection = await this.save(
-      newInstaGuestCollection,
-    );
-    return saveNewInstaGuestCollection;
-  }
+  // async createCollection(
+  //   createCollectionDto: CreateCollectionDto,
+  // ): Promise<Collection> {
+  //   //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
+  //   const Collection = await this.findOne({
+  //     where: {
+  //       link: createCollectionDto.link,
+  //     },
+  //   });
+  //   if (Collection) {
+  //     return null;
+  //   }
+  //   const newCollection = this.create(createCollectionDto);
+  //   const saveNewCollection = await this.save(
+  //     newCollection,
+  //   );
+  //   return saveNewCollection;
+  // }
 
   async getCollections(
     instaGuestUserId: number,
