@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -25,6 +26,7 @@ export class Place {
   name: string;
 
   @Column({ nullable: true })
+  @Index()
   address: string;
 
   @Column('decimal', { nullable: true })
@@ -40,6 +42,7 @@ export class Place {
   phoneNumber: string; //전화번호
 
   @Column({ nullable: true })
+  @Index()
   primaryCategory: string; //주요 카테고리
 
   //인스타 게스트 컬렉션
