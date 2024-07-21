@@ -23,6 +23,8 @@ import { AddressComponentsRepository } from 'src/repositories/address-components
 import { Transactional } from 'typeorm-transactional';
 import { Category } from 'src/entities/category.entity';
 import { OpenHours } from 'src/entities/open-hours.entity';
+import { UserRepository } from 'src/repositories/user.repository';
+import { MarkerResDto } from './dtos/marker-res.dto';
 
 @Injectable()
 export class PlaceService {
@@ -34,6 +36,7 @@ export class PlaceService {
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
     private readonly addressComponentsRepository: AddressComponentsRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
@@ -144,5 +147,28 @@ export class PlaceService {
     });
     if (existedRelation) return existedRelation;
     return await this.placeImageRepository.save(createPlaceImageReqDto);
+  }
+
+  async getAllMarkers(
+    userId: number,
+    addressCollection: string[],
+    categoryCollection: string[],
+  ): Promise<MarkerResDto[]> {
+    //입력값이 문자열 1개라 배열이 아닐 때 수동으로 배열로 바꿔줘야 함.
+    addressCollection =
+      typeof addressCollection === 'string'
+        ? [addressCollection]
+        : addressCollection;
+
+    categoryCollection =
+      typeof categoryCollection === 'string'
+        ? [categoryCollection]
+        : categoryCollection;
+
+    return await this.userRepository.getAllMarkers(
+      userId,
+      addressCollection,
+      categoryCollection,
+    );
   }
 }

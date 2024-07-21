@@ -8,6 +8,7 @@ import { PlaceCategoryRepository } from 'src/repositories/place-category.reposit
 import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
 import { AddressComponentsRepository } from 'src/repositories/address-components.repository';
+import { UserRepository } from 'src/repositories/user.repository';
 
 @Module({
   controllers: [PlaceController],
@@ -20,6 +21,7 @@ import { AddressComponentsRepository } from 'src/repositories/address-components
     PlaceTagRepository,
     PlaceImageRepository,
     AddressComponentsRepository,
+    UserRepository,
   ],
   exports: [PlaceService],
 })

@@ -5,6 +5,8 @@ import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import { InstaGuestUser } from 'src/entities/insta-guest-user.entity';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
+import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -48,6 +50,52 @@ export class UserRepository extends Repository<User> {
     }
     user.instaGuestUser = instaGuestUser;
     return await this.save(user);
+  }
+
+  async getAllMarkers(
+    userId: number,
+    addressCollection: string[],
+    categoryCollection: string[],
+  ): Promise<MarkerResDto[]> {
+    const markerCollection = this.createQueryBuilder('user')
+      .leftJoinAndSelect('user.folders', 'folder')
+      .leftJoinAndSelect('folder.folderPlaces', 'folderPlace')
+      .leftJoinAndSelect('folderPlace.place', 'place')
+      .select([
+        'place.name',
+        'place.latitude',
+        'place.longitude',
+        'place.primary_category',
+      ])
+      .where('user.id = :userId', { userId });
+
+    //address로 필터링 되어야 한다면
+    //place.address LIKE a% OR b%는 지원하지 않아 place.address LIKE a% OR place.address LIKE b%와 같이 작성하여야 함.
+    if (addressCollection && addressCollection.length != 0) {
+      const addressConditions = addressCollection.map(
+        (address, index) => `place.address LIKE :address${index}`,
+      );
+      markerCollection.andWhere(
+        `(${addressConditions.join(' OR ')})`,
+        addressCollection.reduce((params, address, index) => {
+          params[`address${index}`] = `${address}%`;
+          return params;
+        }, {}),
+      );
+    }
+
+    //category로 필터링 되어야 한다면
+    if (categoryCollection && categoryCollection.length != 0) {
+      markerCollection
+        .andWhere('place.primary_category IN (:...categories)')
+        .setParameter('categories', categoryCollection);
+    }
+
+    const result = await markerCollection.getRawMany();
+
+    console.log(result);
+    //plainToInstance함수는 javascript 객체를 특정 class의 instance로 변환시켜준다.
+    return plainToInstance(MarkerResDto, result);
   }
 
   // ----------------------------애플 --------------------------------

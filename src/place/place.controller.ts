@@ -1,6 +1,22 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PlaceService } from './place.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
 import {
   CreatePlaceCategoryReqDto,
@@ -8,6 +24,9 @@ import {
   CreatePlaceTagReqDto,
 } from './dtos/create-place-relation-req.dto';
 import { CreatePlaceReqDto } from './dtos/create-place-req.dto';
+import { access } from 'fs';
+import { AuthGuard } from '@nestjs/passport';
+import { MarkerResDto } from './dtos/marker-res.dto';
 
 @ApiTags('places')
 @Controller('places')
@@ -68,4 +87,27 @@ export class PlaceController {
   ) {
     return await this.placeService.createPlaceImage(createPlaceImageReqDto);
   }
+
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: "Get User's place markers" })
+  @ApiResponse({ type: MarkerResDto })
+  @ApiQuery({ name: 'address', required: false, type: [String] })
+  @ApiQuery({ name: 'category', required: false, type: [String] })
+  @Get('/markers/all')
+  async getAllMarkers(
+    @Query('address') address: string[] = [],
+    @Query('category') category: string[] = [],
+    @Req() req,
+  ) {
+    return await this.placeService.getAllMarkers(
+      req.user.id,
+      address,
+      category,
+    );
+  }
+
+  @ApiOperation({ summary: "Get User's place markers by folder" })
+  @Get('/markers/folder/:id')
+  async getMarkersByFolder(@Param('id') id: number) {}
 }
