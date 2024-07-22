@@ -12,10 +12,8 @@ import { PlaceDetailRepository } from 'src/repositories/place-detail.repository'
   providers: [
     PlaceService,
     PlaceRepository,
-
     PlaceTagRepository,
     PlaceImageRepository,
-
     PlaceDetailRepository,
   ],
   exports: [PlaceService],
