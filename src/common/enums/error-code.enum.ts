@@ -5,6 +5,7 @@ export enum ErrorCodeEnum {
   NotValidRefresh = 1001,
   // aa = 20 : User
   NotValidUser = 2001,
+  NotAuthorized = 2002, //해당 권한 없음.
   // aa = 30 : Insta
   NotValidInstaGuestUser = 3001,
   NotFoundInstaCollection = 3002,

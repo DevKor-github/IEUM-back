@@ -6,3 +6,9 @@ export class NotValidUserException extends CustomException {
     super(ErrorCodeEnum.NotValidUser, message);
   }
 }
+
+export class NotAuthorizedException extends CustomException {
+  constructor(message?: string) {
+    super(ErrorCodeEnum.NotAuthorized, message);
+  }
+}

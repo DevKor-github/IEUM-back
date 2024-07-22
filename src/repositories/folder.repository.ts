@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { RawFolderList } from 'src/common/interfaces/raw-folder-list.interface';
 import { Folder } from 'src/entities/folder.entity';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
 export class FolderRepository extends Repository<Folder> {
@@ -12,6 +12,9 @@ export class FolderRepository extends Repository<Folder> {
     super(Folder, dataSource.createEntityManager());
   }
 
+  async findFolderByFolderId(folderId: number) {
+    return await this.findOne({ where: { id: folderId } });
+  }
   async createFolder(
     userId: number,
     folderName: string,
@@ -33,7 +36,7 @@ export class FolderRepository extends Repository<Folder> {
       newFolder.type = folderType;
     }
     const saveNewFolder = await this.save(newFolder);
-    return saveNewFolder;
+    return;
   }
   async getDefaultFolder(userId: number) {
     let defaultFolder = await this.folderRepository.findOne({
@@ -75,5 +78,9 @@ export class FolderRepository extends Repository<Folder> {
       placeCnt: folder.folderPlaces.length,
     }));
     return folderListWithPlaceCnt;
+  }
+
+  async deleteFolder(folderId: number, manager: EntityManager) {
+    await manager.delete(Folder, { id: folderId });
   }
 }

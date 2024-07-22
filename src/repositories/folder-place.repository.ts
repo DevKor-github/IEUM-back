@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FolderPlace } from 'src/entities/folder-place.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class FolderPlaceRepository extends Repository<FolderPlace> {
@@ -21,5 +21,9 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     newFolderPlace.placeId = placeId;
     const saveNewFolderPlace = await this.save(newFolderPlace);
     return saveNewFolderPlace;
+  }
+
+  async deleteFolderPlace(folderId: number, manager: EntityManager) {
+    await manager.delete(FolderPlace, { folderId: folderId });
   }
 }
