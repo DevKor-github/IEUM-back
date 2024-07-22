@@ -45,8 +45,10 @@ export class PlaceRepository extends Repository<Place> {
         'place.id',
         'place.name',
         'place.address',
-        'place.primary_category',
-        'tag.tag_name',
+        'place.primary_category AS place_primary_category',
+        'place.latitude',
+        'place.longitude',
+        'tag.tag_name AS place_tag_name',
       ])
       .where('place.id = :placeId', { placeId })
 
