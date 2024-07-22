@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -63,6 +64,26 @@ export class FolderController {
   @Delete('/:id')
   async deleteFolder(@Param('id') folderId: number, @Req() req) {
     return await this.folderService.deleteFolder(req.user.id, folderId);
+  }
+
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: 'Change the name of the folder.' })
+  @ApiResponse({
+    status: 200,
+    description: '폴더 이름 변경 성공.',
+  })
+  @Put('/:id')
+  async changeFolderName(
+    @Param('id') folderId: number,
+    @Body() newFolderNameDto: CreateFolderReqDto,
+    @Req() req,
+  ) {
+    return await this.folderService.changeFolderName(
+      req.user.id,
+      folderId,
+      newFolderNameDto.name,
+    );
   }
 
   @Get('/:folderId')

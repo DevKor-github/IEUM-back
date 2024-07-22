@@ -63,6 +63,14 @@ export class FolderService {
     }
   }
 
+  async changeFolderName(userId: number, folderId: number, folderName: string) {
+    return await this.folderRepository.changeFolderName(
+      userId,
+      folderId,
+      folderName,
+    );
+  }
+
   async getFolderByFolderId(folderId: number) {}
 
   async getInstaFolder(userId: number) {

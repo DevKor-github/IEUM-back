@@ -83,4 +83,8 @@ export class FolderRepository extends Repository<Folder> {
   async deleteFolder(folderId: number, manager: EntityManager) {
     await manager.delete(Folder, { id: folderId });
   }
+
+  async changeFolderName(userId: number, folderId: number, folderName: string) {
+    await this.update({ id: folderId, userId: userId }, { name: folderName });
+  }
 }
