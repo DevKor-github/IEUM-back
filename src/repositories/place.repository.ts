@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { RawPlacePreview } from 'src/common/interfaces/raw-place-preview.interface';
 import { Place } from 'src/entities/place.entity';
 import { DataSource, Repository } from 'typeorm';
 
@@ -33,5 +35,28 @@ export class PlaceRepository extends Repository<Place> {
       phoneNumber: placeDetail.nationalPhoneNumber,
       primaryCategory: placeDetail.types[0],
     });
+  }
+
+  async getPlaceInfoFromMarker(placeId: number): Promise<RawPlacePreview> {
+    const placePreviewInfo = await this.createQueryBuilder('place')
+      .leftJoinAndSelect('place.placeTags', 'placeTag')
+      .leftJoinAndSelect('placeTag.tag', 'tag')
+      .select([
+        'place.id',
+        'place.name',
+        'place.address',
+        'place.primary_category',
+        'tag.tag_name',
+      ])
+      .where('place.id = :placeId', { placeId })
+
+      .getRawOne();
+
+    //db 바뀌고 나서 tag.type이 1,2,3인 것만 가져와야함.
+    //.andWhere('tag.type in 1,2,3')
+    //해쉬태그들을 배열로 반환.
+
+    //db 바뀌고 나서 place와 image를 연결짓는 N:N 테이블이 사라짐. 새로 image 테이블 연결해야함.
+    return placePreviewInfo;
   }
 }

@@ -27,6 +27,7 @@ import { CreatePlaceReqDto } from './dtos/create-place-req.dto';
 import { access } from 'fs';
 import { AuthGuard } from '@nestjs/passport';
 import { MarkerResDto } from './dtos/marker-res.dto';
+import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 
 @ApiTags('places')
 @Controller('places')
@@ -122,5 +123,13 @@ export class PlaceController {
       category,
       id,
     );
+  }
+
+  @ApiOperation({ summary: "Get place's preview info from marker" })
+  @Get('/markers/place-info/:id')
+  async getPlaceInfoFromMarker(
+    @Param('id') id: number,
+  ): Promise<PlacePreviewResDto> {
+    return await this.placeService.getPlaceInfoFromMarker(id);
   }
 }

@@ -25,6 +25,7 @@ import { Category } from 'src/entities/category.entity';
 import { OpenHours } from 'src/entities/open-hours.entity';
 import { UserRepository } from 'src/repositories/user.repository';
 import { MarkerResDto } from './dtos/marker-res.dto';
+import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 
 @Injectable()
 export class PlaceService {
@@ -178,6 +179,12 @@ export class PlaceService {
       userId,
       addressCollection,
       categoryCollection,
+    );
+  }
+
+  async getPlaceInfoFromMarker(placeId: number): Promise<PlacePreviewResDto> {
+    return new PlacePreviewResDto(
+      await this.placeRepository.getPlaceInfoFromMarker(placeId),
     );
   }
 }
