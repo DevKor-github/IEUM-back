@@ -26,6 +26,8 @@ import { OpenHours } from 'src/entities/open-hours.entity';
 import { UserRepository } from 'src/repositories/user.repository';
 import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
+import { PlaceListReqDto } from './dtos/place-list-pagination-req.dto';
+import { PlaceListResDto } from './dtos/place-list-pagination-res.dto';
 
 @Injectable()
 export class PlaceService {
@@ -186,5 +188,55 @@ export class PlaceService {
     return new PlacePreviewResDto(
       await this.placeRepository.getPlaceInfoFromMarker(placeId),
     );
+  }
+
+  async getPlaceList(
+    userId: number,
+    placeListReqDto: PlaceListReqDto,
+  ): Promise<PlaceListResDto> {
+    placeListReqDto.addressCollection =
+      typeof placeListReqDto.addressCollection === 'string'
+        ? [placeListReqDto.addressCollection]
+        : placeListReqDto.addressCollection;
+
+    placeListReqDto.categoryCollection =
+      typeof placeListReqDto.categoryCollection === 'string'
+        ? [placeListReqDto.categoryCollection]
+        : placeListReqDto.categoryCollection;
+
+    const placeCollection = await this.userRepository.getPlaceList(
+      userId,
+      placeListReqDto,
+    );
+    //주소 형태 변환
+    placeCollection.map((place) => {
+      const shortAddress = place.address.split(' ');
+      place.address = shortAddress.slice(0, 2).join(' ');
+    });
+
+    let hasNext: boolean;
+    let nextCursorId: number = null;
+
+    if (!placeListReqDto.cursorId) {
+      console.log(placeCollection.length);
+      hasNext = placeCollection.length > placeListReqDto.take * 2;
+    } else {
+      hasNext = placeCollection.length > placeListReqDto.take;
+    }
+
+    if (!hasNext) {
+      nextCursorId = null;
+    } else {
+      nextCursorId = placeCollection[placeCollection.length - 2].id;
+      placeCollection.pop();
+    }
+
+    const placeListResCollection = new PlaceListResDto(placeCollection, {
+      take: placeListReqDto.take,
+      hasNext: hasNext,
+      cursorId: nextCursorId,
+    });
+
+    return placeListResCollection;
   }
 }

@@ -28,6 +28,8 @@ import { access } from 'fs';
 import { AuthGuard } from '@nestjs/passport';
 import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
+import { PlaceListResDto } from './dtos/place-list-pagination-res.dto';
+import { PlaceListReqDto } from './dtos/place-list-pagination-req.dto';
 
 @ApiTags('places')
 @Controller('places')
@@ -131,5 +133,20 @@ export class PlaceController {
     @Param('id') id: number,
   ): Promise<PlacePreviewResDto> {
     return await this.placeService.getPlaceInfoFromMarker(id);
+  }
+
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: "Get User's place list" })
+  @ApiResponse({ type: PlaceListResDto })
+  @ApiQuery({ name: 'cursorId', required: false, type: Number })
+  @ApiQuery({ name: 'addressCollection', required: false, type: [String] })
+  @ApiQuery({ name: 'categoryCollection', required: false, type: [String] })
+  @Get('/list/all')
+  async getAllPlaceList(
+    @Req() req,
+    @Query() placeListReqDto: PlaceListReqDto,
+  ): Promise<PlaceListResDto> {
+    return this.placeService.getPlaceList(req.user.id, placeListReqDto);
   }
 }

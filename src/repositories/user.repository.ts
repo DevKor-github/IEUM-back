@@ -7,6 +7,9 @@ import { InstaGuestUser } from 'src/entities/insta-guest-user.entity';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
+import { PlaceListReqDto } from 'src/place/dtos/place-list-pagination-req.dto';
+import { PlaceListDataDto } from 'src/place/dtos/place-list-pagination-res.dto';
+import { FolderType } from 'src/common/enums/folder-type.enum';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -74,6 +77,10 @@ export class UserRepository extends Repository<User> {
     //folder별로 보여줘야 한다면
     if (folderId !== undefined) {
       markerCollection.andWhere('folder.id = :folderId', { folderId });
+    } else {
+      markerCollection.andWhere('folder.type = :folderType', {
+        folderType: FolderType.Default,
+      });
     }
     //address로 필터링 되어야 한다면
     //place.address LIKE a% OR b%는 지원하지 않아 place.address LIKE a% OR place.address LIKE b%와 같이 작성하여야 함.
@@ -97,10 +104,101 @@ export class UserRepository extends Repository<User> {
         .setParameter('categories', categoryCollection);
     }
 
-    const result = await markerCollection.getRawMany();
+    const result = await markerCollection
+      .orderBy('place.id', 'DESC')
+      .getRawMany();
 
     //plainToInstance함수는 javascript 객체를 특정 class의 instance로 변환시켜준다.
     return plainToInstance(MarkerResDto, result);
+  }
+
+  async getPlaceList(
+    userId: number,
+    placeListReqDto: PlaceListReqDto,
+  ): Promise<PlaceListDataDto[]> {
+    const placeCollection = this.createQueryBuilder('user')
+      .innerJoinAndSelect('user.folders', 'folder')
+      .innerJoinAndSelect('folder.folderPlaces', 'folderPlace')
+      .innerJoinAndSelect('folderPlace.place', 'place')
+      .select([
+        'place.id AS id',
+        'place.name AS name',
+        'place.address AS address',
+        'place.primary_category AS category ',
+      ])
+      .where('user.id = :userId', { userId })
+      .andWhere('folder.type = :folderType', {
+        folderType: FolderType.Default,
+      }); //default에 있는 장소들 가져옴.
+
+    //첫 호출이라 cursor 값이 0이라면
+    if (!placeListReqDto.cursorId) {
+      if (
+        placeListReqDto.addressCollection &&
+        placeListReqDto.addressCollection.length != 0
+      ) {
+        const addressConditions = placeListReqDto.addressCollection.map(
+          (address, index) => `place.address LIKE :address${index}`,
+        );
+        placeCollection.andWhere(
+          `(${addressConditions.join(' OR ')})`,
+          placeListReqDto.addressCollection.reduce((params, address, index) => {
+            params[`address${index}`] = `${address}%`;
+            return params;
+          }, {}),
+        );
+      }
+      if (
+        placeListReqDto.categoryCollection &&
+        placeListReqDto.categoryCollection.length != 0
+      ) {
+        placeCollection
+          .andWhere('place.primary_category IN (:...categories)')
+          .setParameter('categories', placeListReqDto.categoryCollection);
+      }
+      placeCollection
+        .orderBy('place.id', 'DESC')
+        .limit(placeListReqDto.take * 2 + 1);
+    }
+
+    //두 번째 호출부터라 cursor값이 있다면
+    else {
+      placeCollection.andWhere('place.id < :cursorId', {
+        cursorId: placeListReqDto.cursorId,
+      });
+
+      if (
+        placeListReqDto.addressCollection &&
+        placeListReqDto.addressCollection.length != 0
+      ) {
+        const addressConditions = placeListReqDto.addressCollection.map(
+          (address, index) => `place.address LIKE :address${index}`,
+        );
+        placeCollection.andWhere(
+          `(${addressConditions.join(' OR ')})`,
+          placeListReqDto.addressCollection.reduce((params, address, index) => {
+            params[`address${index}`] = `${address}%`;
+            return params;
+          }, {}),
+        );
+      }
+      if (
+        placeListReqDto.categoryCollection &&
+        placeListReqDto.categoryCollection.length != 0
+      ) {
+        placeCollection
+          .andWhere('place.primary_category IN (:...categories)')
+          .setParameter('categories', placeListReqDto.categoryCollection);
+      }
+      placeCollection
+        .orderBy('place.id', 'DESC')
+        .limit(placeListReqDto.take + 1);
+    }
+
+    const result = await placeCollection.getRawMany();
+    //place_image join 추가해서 image url 반환 해야함.
+
+    return result;
   }
 
   // ----------------------------애플 --------------------------------
