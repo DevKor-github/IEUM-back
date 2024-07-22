@@ -25,4 +25,10 @@ export class CollectionPlace {
 
   @RelationId((collectionPlace: CollectionPlace) => collectionPlace.place)
   placeId: number;
+
+  @Column({ default: false })
+  isSaved: boolean;
+
+  @Column()
+  placeKeyword: string;
 }

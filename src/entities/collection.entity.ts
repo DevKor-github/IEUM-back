@@ -36,4 +36,7 @@ export class Collection extends BaseEntity {
     (collectionPlace) => collectionPlace.collection,
   )
   collectionPlaces: CollectionPlace[];
+
+  @Column({ default: false })
+  isViewed: boolean;
 }
