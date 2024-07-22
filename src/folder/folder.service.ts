@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
 import { FolderRepository } from 'src/repositories/folder.repository';
+import { FolderListResDto } from './dtos/folder-list.res.dto';
 
 @Injectable()
 export class FolderService {
@@ -9,7 +10,13 @@ export class FolderService {
     private readonly folderPlaceRepository: FolderPlaceRepository,
   ) {}
 
-  async getFoldersList(userId?: number) {}
+  async getFolderList(userId: number): Promise<FolderListResDto[]> {
+    const rawFolderList = await this.folderRepository.getFolderList(userId);
+    const folderList = rawFolderList.map(
+      (folder) => new FolderListResDto(folder),
+    );
+    return folderList;
+  }
 
   async getFolderByFolderId(folderId: number) {}
 

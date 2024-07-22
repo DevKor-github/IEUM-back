@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FolderType } from 'src/common/enums/folder-type.enum';
+import { RawFolderList } from 'src/common/interfaces/raw-folder-list.interface';
 import { Folder } from 'src/entities/folder.entity';
 import { Repository, DataSource } from 'typeorm';
 
@@ -60,5 +61,19 @@ export class FolderRepository extends Repository<Folder> {
       );
     }
     return instaFolder;
+  }
+
+  async getFolderList(userId: number): Promise<RawFolderList[]> {
+    const folderList = await this.find({
+      where: { userId: userId },
+      relations: ['folderPlaces'],
+    });
+
+    const folderListWithPlaceCnt = folderList.map((folder) => ({
+      id: folder.id,
+      name: folder.name,
+      placeCnt: folder.folderPlaces.length,
+    }));
+    return folderListWithPlaceCnt;
   }
 }
