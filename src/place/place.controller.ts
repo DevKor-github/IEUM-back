@@ -114,7 +114,7 @@ export class PlaceController {
   @ApiQuery({ name: 'category', required: false, type: [String] })
   @Get('/markers/folder/:id')
   async getMarkersByFolder(
-    @Param('id') id: number,
+    @Param('id') folderId: number,
     @Query('address') address: string[] = [],
     @Query('category') category: string[] = [],
     @Req() req,
@@ -123,7 +123,7 @@ export class PlaceController {
       req.user.id,
       address,
       category,
-      id,
+      folderId,
     );
   }
 
@@ -148,5 +148,25 @@ export class PlaceController {
     @Query() placeListReqDto: PlaceListReqDto,
   ): Promise<PlaceListResDto> {
     return this.placeService.getPlaceList(req.user.id, placeListReqDto);
+  }
+
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: "Get User's place list by folder" })
+  @ApiResponse({ type: PlaceListResDto })
+  @ApiQuery({ name: 'cursorId', required: false, type: Number })
+  @ApiQuery({ name: 'addressCollection', required: false, type: [String] })
+  @ApiQuery({ name: 'categoryCollection', required: false, type: [String] })
+  @Get('/list/folder/:id')
+  async getPlaceListByFolder(
+    @Req() req,
+    @Param('id') folderId: number,
+    @Query() placeListReqDto: PlaceListReqDto,
+  ): Promise<PlaceListResDto> {
+    return this.placeService.getPlaceList(
+      req.user.id,
+      placeListReqDto,
+      folderId,
+    );
   }
 }

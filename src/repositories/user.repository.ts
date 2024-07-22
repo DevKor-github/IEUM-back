@@ -115,6 +115,7 @@ export class UserRepository extends Repository<User> {
   async getPlaceList(
     userId: number,
     placeListReqDto: PlaceListReqDto,
+    folderId?: number,
   ): Promise<PlaceListDataDto[]> {
     const placeCollection = this.createQueryBuilder('user')
       .innerJoinAndSelect('user.folders', 'folder')
@@ -126,10 +127,16 @@ export class UserRepository extends Repository<User> {
         'place.address AS address',
         'place.primary_category AS category ',
       ])
-      .where('user.id = :userId', { userId })
-      .andWhere('folder.type = :folderType', {
+      .where('user.id = :userId', { userId });
+
+    //folder별로 보여줘야 한다면
+    if (folderId !== undefined) {
+      placeCollection.andWhere('folder.id = :folderId', { folderId });
+    } else {
+      placeCollection.andWhere('folder.type = :folderType', {
         folderType: FolderType.Default,
-      }); //default에 있는 장소들 가져옴.
+      });
+    }
 
     //첫 호출이라 cursor 값이 0이라면
     if (!placeListReqDto.cursorId) {

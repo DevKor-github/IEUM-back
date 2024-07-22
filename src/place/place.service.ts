@@ -27,7 +27,10 @@ import { UserRepository } from 'src/repositories/user.repository';
 import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceListReqDto } from './dtos/place-list-pagination-req.dto';
-import { PlaceListResDto } from './dtos/place-list-pagination-res.dto';
+import {
+  PlaceListDataDto,
+  PlaceListResDto,
+} from './dtos/place-list-pagination-res.dto';
 
 @Injectable()
 export class PlaceService {
@@ -193,6 +196,7 @@ export class PlaceService {
   async getPlaceList(
     userId: number,
     placeListReqDto: PlaceListReqDto,
+    folderId?: number,
   ): Promise<PlaceListResDto> {
     placeListReqDto.addressCollection =
       typeof placeListReqDto.addressCollection === 'string'
@@ -204,10 +208,20 @@ export class PlaceService {
         ? [placeListReqDto.categoryCollection]
         : placeListReqDto.categoryCollection;
 
-    const placeCollection = await this.userRepository.getPlaceList(
-      userId,
-      placeListReqDto,
-    );
+    let placeCollection: PlaceListDataDto[];
+    if (folderId !== undefined) {
+      placeCollection = await this.userRepository.getPlaceList(
+        userId,
+        placeListReqDto,
+        folderId,
+      );
+    } else {
+      placeCollection = await this.userRepository.getPlaceList(
+        userId,
+        placeListReqDto,
+      );
+    }
+
     //주소 형태 변환
     placeCollection.map((place) => {
       const shortAddress = place.address.split(' ');
