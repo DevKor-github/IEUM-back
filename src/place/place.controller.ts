@@ -20,15 +20,15 @@ export class PlaceController {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
   }
 
-  @ApiOperation({ summary: 'Create place by googlePlaceId' })
-  @Post('')
-  async createPlaceByGooglePlaceId(
-    @Body() createPlaceReqDto: CreatePlaceReqDto,
-  ) {
-    return await this.placeService.createPlaceByGooglePlaceId(
-      createPlaceReqDto.googlePlaceId,
-    );
-  }
+  // @ApiOperation({ summary: 'Create place by googlePlaceId' })
+  // @Post('')
+  // async createPlaceByGooglePlaceId(
+  //   @Body() createPlaceReqDto: CreatePlaceReqDto,
+  // ) {
+  //   return await this.placeService.createPlaceByGooglePlaceId(
+  //     createPlaceReqDto.googlePlaceId,
+  //   );
+  // }
 
   @ApiOperation({ summary: 'Search Google Place API by text' })
   @Post('google')
@@ -50,17 +50,17 @@ export class PlaceController {
     return await this.placeService.searchKakaoPlaceByKeyword(body.keyword);
   }
 
-  @ApiOperation({ summary: 'Create placeTag' })
-  @Post('place-tags')
-  async createPlaceTag(@Body() createPlaceTagReqDto: CreatePlaceTagReqDto) {
-    return await this.placeService.createPlaceTag(createPlaceTagReqDto);
-  }
+  // @ApiOperation({ summary: 'Create placeTag' })
+  // @Post('place-tags')
+  // async createPlaceTag(@Body() createPlaceTagReqDto: CreatePlaceTagReqDto) {
+  //   return await this.placeService.createPlaceTag(createPlaceTagReqDto);
+  // }
 
-  @ApiOperation({ summary: 'Create placeImage' })
-  @Post('place-images')
-  async createPlaceImage(
-    @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
-  ) {
-    return await this.placeService.createPlaceImage(createPlaceImageReqDto);
-  }
+  // @ApiOperation({ summary: 'Create placeImage' })
+  // @Post('place-images')
+  // async createPlaceImage(
+  //   @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
+  // ) {
+  //   return await this.placeService.createPlaceImage(createPlaceImageReqDto);
+  // }
 }

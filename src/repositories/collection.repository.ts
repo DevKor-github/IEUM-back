@@ -7,6 +7,7 @@ import {
   RawInstaPlaceMarker,
 } from 'src/common/interfaces/raw-insta-collection.interface';
 import { Collection } from 'src/entities/collection.entity';
+import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
 
 @Injectable()
 export class CollectionRepository extends Repository<Collection> {
@@ -32,6 +33,27 @@ export class CollectionRepository extends Repository<Collection> {
   //   );
   //   return saveNewCollection;
   // }
+  async createCollection(
+    createCollectionReq: CreateCollectionReqDto,
+  ): Promise<Collection> {
+    //   //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
+    const existedCollection = await this.findOne({
+      where: { link: createCollectionReq.link },
+    });
+    if (existedCollection) {
+      return existedCollection;
+    }
+    const newCollection = new Collection();
+    newCollection.userId = createCollectionReq.userId;
+    newCollection.link = createCollectionReq.link;
+    newCollection.content = createCollectionReq.content
+      ? createCollectionReq.content
+      : null;
+    newCollection.embeddedTag = createCollectionReq.embeddedTag
+      ? createCollectionReq.embeddedTag
+      : null;
+    return await this.save(newCollection);
+  }
 
   async getCollections(
     instaGuestUserId: number,
