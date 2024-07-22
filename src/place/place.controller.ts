@@ -100,14 +100,27 @@ export class PlaceController {
     @Query('category') category: string[] = [],
     @Req() req,
   ) {
-    return await this.placeService.getAllMarkers(
+    return await this.placeService.getMarkers(req.user.id, address, category);
+  }
+
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: "Get User's place markers by folder" })
+  @ApiResponse({ type: MarkerResDto })
+  @ApiQuery({ name: 'address', required: false, type: [String] })
+  @ApiQuery({ name: 'category', required: false, type: [String] })
+  @Get('/markers/folder/:id')
+  async getMarkersByFolder(
+    @Param('id') id: number,
+    @Query('address') address: string[] = [],
+    @Query('category') category: string[] = [],
+    @Req() req,
+  ) {
+    return await this.placeService.getMarkers(
       req.user.id,
       address,
       category,
+      id,
     );
   }
-
-  @ApiOperation({ summary: "Get User's place markers by folder" })
-  @Get('/markers/folder/:id')
-  async getMarkersByFolder(@Param('id') id: number) {}
 }

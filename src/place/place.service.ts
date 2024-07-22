@@ -149,10 +149,11 @@ export class PlaceService {
     return await this.placeImageRepository.save(createPlaceImageReqDto);
   }
 
-  async getAllMarkers(
+  async getMarkers(
     userId: number,
     addressCollection: string[],
     categoryCollection: string[],
+    folderId?: number,
   ): Promise<MarkerResDto[]> {
     //입력값이 문자열 1개라 배열이 아닐 때 수동으로 배열로 바꿔줘야 함.
     addressCollection =
@@ -165,7 +166,15 @@ export class PlaceService {
         ? [categoryCollection]
         : categoryCollection;
 
-    return await this.userRepository.getAllMarkers(
+    if (folderId !== undefined) {
+      return await this.userRepository.getMarkers(
+        userId,
+        addressCollection,
+        categoryCollection,
+        folderId,
+      );
+    }
+    return await this.userRepository.getMarkers(
       userId,
       addressCollection,
       categoryCollection,

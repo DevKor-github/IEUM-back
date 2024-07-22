@@ -52,16 +52,18 @@ export class UserRepository extends Repository<User> {
     return await this.save(user);
   }
 
-  async getAllMarkers(
+  async getMarkers(
     userId: number,
     addressCollection: string[],
     categoryCollection: string[],
+    folderId?: number,
   ): Promise<MarkerResDto[]> {
     const markerCollection = this.createQueryBuilder('user')
-      .leftJoinAndSelect('user.folders', 'folder')
-      .leftJoinAndSelect('folder.folderPlaces', 'folderPlace')
-      .leftJoinAndSelect('folderPlace.place', 'place')
+      .innerJoinAndSelect('user.folders', 'folder')
+      .innerJoinAndSelect('folder.folderPlaces', 'folderPlace')
+      .innerJoinAndSelect('folderPlace.place', 'place')
       .select([
+        'place.id',
         'place.name',
         'place.latitude',
         'place.longitude',
@@ -69,6 +71,10 @@ export class UserRepository extends Repository<User> {
       ])
       .where('user.id = :userId', { userId });
 
+    //folder별로 보여줘야 한다면
+    if (folderId !== undefined) {
+      markerCollection.andWhere('folder.id = :folderId', { folderId });
+    }
     //address로 필터링 되어야 한다면
     //place.address LIKE a% OR b%는 지원하지 않아 place.address LIKE a% OR place.address LIKE b%와 같이 작성하여야 함.
     if (addressCollection && addressCollection.length != 0) {
@@ -93,7 +99,6 @@ export class UserRepository extends Repository<User> {
 
     const result = await markerCollection.getRawMany();
 
-    console.log(result);
     //plainToInstance함수는 javascript 객체를 특정 class의 instance로 변환시켜준다.
     return plainToInstance(MarkerResDto, result);
   }
