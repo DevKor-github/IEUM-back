@@ -86,6 +86,26 @@ export class FolderController {
     );
   }
 
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: 'Delete a place from folder.' })
+  @ApiResponse({
+    status: 200,
+    description: '폴더에서 장소 삭제 성공.',
+  })
+  @Delete('/place/:folderId/:placeId')
+  async deleteFolderPlace(
+    @Param('folderId') folderId: number,
+    @Param('placeId') placeId: number,
+    @Req() req,
+  ) {
+    return await this.folderService.deleteFolderPlace(
+      req.user.id,
+      folderId,
+      placeId,
+    );
+  }
+
   @Get('/:folderId')
   async getFolderByFolderId() {}
 }

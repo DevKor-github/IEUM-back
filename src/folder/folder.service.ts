@@ -48,7 +48,7 @@ export class FolderService {
     await queryRunner.startTransaction();
 
     try {
-      await this.folderPlaceRepository.deleteFolderPlace(
+      await this.folderPlaceRepository.deleteFolderPlaceFromFolderDeletion(
         folderId,
         queryRunner.manager,
       );
@@ -68,6 +68,24 @@ export class FolderService {
       userId,
       folderId,
       folderName,
+    );
+  }
+
+  async deleteFolderPlace(userId: number, folderId: number, placeId: number) {
+    const targetFolder =
+      await this.folderRepository.findFolderByFolderId(folderId);
+
+    if (targetFolder.userId != userId) {
+      throw new NotAuthorizedException('해당 권한 없음.');
+    }
+
+    if (targetFolder.type == FolderType.Default) {
+      return await this.folderPlaceRepository.deleteAllFolderPlace(placeId);
+    }
+
+    return await this.folderPlaceRepository.deleteFolderPlace(
+      folderId,
+      placeId,
     );
   }
 

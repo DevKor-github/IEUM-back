@@ -23,7 +23,18 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     return saveNewFolderPlace;
   }
 
-  async deleteFolderPlace(folderId: number, manager: EntityManager) {
+  async deleteFolderPlaceFromFolderDeletion(
+    folderId: number,
+    manager: EntityManager,
+  ) {
     await manager.delete(FolderPlace, { folderId: folderId });
+  }
+
+  async deleteFolderPlace(folderId: number, placeId: number) {
+    await this.delete({ folderId: folderId, placeId: placeId });
+  }
+
+  async deleteAllFolderPlace(placeId: number) {
+    await this.delete({ placeId: placeId });
   }
 }
