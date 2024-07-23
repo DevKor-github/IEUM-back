@@ -9,10 +9,15 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
     super(CollectionPlace, dataSource.createEntityManager());
   }
 
-  async createCollectionPlace(collectionId: number, placeId: number) {
+  async createCollectionPlace(
+    collectionId: number,
+    placeId: number,
+    placeKeyword: string,
+  ) {
     await this.save({
       collectionId: collectionId,
       placeId: placeId,
+      placeKeyword: placeKeyword,
     });
   }
 }

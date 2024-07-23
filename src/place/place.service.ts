@@ -8,7 +8,6 @@ import {
 } from 'src/common/constants/google-apis.constant';
 import { Place } from 'src/entities/place.entity';
 import { PlaceRepository } from 'src/repositories/place.repository';
-import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import {
   CreatePlaceCategoryReqDto,
   CreatePlaceImageReqDto,
@@ -20,6 +19,7 @@ import { PlaceImageRepository } from 'src/repositories/place-image.repository';
 import { Transactional } from 'typeorm-transactional';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
+import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 
 @Injectable()
 export class PlaceService {
@@ -33,7 +33,7 @@ export class PlaceService {
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
     if (!place) throw new NotFoundException('Place not found');
-    return new PlaceDetailResDto(place);
+    return new PlaceDetailResDto();
   }
 
   async searchKakaoPlaceByKeyword(keyword: string): Promise<any> {

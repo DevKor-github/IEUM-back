@@ -43,4 +43,12 @@ export class UserService {
     }
     await this.userRepository.softDeleteUser(id);
   }
+
+  async getUserByUuid(uuid: string) {
+    const user = await this.userRepository.findUserByUuid(uuid);
+    if (!user) {
+      throw new NotValidUserException('존재하지 않는 계정이에요.');
+    }
+    return user;
+  }
 }

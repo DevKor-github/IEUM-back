@@ -16,6 +16,10 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
+  async findUserByUuid(uuid: string) {
+    return await this.findOne({ where: { uuid: uuid } });
+  }
+
   async softDeleteUser(id: number) {
     // const user = await this.findUserById(id);
     // user.deletedAt = new Date();
