@@ -3,10 +3,8 @@ import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { InstaGuestUser } from 'src/entities/insta-guest-user.entity';
-import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { PlaceListReqDto } from 'src/place/dtos/place-list-pagination-req.dto';
 import { PlaceListDataDto } from 'src/place/dtos/place-list-pagination-res.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
@@ -29,9 +27,9 @@ export class UserRepository extends Repository<User> {
     await this.softDelete({ id: id });
   }
 
-  async renewRefreshToken(oAuthId: string, refreshToken: string) {
+  async renewRefreshToken(oAuthId: string, jti: string) {
     const user = await this.findUserByAppleOAuthId(oAuthId);
-    user.refreshToken = refreshToken;
+    user.jti = jti;
     return await this.save(user);
   }
 
@@ -43,15 +41,6 @@ export class UserRepository extends Repository<User> {
     user.sex = firstLoginDto.sex;
     user.mbti = firstLoginDto.mbti;
 
-    return await this.save(user);
-  }
-
-  async connectInstagram(userId: number, instaGuestUser: InstaGuestUser) {
-    const user = await this.findUserById(userId);
-    if (!user) {
-      throw new NotValidUserException('존재하지 않는 유저에요.');
-    }
-    user.instaGuestUser = instaGuestUser;
     return await this.save(user);
   }
 

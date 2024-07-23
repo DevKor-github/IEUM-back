@@ -8,16 +8,15 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { InstaGuestUser } from './insta-guest-user.entity';
 import { Trip } from './trip.entity';
 import { Preference } from './preference.entity';
 import { Folder } from './folder.entity';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { BasicDate } from './basic-date.entity';
-import { UserCurationLike } from './user-curation-like.entity';
+import { BaseEntity } from './base-entity.entity';
+import { Collection } from './collection.entity';
 
 @Entity()
-export class User extends BasicDate {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -43,14 +42,8 @@ export class User extends BasicDate {
   @Column('varchar', { length: 4, nullable: true })
   mbti: string;
 
-  @OneToOne(() => InstaGuestUser, (instaGuestUser) => instaGuestUser.user, {
-    nullable: true,
-  })
-  @JoinColumn()
-  instaGuestUser?: InstaGuestUser;
-
   @Column('varchar', { nullable: true })
-  refreshToken: string;
+  jti: string;
 
   @OneToMany(() => Trip, (trip) => trip.user)
   trips: Trip[];
@@ -61,9 +54,6 @@ export class User extends BasicDate {
   @OneToMany(() => Folder, (Folder) => Folder.user)
   folders: Folder[];
 
-  @OneToMany(
-    () => UserCurationLike,
-    (userCurationLike) => userCurationLike.user,
-  )
-  userCurationLikes: UserCurationLike[];
+  @OneToMany(() => Collection, (collection) => collection.user)
+  collections: Collection[];
 }

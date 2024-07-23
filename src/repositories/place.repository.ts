@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { RawPlacePreview } from 'src/common/interfaces/raw-place-preview.interface';
+import { KakaoLocalSearchRes } from 'src/common/interfaces/places.interface';
 import { Place } from 'src/entities/place.entity';
 import { DataSource, Repository } from 'typeorm';
 
@@ -14,13 +14,10 @@ export class PlaceRepository extends Repository<Place> {
 
   async getPlaceDetailById(placeId: number): Promise<Place> {
     return await this.createQueryBuilder('place')
-      .leftJoinAndSelect('place.openHours', 'openHours')
-      .leftJoinAndSelect('place.placeCategories', 'placeCategories')
-      .leftJoinAndSelect('placeCategories.category', 'category')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
       .leftJoinAndSelect('placeTags.tag', 'tag')
       .leftJoinAndSelect('place.placeImages', 'placeImages')
-      .leftJoinAndSelect('placeImages.image', 'image')
+      .leftJoinAndSelect('place.placeDetail', 'placeDetail')
       .where('place.id = :placeId', { placeId })
       .getOne();
   }
@@ -60,5 +57,20 @@ export class PlaceRepository extends Repository<Place> {
 
     //db 바뀌고 나서 place와 image를 연결짓는 N:N 테이블이 사라짐. 새로 image 테이블 연결해야함.
     return placePreviewInfo;
+  }
+  async saveByKakaoPlace(
+    kakaoLocalSearchRes: KakaoLocalSearchRes,
+  ): Promise<Place> {
+    return await this.save({
+      name: kakaoLocalSearchRes.place_name,
+      url: kakaoLocalSearchRes.place_url,
+      address: kakaoLocalSearchRes.address_name,
+      roadAddress: kakaoLocalSearchRes.road_address_name,
+      kakaoId: kakaoLocalSearchRes.id,
+      phone: kakaoLocalSearchRes.phone,
+      primaryCategory: kakaoLocalSearchRes.category_group_name,
+      latitude: Number(kakaoLocalSearchRes.y),
+      longitude: Number(kakaoLocalSearchRes.x),
+    });
   }
 }

@@ -5,12 +5,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlaceModule } from './place/place.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { InstagramModule } from './instagram/instagram.module';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
-import { CategoryModule } from './category/category.module';
 import { TagModule } from './tag/tag.module';
-import { ImageModule } from './image/image.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TripModule } from './trip/trip.module';
@@ -18,6 +15,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomResponseInterceptor } from './common/interceptors/custom-response.interceptor';
 import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 import { FolderModule } from './folder/folder.module';
+import { CollectionModule } from './collection/collection.module';
 
 @Module({
   imports: [
@@ -44,15 +42,13 @@ import { FolderModule } from './folder/folder.module';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
-    InstagramModule,
     PlaceModule,
-    CategoryModule,
     TagModule,
-    ImageModule,
     AuthModule,
     UserModule,
     TripModule,
     FolderModule,
+    CollectionModule,
   ],
   controllers: [AppController],
   providers: [

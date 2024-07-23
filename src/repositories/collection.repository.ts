@@ -1,39 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { InstaGuestCollection } from 'src/entities/insta-guest-collection.entity';
-import { CreateInstaGuestCollectionDto } from 'src/instagram/dtos/create-insta-guest-collection-dto';
 import { INSTA_COLLECTIONS_TAKE } from 'src/common/constants/pagination.constant';
 import {
   RawInstaCollection,
   RawInstaCollectionDetail,
   RawInstaPlaceMarker,
 } from 'src/common/interfaces/raw-insta-collection.interface';
+import { Collection } from 'src/entities/collection.entity';
+import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
 
 @Injectable()
-export class InstaGuestCollectionRepository extends Repository<InstaGuestCollection> {
+export class CollectionRepository extends Repository<Collection> {
   constructor(dataSource: DataSource) {
-    super(InstaGuestCollection, dataSource.createEntityManager());
+    super(Collection, dataSource.createEntityManager());
   }
 
-  async createInstaGuestCollection(
-    createInstaGuestCollectionDto: CreateInstaGuestCollectionDto,
-  ): Promise<InstaGuestCollection> {
-    //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
-    const instaGuestCollection = await this.findOne({
-      where: {
-        instaGuestUserId: createInstaGuestCollectionDto.instaGuestUserId,
-        placeId: createInstaGuestCollectionDto.placeId,
-        link: createInstaGuestCollectionDto.link,
-      },
+  // async createCollection(
+  //   createCollectionDto: CreateCollectionDto,
+  // ): Promise<Collection> {
+  //   //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
+  //   const Collection = await this.findOne({
+  //     where: {
+  //       link: createCollectionDto.link,
+  //     },
+  //   });
+  //   if (Collection) {
+  //     return null;
+  //   }
+  //   const newCollection = this.create(createCollectionDto);
+  //   const saveNewCollection = await this.save(
+  //     newCollection,
+  //   );
+  //   return saveNewCollection;
+  // }
+  async createCollection(
+    createCollectionReq: CreateCollectionReqDto,
+  ): Promise<Collection> {
+    //   //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
+    const existedCollection = await this.findOne({
+      where: { link: createCollectionReq.link },
     });
-    if (instaGuestCollection) {
-      return null;
+    if (existedCollection) {
+      return existedCollection;
     }
-    const newInstaGuestCollection = this.create(createInstaGuestCollectionDto);
-    const saveNewInstaGuestCollection = await this.save(
-      newInstaGuestCollection,
-    );
-    return saveNewInstaGuestCollection;
+    const newCollection = new Collection();
+    newCollection.userId = createCollectionReq.userId;
+    newCollection.link = createCollectionReq.link;
+    newCollection.content = createCollectionReq.content
+      ? createCollectionReq.content
+      : null;
+    newCollection.embeddedTag = createCollectionReq.embeddedTag
+      ? createCollectionReq.embeddedTag
+      : null;
+    return await this.save(newCollection);
   }
 
   async getCollections(
@@ -46,26 +65,23 @@ export class InstaGuestCollectionRepository extends Repository<InstaGuestCollect
       .leftJoinAndSelect('instaGuestCollection.place', 'place')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
       .leftJoinAndSelect('placeTags.tag', 'tag')
-      .leftJoinAndSelect('place.addressComponents', 'addressComponents')
       .select([
         'instaGuestCollection.id AS insta_guest_collection_id',
         'instaGuestCollection.placeId AS place_id',
         'instaGuestCollection.content AS instagram_description',
         'instaGuestCollection.embeddedTag AS embedded_tag',
         'place.name AS place_name',
+        'place.address AS place_address',
         'place.latitude AS latitude',
         'place.longitude AS longitude',
         'place.primaryCategory AS primary_category',
         'JSON_AGG(DISTINCT tag.tagName) AS tags',
-        'addressComponents.administrativeAreaLevel1 AS address_level1',
-        'COALESCE(addressComponents.locality, addressComponents.sublocalityLevel1) AS address_level2',
       ])
       .where('instaGuestCollection.instaGuestUserId = :instaGuestUserId', {
         instaGuestUserId,
       })
       .groupBy('instaGuestCollection.id')
       .addGroupBy('place.id')
-      .addGroupBy('addressComponents.id')
       .orderBy('instaGuestCollection.id', 'DESC')
       .limit(INSTA_COLLECTIONS_TAKE + 1);
 

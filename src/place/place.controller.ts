@@ -18,13 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
-import {
-  CreatePlaceCategoryReqDto,
-  CreatePlaceImageReqDto,
-  CreatePlaceTagReqDto,
-} from './dtos/create-place-relation-req.dto';
-import { CreatePlaceReqDto } from './dtos/create-place-req.dto';
-import { access } from 'fs';
 import { AuthGuard } from '@nestjs/passport';
 import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
@@ -42,15 +35,15 @@ export class PlaceController {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
   }
 
-  @ApiOperation({ summary: 'Create place by googlePlaceId' })
-  @Post('')
-  async createPlaceByGooglePlaceId(
-    @Body() createPlaceReqDto: CreatePlaceReqDto,
-  ) {
-    return await this.placeService.createPlaceByGooglePlaceId(
-      createPlaceReqDto.googlePlaceId,
-    );
-  }
+  // @ApiOperation({ summary: 'Create place by googlePlaceId' })
+  // @Post('')
+  // async createPlaceByGooglePlaceId(
+  //   @Body() createPlaceReqDto: CreatePlaceReqDto,
+  // ) {
+  //   return await this.placeService.createPlaceByGooglePlaceId(
+  //     createPlaceReqDto.googlePlaceId,
+  //   );
+  // }
 
   @ApiOperation({ summary: 'Search Google Place API by text' })
   @Post('google')
@@ -66,30 +59,17 @@ export class PlaceController {
     return await this.placeService.getPlaceDetailByGooglePlaceId(googlePlaceId);
   }
 
-  // Place Relation
-  @ApiOperation({ summary: 'Create placeCategory' })
-  @Post('place-categories')
-  async createPlaceCategory(
-    @Body() createPlaceCategoryReqDto: CreatePlaceCategoryReqDto,
-  ) {
-    return await this.placeService.createPlaceCategory(
-      createPlaceCategoryReqDto,
-    );
+  @ApiOperation({ summary: 'Search KaKao Place API by keyword' })
+  @Post('kakao')
+  async getKakaoPlacesByKeyword(@Body() body: { keyword: string }) {
+    return await this.placeService.searchKakaoPlaceByKeyword(body.keyword);
   }
 
-  @ApiOperation({ summary: 'Create placeTag' })
-  @Post('place-tags')
-  async createPlaceTag(@Body() createPlaceTagReqDto: CreatePlaceTagReqDto) {
-    return await this.placeService.createPlaceTag(createPlaceTagReqDto);
-  }
-
-  @ApiOperation({ summary: 'Create placeImage' })
-  @Post('place-images')
-  async createPlaceImage(
-    @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
-  ) {
-    return await this.placeService.createPlaceImage(createPlaceImageReqDto);
-  }
+  // @ApiOperation({ summary: 'Create placeTag' })
+  // @Post('place-tags')
+  // async createPlaceTag(@Body() createPlaceTagReqDto: CreatePlaceTagReqDto) {
+  //   return await this.placeService.createPlaceTag(createPlaceTagReqDto);
+  // }
 
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
@@ -169,4 +149,11 @@ export class PlaceController {
       folderId,
     );
   }
+  // @ApiOperation({ summary: 'Create placeImage' })
+  // @Post('place-images')
+  // async createPlaceImage(
+  //   @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
+  // ) {
+  //   return await this.placeService.createPlaceImage(createPlaceImageReqDto);
+  // }
 }
