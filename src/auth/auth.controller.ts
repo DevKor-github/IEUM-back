@@ -36,11 +36,12 @@ export class AuthController {
   })
   //header 값 가져오는 데코레이터
   //header에 authorization 필드가 인증 정보를 가지고 있음.
+  // req.headers.authorization.substring(7),
   renewAccessToken(@Req() req) {
     return this.authService.newAccessToken(
       //passport 인증은 jwt에서 추출한 정보를 user 속성에 담는다!!!
       req.user.id,
-      req.headers.authorization.substring(7),
+      req.user.jti,
     );
   }
 

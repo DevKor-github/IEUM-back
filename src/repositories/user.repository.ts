@@ -23,9 +23,9 @@ export class UserRepository extends Repository<User> {
     await this.softDelete({ id: id });
   }
 
-  async renewRefreshToken(oAuthId: string, refreshToken: string) {
+  async renewRefreshToken(oAuthId: string, jti: string) {
     const user = await this.findUserByAppleOAuthId(oAuthId);
-    user.refreshToken = refreshToken;
+    user.jti = jti;
     return await this.save(user);
   }
 

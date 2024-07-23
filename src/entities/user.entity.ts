@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   mbti: string;
 
   @Column('varchar', { nullable: true })
-  refreshToken: string;
+  jti: string;
 
   @OneToMany(() => Trip, (trip) => trip.user)
   trips: Trip[];
