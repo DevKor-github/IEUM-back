@@ -1,4 +1,12 @@
-import { Body, Controller, Get, ParseArrayPipe, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseArrayPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CollectionService } from './collection.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
@@ -9,9 +17,24 @@ import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 export class CollectionController {
   constructor(private readonly collectionService: CollectionService) {}
 
-  @Get('')
-  async getCollections() {
-    return await this.collectionService.getCollections(1);
+  @Get('unviewed')
+  async getUnviewedCollections(@Query('cursorId ') cursorId: number) {
+    return await this.collectionService.getUnviewedCollections(1, cursorId);
+  }
+
+  @Get('viewed')
+  async getViewedCollection(@Query('cursorId') cursorId?: number) {
+    return await this.collectionService.getViewedCollections(1, cursorId);
+  }
+
+  // @Get(':collectionId') //한 가지 collection의 정보만을 얻어오기
+  // async getCollection(@Param('collectionId') collectionId: number) {
+  //   return await this.collectionService.getCollection(collectionId);
+  // }
+
+  @Get(':collectionId/collection-places')
+  async getCollectionPlaces(@Param('collectionId') collectionId: number) {
+    return await this.collectionService.getCollectionPlaces(collectionId);
   }
 
   @Post('')

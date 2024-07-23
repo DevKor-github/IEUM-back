@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { INSTA_COLLECTIONS_TAKE } from 'src/common/constants/pagination.constant';
+import {
+  COLLECTIONS_TAKE,
+  INSTA_COLLECTIONS_TAKE,
+} from 'src/common/constants/pagination.constant';
 import {
   RawInstaCollection,
   RawInstaCollectionDetail,
@@ -52,97 +55,168 @@ export class CollectionRepository extends Repository<Collection> {
     return await this.save(newCollection);
   }
 
-  async getCollections(
-    instaGuestUserId: number,
-    region?: string,
-    cursorId?: number,
-    placeId?: number,
-  ): Promise<RawInstaCollection[]> {
-    const query = this.createQueryBuilder('instaGuestCollection')
-      .leftJoinAndSelect('instaGuestCollection.place', 'place')
-      .leftJoinAndSelect('place.placeTags', 'placeTags')
-      .leftJoinAndSelect('placeTags.tag', 'tag')
+  async getViewedCollections(userId: number, cursorId: number) {
+    const query = this.createQueryBuilder('collection')
+      .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
+      .loadRelationCountAndMap(
+        'collection.collectionPlacesCount',
+        'collection.collectionPlaces',
+      )
+      .loadRelationCountAndMap(
+        'collection.savedCollectionPlacesCount',
+        'collection.collectionPlaces',
+        'collectionPlace',
+        (qb) =>
+          qb.where('collectionPlace.isSaved = :isSaved', { isSaved: true }),
+      )
       .select([
-        'instaGuestCollection.id AS insta_guest_collection_id',
-        'instaGuestCollection.placeId AS place_id',
-        'instaGuestCollection.content AS instagram_description',
-        'instaGuestCollection.embeddedTag AS embedded_tag',
-        'place.name AS place_name',
-        'place.address AS place_address',
-        'place.latitude AS latitude',
-        'place.longitude AS longitude',
-        'place.primaryCategory AS primary_category',
-        'JSON_AGG(DISTINCT tag.tagName) AS tags',
+        'collection.id',
+        'collection.link',
+        'collection.content',
+        'collection.isViewed',
+        'collection.collectionPlacesCount',
       ])
-      .where('instaGuestCollection.instaGuestUserId = :instaGuestUserId', {
-        instaGuestUserId,
-      })
-      .groupBy('instaGuestCollection.id')
-      .addGroupBy('place.id')
-      .orderBy('instaGuestCollection.id', 'DESC')
-      .limit(INSTA_COLLECTIONS_TAKE + 1);
-
-    if (region) {
-      query.andWhere(
-        'addressComponents.administrativeAreaLevel1 LIKE :region',
-        {
-          region: `${region}%`,
-        },
-      ); // 특정 문자열로 시작하는 경우에는 인덱스를 타므로 성능 문제 X
-    }
-
-    if (placeId) {
-      query.andWhere('instaGuestCollection.placeId = :placeId', {
-        placeId,
-      });
-    }
+      .where('collection.userId = :userId', { userId })
+      .andWhere('collection.isViewed = true')
+      .groupBy('collection.id')
+      .orderBy(`collection.id`, 'DESC')
+      .limit(COLLECTIONS_TAKE + 1);
 
     if (cursorId) {
-      query.andWhere('instaGuestCollection.id < :cursorId', {
+      query.andWhere('collection.id < :cursorId', {
         cursorId,
       });
     }
-
-    return await query.getRawMany();
+    return await query.getMany();
   }
 
-  async getCollectionDetail(
-    instaGuestUserId: number,
-    instaGuestCollectionId: number,
-  ): Promise<RawInstaCollectionDetail> {
-    return await this.createQueryBuilder('instaGuestCollection')
-      .leftJoinAndSelect('instaGuestCollection.place', 'place')
-      .leftJoinAndSelect('place.openHours', 'openHours')
-      .leftJoinAndSelect('place.placeTags', 'placeTags')
-      .leftJoinAndSelect('placeTags.tag', 'tag')
-      .leftJoinAndSelect('place.addressComponents', 'addressComponents')
+  async getUnviewedCollections(userId: number, cursorId: number) {
+    const query = this.createQueryBuilder('collection')
+      .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
+      .loadRelationCountAndMap(
+        'collection.collectionPlacesCount',
+        'collection.collectionPlaces',
+      )
       .select([
-        'instaGuestCollection.id AS insta_guest_collection_id',
-        'instaGuestCollection.placeId AS place_id',
-        'instaGuestCollection.content AS instagram_description',
-        'instaGuestCollection.embeddedTag AS embedded_tag',
-        'instaGuestCollection.link AS link',
-        'place.name AS place_name',
-        'place.latitude AS latitude',
-        'place.longitude AS longitude',
-        'place.address AS address',
-        'place.phoneNumber AS phone_number',
-        'place.primaryCategory AS primary_category',
-        'openHours.opening AS open_hours',
-        'JSON_AGG(DISTINCT tag.tagName) AS tags',
-        'addressComponents.administrativeAreaLevel1 AS address_level1',
-        'COALESCE(addressComponents.locality, addressComponents.sublocalityLevel1) AS address_level2',
+        'collection.id',
+        'collection.link',
+        'collection.content',
+        'collection.isViewed',
+        'collection.collectionPlacesCount',
       ])
-      .where('instaGuestCollection.instaGuestUserId = :instaGuestUserId', {
-        instaGuestUserId,
-      })
-      .andWhere('instaGuestCollection.id = :instaGuestCollectionId', {
-        instaGuestCollectionId,
-      })
-      .groupBy('instaGuestCollection.id')
-      .addGroupBy('place.id')
-      .addGroupBy('addressComponents.id')
-      .addGroupBy('openHours.id')
-      .getRawOne();
+      .where('collection.userId = :userId', { userId })
+      .andWhere('collection.isViewed = false')
+      .groupBy('collection.id')
+      .orderBy(`collection.id`, 'DESC')
+      .limit(COLLECTIONS_TAKE + 1);
+
+    if (cursorId) {
+      query.andWhere('collection.id < :cursorId', {
+        cursorId,
+      });
+    }
+    return await query.getMany();
   }
+
+  async getCollectionDetail(collectionId: number) {
+    return await this.createQueryBuilder('collection')
+      .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
+      .leftJoinAndSelect('collectionPlaces.place', 'place')
+      .select([collection.]);
+  }
+
+  //deprecated
+  // async getCollections(
+  //   instaGuestUserId: number,
+  //   region?: string,
+  //   cursorId?: number,
+  //   placeId?: number,
+  // ): Promise<RawInstaCollection[]> {
+  //   const query = this.createQueryBuilder('instaGuestCollection')
+  //     .leftJoinAndSelect('instaGuestCollection.place', 'place')
+  //     .leftJoinAndSelect('place.placeTags', 'placeTags')
+  //     .leftJoinAndSelect('placeTags.tag', 'tag')
+  //     .select([
+  //       'instaGuestCollection.id AS insta_guest_collection_id',
+  //       'instaGuestCollection.placeId AS place_id',
+  //       'instaGuestCollection.content AS instagram_description',
+  //       'instaGuestCollection.embeddedTag AS embedded_tag',
+  //       'place.name AS place_name',
+  //       'place.address AS place_address',
+  //       'place.latitude AS latitude',
+  //       'place.longitude AS longitude',
+  //       'place.primaryCategory AS primary_category',
+  //       'JSON_AGG(DISTINCT tag.tagName) AS tags',
+  //     ])
+  //     .where('instaGuestCollection.instaGuestUserId = :instaGuestUserId', {
+  //       instaGuestUserId,
+  //     })
+  //     .groupBy('instaGuestCollection.id')
+  //     .addGroupBy('place.id')
+  //     .orderBy('instaGuestCollection.id', 'DESC')
+  //     .limit(INSTA_COLLECTIONS_TAKE + 1);
+
+  //   if (region) {
+  //     query.andWhere(
+  //       'addressComponents.administrativeAreaLevel1 LIKE :region',
+  //       {
+  //         region: `${region}%`,
+  //       },
+  //     ); // 특정 문자열로 시작하는 경우에는 인덱스를 타므로 성능 문제 X
+  //   }
+
+  //   if (placeId) {
+  //     query.andWhere('instaGuestCollection.placeId = :placeId', {
+  //       placeId,
+  //     });
+  //   }
+
+  //   if (cursorId) {
+  //     query.andWhere('instaGuestCollection.id < :cursorId', {
+  //       cursorId,
+  //     });
+  //   }
+
+  //   return await query.getRawMany();
+  // }
+
+  // async getCollectionDetail(
+  //   instaGuestUserId: number,
+  //   instaGuestCollectionId: number,
+  // ): Promise<RawInstaCollectionDetail> {
+  //   return await this.createQueryBuilder('instaGuestCollection')
+  //     .leftJoinAndSelect('instaGuestCollection.place', 'place')
+  //     .leftJoinAndSelect('place.openHours', 'openHours')
+  //     .leftJoinAndSelect('place.placeTags', 'placeTags')
+  //     .leftJoinAndSelect('placeTags.tag', 'tag')
+  //     .leftJoinAndSelect('place.addressComponents', 'addressComponents')
+  //     .select([
+  //       'instaGuestCollection.id AS insta_guest_collection_id',
+  //       'instaGuestCollection.placeId AS place_id',
+  //       'instaGuestCollection.content AS instagram_description',
+  //       'instaGuestCollection.embeddedTag AS embedded_tag',
+  //       'instaGuestCollection.link AS link',
+  //       'place.name AS place_name',
+  //       'place.latitude AS latitude',
+  //       'place.longitude AS longitude',
+  //       'place.address AS address',
+  //       'place.phoneNumber AS phone_number',
+  //       'place.primaryCategory AS primary_category',
+  //       'openHours.opening AS open_hours',
+  //       'JSON_AGG(DISTINCT tag.tagName) AS tags',
+  //       'addressComponents.administrativeAreaLevel1 AS address_level1',
+  //       'COALESCE(addressComponents.locality, addressComponents.sublocalityLevel1) AS address_level2',
+  //     ])
+  //     .where('instaGuestCollection.instaGuestUserId = :instaGuestUserId', {
+  //       instaGuestUserId,
+  //     })
+  //     .andWhere('instaGuestCollection.id = :instaGuestCollectionId', {
+  //       instaGuestCollectionId,
+  //     })
+  //     .groupBy('instaGuestCollection.id')
+  //     .addGroupBy('place.id')
+  //     .addGroupBy('addressComponents.id')
+  //     .addGroupBy('openHours.id')
+  //     .getRawOne();
+  // }
 }

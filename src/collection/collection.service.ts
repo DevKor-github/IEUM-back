@@ -43,8 +43,27 @@ export class CollectionService {
     return;
   }
 
-  async getCollections(userId: number) {
-    const collections = await this.collectionRepository.getCollections(userId);
-    return collections;
+  //기 조회 여부에 따라 다르게 메서드 호출
+  //isViewed가 false인 collection은 colleciton-place를 counting만 하고,
+  //isViewed가 true인 collection은 collection-place와 JOIN하여 isSaved를 따로 카운팅.
+
+  async getUnviewedCollections(userId: number, cursorId?: number) {
+    const unviewedCollections =
+      await this.collectionRepository.getUnviewedCollections(userId, cursorId);
+    return unviewedCollections;
   }
+
+  async getViewedCollections(userId: number, cursorId?: number) {
+    const viewedCollections =
+      await this.collectionRepository.getViewedCollections(userId, cursorId);
+    return viewedCollections;
+  }
+
+  // async getCollectionDetail(collectionId: number) {
+  //   const collectionDetail =
+  //     await this.collectionRepository.getCollectionDetail(collectionId);
+  //   return collectionDetail;
+  // }
+
+  //getCOllectionDetail 호출 시에 Transaction으로 isViewed Update.
 }
