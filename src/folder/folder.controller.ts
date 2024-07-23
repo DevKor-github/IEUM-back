@@ -1,9 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { FolderService } from './folder.service';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 
 @ApiTags('폴더 관련 api')
-@Controller('folder')
+@Controller('folders')
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
@@ -12,4 +13,14 @@ export class FolderController {
 
   @Get('/:folderId')
   async getFolderByFolderId() {}
+
+  @Post('/folder-places')
+  async createFolderPlaces(
+    @Body() createFolderPlacesReq: CreateFolderPlacesReqDto,
+  ) {
+    return await this.folderService.createFolderPlaces(
+      1,
+      createFolderPlacesReq,
+    );
+  }
 }
