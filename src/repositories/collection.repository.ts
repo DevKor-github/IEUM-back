@@ -40,7 +40,7 @@ export class CollectionRepository extends Repository<Collection> {
   ): Promise<Collection> {
     //   //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
     const existedCollection = await this.findOne({
-      where: { link: link },
+      where: { userId: userId, link: link },
     });
     if (existedCollection) {
       return existedCollection;

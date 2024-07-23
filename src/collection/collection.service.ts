@@ -42,4 +42,9 @@ export class CollectionService {
     //
     return;
   }
+
+  async getCollections(userId: number) {
+    const collections = await this.collectionRepository.getCollections(userId);
+    return collections;
+  }
 }

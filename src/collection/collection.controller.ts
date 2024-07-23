@@ -9,6 +9,11 @@ import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 export class CollectionController {
   constructor(private readonly collectionService: CollectionService) {}
 
+  @Get('')
+  async getCollections() {
+    return await this.collectionService.getCollections(1);
+  }
+
   @Post('')
   async sendForCrawling(@Body() body: CrawlingCollectionReqDto) {
     return await this.collectionService.sendForCrawling(body);

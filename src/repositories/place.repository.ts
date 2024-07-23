@@ -36,6 +36,12 @@ export class PlaceRepository extends Repository<Place> {
   async saveByKakaoPlace(
     kakaoLocalSearchRes: KakaoLocalSearchRes,
   ): Promise<Place> {
+    const existedPlace = await this.findOne({
+      where: { kakaoId: kakaoLocalSearchRes.id },
+    });
+    if (existedPlace) {
+      return existedPlace;
+    }
     return await this.save({
       name: kakaoLocalSearchRes.place_name,
       url: kakaoLocalSearchRes.place_url,

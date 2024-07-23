@@ -14,6 +14,12 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
     placeId: number,
     placeKeyword: string,
   ) {
+    const existedCollectionPlace = await this.findOne({
+      where: { collectionId: collectionId, placeId: placeId },
+    });
+    if (existedCollectionPlace) {
+      return existedCollectionPlace;
+    }
     await this.save({
       collectionId: collectionId,
       placeId: placeId,
