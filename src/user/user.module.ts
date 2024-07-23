@@ -8,7 +8,7 @@ import { PreferenceRepository } from 'src/repositories/preference.repository';
 import { UserRepository } from 'src/repositories/user.repository';
 import { JwtAccessStrategy } from 'src/auth/strategies/jwt-access.strategy';
 import { JwtAccessNicknameCheckStrategy } from 'src/auth/strategies/jwt-access-nickname-check.strategy';
-import { InstaGuestUserRepository } from 'src/repositories/insta-guest-user.repository';
+
 import { FolderRepository } from 'src/repositories/folder.repository';
 import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
 
@@ -19,7 +19,6 @@ import { FolderPlaceRepository } from 'src/repositories/folder-place.repository'
     UserService,
     PreferenceRepository,
     UserRepository,
-    InstaGuestUserRepository,
     FolderRepository,
     FolderPlaceRepository,
     JwtAccessStrategy,

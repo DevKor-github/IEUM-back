@@ -3,12 +3,10 @@ import axios from 'axios';
 import {
   PLACES_API_BASE_URL,
   SEARCH_BY_ID_URL,
+  SEARCH_BY_KEYWORD_KAKAO_URL,
   SEARCH_BY_TEXT_URL,
 } from 'src/common/constants/google-apis.constant';
 import { Place } from 'src/entities/place.entity';
-import { CategoryRepository } from 'src/repositories/category.repository';
-import { OpenHoursRepository } from 'src/repositories/open-hours.repository';
-import { PlaceCategoryRepository } from 'src/repositories/place-category.repository';
 import { PlaceRepository } from 'src/repositories/place.repository';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import {
@@ -18,28 +16,37 @@ import {
 } from './dtos/create-place-relation-req.dto';
 import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
-import { AddressComponents } from 'src/entities/address-components.entity';
-import { AddressComponentsRepository } from 'src/repositories/address-components.repository';
+
 import { Transactional } from 'typeorm-transactional';
-import { Category } from 'src/entities/category.entity';
-import { OpenHours } from 'src/entities/open-hours.entity';
+import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
+import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 
 @Injectable()
 export class PlaceService {
   constructor(
     private readonly placeRepository: PlaceRepository,
-    private readonly openHoursRepository: OpenHoursRepository,
-    private readonly categoryRepository: CategoryRepository,
-    private readonly placeCategoryRepository: PlaceCategoryRepository,
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
-    private readonly addressComponentsRepository: AddressComponentsRepository,
+    private readonly placeDetailRepository: PlaceDetailRepository,
   ) {}
 
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
     if (!place) throw new NotFoundException('Place not found');
     return new PlaceDetailResDto(place);
+  }
+
+  async searchKakaoPlaceByKeyword(keyword: string): Promise<any> {
+    const response = await axios.get(SEARCH_BY_KEYWORD_KAKAO_URL, {
+      headers: { Authorization: `KakaoAK ${process.env.KAKAO_REST_API_KEY}` },
+      params: { query: keyword, size: 3 },
+    });
+    return response.data;
+  }
+
+  async createPlaceByKakao(keyword: string) {
+    const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
+    return this.placeRepository.saveByKakaoPlace(kakaoPlace.documents[0]);
   }
 
   async searchGooglePlacesByText(text: string): Promise<any> {
@@ -58,14 +65,16 @@ export class PlaceService {
     return place.data;
   }
 
-  async getPlaceDetailByGooglePlaceId(googlePlaceId: string): Promise<any> {
+  async getPlaceDetailByGooglePlaceId(
+    googlePlaceId: string,
+  ): Promise<PlaceDetailByGoogle> {
     const placeDetail = await axios.get(SEARCH_BY_ID_URL + googlePlaceId, {
       params: { languageCode: 'ko' },
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
         'X-Goog-FieldMask':
-          'id,name,types,displayName,nationalPhoneNumber,formattedAddress,location,regularOpeningHours.weekdayDescriptions,displayName,primaryTypeDisplayName,addressComponents',
+          'id,name,types,displayName,nationalPhoneNumber,formattedAddress,location,regularOpeningHours.weekdayDescriptions,primaryTypeDisplayName,addressComponents,websiteUri,allowsDogs,goodForGroups,reservable,delivery,takeout',
       },
     });
 
@@ -77,51 +86,35 @@ export class PlaceService {
     googlePlaceId: string,
   ): Promise<PlaceDetailResDto> {
     const existedPlace = await this.placeRepository.findOne({
-      where: { googlePlaceId: googlePlaceId },
+      where: { kakaoId: googlePlaceId },
     });
     if (existedPlace) return this.getPlaceDetailById(existedPlace.id);
+    console.log(existedPlace);
     const placeDetail = await this.getPlaceDetailByGooglePlaceId(googlePlaceId);
+    console.log(placeDetail);
     const createdPlace =
       await this.placeRepository.saveByGooglePlaceDetail(placeDetail);
+    console.log(createdPlace);
+    // if (placeDetail.regularOpeningHours) {
+    //   OpenHours = await this.openHoursRepository.save({
+    //     opening: placeDetail.regularOpeningHours.weekdayDescriptions,
+    //     place: createdPlace,
+    //   });
+    // }
 
-    let OpenHours: OpenHours;
-    if (placeDetail.regularOpeningHours) {
-      OpenHours = await this.openHoursRepository.save({
-        opening: placeDetail.regularOpeningHours.weekdayDescriptions,
-        place: createdPlace,
-      });
-    }
+    // if (placeDetail.addressComponents) {
+    //   await this.addressComponentsRepository.saveAddressComponents(
+    //     placeDetail.addressComponents,
+    //     createdPlace,
+    //   );
+    // }
 
-    if (placeDetail.addressComponents) {
-      await this.addressComponentsRepository.saveAddressComponents(
-        placeDetail.addressComponents,
-        createdPlace,
+    const createdPlaceDetail =
+      await this.placeDetailRepository.saveByPlaceDetailByGoogle(
+        createdPlace.id,
+        placeDetail,
       );
-    }
-    const categories = await this.categoryRepository.saveCategoryArray(
-      placeDetail.types,
-    );
-
-    await this.placeCategoryRepository.savePlaceCategoryArray(
-      createdPlace,
-      categories,
-    );
-
-    return PlaceDetailResDto.fromCreation(createdPlace, OpenHours, categories);
-  }
-
-  //Place 부가정보 relation 저장
-  async createPlaceCategory(
-    createPlaceCategoryReqDto: CreatePlaceCategoryReqDto,
-  ) {
-    const existedRelation = await this.placeCategoryRepository.findOne({
-      where: {
-        placeId: createPlaceCategoryReqDto.placeId,
-        categoryId: createPlaceCategoryReqDto.categoryId,
-      },
-    });
-    if (existedRelation) return existedRelation;
-    return await this.placeCategoryRepository.save(createPlaceCategoryReqDto);
+    return PlaceDetailResDto.fromCreation(createdPlace);
   }
 
   async createPlaceTag(createPlaceTagReqDto: CreatePlaceTagReqDto) {
@@ -139,10 +132,14 @@ export class PlaceService {
     const existedRelation = await this.placeImageRepository.findOne({
       where: {
         placeId: createPlaceImageReqDto.placeId,
-        imageId: createPlaceImageReqDto.imageId,
       },
     });
     if (existedRelation) return existedRelation;
     return await this.placeImageRepository.save(createPlaceImageReqDto);
+  }
+
+  async createPlaceByKeyword(keyword: string) {
+    const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
+    return kakaoPlace.documents[0];
   }
 }

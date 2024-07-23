@@ -1,6 +1,11 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+} from 'typeorm';
 import { Place } from './place.entity';
-import { Image } from './image.entity';
 
 @Entity()
 export class PlaceImage {
@@ -11,11 +16,9 @@ export class PlaceImage {
   place: Place;
 
   @RelationId((placeImage: PlaceImage) => placeImage.place)
+  @Column()
   placeId: number;
 
-  @ManyToOne(() => Image, (image) => image.placeImages, { onDelete: 'CASCADE' })
-  image: Image;
-
-  @RelationId((placeImage: PlaceImage) => placeImage.image)
-  imageId: number;
+  @Column()
+  url: string;
 }

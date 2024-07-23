@@ -49,27 +49,4 @@ export class UserController {
   async deleteUser(@Req() req) {
     return await this.userService.deleteUser(req.user.id);
   }
-
-  //@UseGuards(AuthGuard('access'))
-  @Post('/me/connect-instagram')
-  @ApiBearerAuth('Access Token')
-  @ApiOkResponse({ description: '인스타그램 연동 성공' })
-  @ApiOperation({
-    summary: '인스타그램 연동',
-  })
-  async connectInstagram(@Req() req, @Body() body: ConnectInstagramDto) {
-    return await this.userService.connectInstagram(body.userId, body.instaId); //테스트를 위해 userId도 body로 받음. 로그인 시스템 구현하면 토큰 기반으로 변경.
-  }
-
-  //@UseGuards(AuthGuard('access'))
-  @Get('/me/sync-instagram')
-  @ApiBearerAuth('Access Token')
-  @ApiOkResponse({ description: '인스타그램 동기화 성공' })
-  @ApiOperation({
-    summary: '인스타그램 동기화',
-  })
-  async syncInstagramFolder(@Req() req, @Query('userId') userId: number) {
-    //테스트를 위해 userId는 query로 받음. 로그인 시스템 구현하면 토큰 기반으로 변경.
-    return await this.userService.syncInstagramFolder(userId);
-  }
 }

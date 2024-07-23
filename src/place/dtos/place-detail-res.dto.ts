@@ -1,5 +1,3 @@
-import { Category } from 'src/entities/category.entity';
-import { OpenHours } from 'src/entities/open-hours.entity';
 import { Place } from 'src/entities/place.entity';
 
 export class PlaceDetailResDto {
@@ -36,27 +34,13 @@ export class PlaceDetailResDto {
     this.address = place.address;
     this.latitude = place.latitude;
     this.longitude = place.longitude;
-    this.googlePlaceId = place.googlePlaceId;
-    this.openHours = place.openHours?.opening;
-    this.phoneNumber = place.phoneNumber;
+    //this.phoneNumber = place.phoneNumber;
     this.primaryCategory = place.primaryCategory;
-    this.categories = place.placeCategories?.map(
-      (placeCategory) => placeCategory.category.categoryName,
-    );
     this.tags = place.placeTags?.map((placeTag) => placeTag.tag.tagName);
-    this.images = place.placeImages?.map((placeImage) => placeImage.image.url);
   }
 
-  static fromCreation(
-    place: Place,
-    openHours?: OpenHours,
-    categories?: Category[],
-  ): PlaceDetailResDto {
+  static fromCreation(place: Place): PlaceDetailResDto {
     const placeDetailResDto = new PlaceDetailResDto(place);
-    placeDetailResDto.openHours = openHours?.opening || [];
-    placeDetailResDto.categories = categories
-      ? categories.map((category) => category.categoryName)
-      : [];
     placeDetailResDto.tags = [];
     placeDetailResDto.images = [];
 
