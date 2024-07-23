@@ -8,8 +8,11 @@ export class Tag {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  type: TagType;
+  @Column({
+    type: 'enum',
+    enum: TagType,
+  }) //데이터베이스에서의 type 유효성 검사.
+  type: TagType; //typescript에서의 타입 검사
 
   @Column()
   tagName: string;

@@ -108,6 +108,7 @@ export class PlaceController {
   }
 
   @ApiOperation({ summary: "Get place's preview info from marker" })
+  @ApiResponse({ type: PlacePreviewResDto })
   @Get('/place-preview/:id')
   async getPlaceInfoFromMarker(
     @Param('id') id: number,

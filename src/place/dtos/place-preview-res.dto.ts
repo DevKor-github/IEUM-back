@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RawPlacePreview } from 'src/common/interfaces/raw-place-preview.interface';
+import { Place } from 'src/entities/place.entity';
 
 export class PlacePreviewResDto {
   @ApiProperty()
@@ -15,7 +15,7 @@ export class PlacePreviewResDto {
   address: string;
 
   @ApiProperty()
-  tags: string[];
+  hashTags: string[] = [];
 
   @ApiProperty()
   url: string;
@@ -26,15 +26,22 @@ export class PlacePreviewResDto {
   @ApiProperty()
   longitude: number;
 
-  constructor(placeInfo: RawPlacePreview) {
-    this.id = placeInfo.place_id;
-    this.name = placeInfo.place_name;
-    this.category = placeInfo.place_primary_category;
-    const depth2Address = placeInfo.place_address.split(' ');
+  constructor(place: Place) {
+    this.id = place.id;
+    this.name = place.name;
+    this.category = place.primaryCategory;
+    const depth2Address = place.address.split(' ');
     this.address = depth2Address.slice(0, 2).join(' ');
-    this.url = placeInfo.place_imageURL;
-    this.tags = placeInfo.place_tag_name;
-    this.latitude = placeInfo.place_latitude;
-    this.longitude = placeInfo.place_longitude;
+    this.url = place.placeImages.length != 0 ? place.placeImages[0].url : null;
+    this.hashTags = place.placeTags
+      .filter(
+        (placeTag) =>
+          placeTag.tag.type == 1 ||
+          placeTag.tag.type == 2 ||
+          placeTag.tag.type == 3,
+      )
+      .map((placeTag) => placeTag.tag.tagName);
+    this.latitude = place.latitude;
+    this.longitude = place.longitude;
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RawPlacePreview } from 'src/common/interfaces/raw-place-preview.interface';
 import { KakaoLocalSearchRes } from 'src/common/interfaces/places.interface';
 import { Place } from 'src/entities/place.entity';
 import { DataSource, Repository } from 'typeorm';
+import { TagType } from 'src/common/enums/tag-type.enum';
+import { Tag } from 'src/entities/tag.entity';
 
 @Injectable()
 export class PlaceRepository extends Repository<Place> {
@@ -34,28 +35,26 @@ export class PlaceRepository extends Repository<Place> {
     });
   }
 
-  async getPlaceInfoFromMarker(placeId: number): Promise<RawPlacePreview> {
+  async getPlaceInfoFromMarker(placeId: number): Promise<Place> {
     const placePreviewInfo = await this.createQueryBuilder('place')
       .leftJoinAndSelect('place.placeTags', 'placeTag')
       .leftJoinAndSelect('placeTag.tag', 'tag')
+      .leftJoinAndSelect('place.placeImages', 'placeImage')
       .select([
         'place.id',
         'place.name',
         'place.address',
-        'place.primary_category AS place_primary_category',
+        'place.primary_category',
         'place.latitude',
         'place.longitude',
+        'placeTag',
+        'tag',
         'tag.tag_name AS place_tag_name',
+        'placeImage',
       ])
       .where('place.id = :placeId', { placeId })
+      .getOne();
 
-      .getRawOne();
-
-    //db 바뀌고 나서 tag.type이 1,2,3인 것만 가져와야함.
-    //.andWhere('tag.type in 1,2,3')
-    //해쉬태그들을 배열로 반환.
-
-    //db 바뀌고 나서 place와 image를 연결짓는 N:N 테이블이 사라짐. 새로 image 테이블 연결해야함.
     return placePreviewInfo;
   }
   async saveByKakaoPlace(
