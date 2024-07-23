@@ -23,7 +23,7 @@ async function bootstrap() {
   );
   const config = new DocumentBuilder()
     .setTitle('IEUM API')
-    .setDescription('IEUM Integrated API Docs')
+    .setDescription('IEUM APP TEST API')
     .setVersion('0.1')
     .addBearerAuth(
       {

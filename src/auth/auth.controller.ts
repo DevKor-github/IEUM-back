@@ -23,7 +23,7 @@ import {
 import { AppleLoginDto } from './dtos/apple-login.dto';
 
 @Controller('auth')
-@ApiTags('인증 인가')
+@ApiTags('인증/인가 API')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

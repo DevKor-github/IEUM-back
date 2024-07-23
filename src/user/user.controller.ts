@@ -21,8 +21,8 @@ import { FirstLoginDto } from './dtos/first-login.dto';
 import { UserService } from './user.service';
 import { ConnectInstagramDto } from './dtos/connect-instagram.dto';
 
+@ApiTags('유저 API')
 @Controller('users')
-@ApiTags('유저 관련 api')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

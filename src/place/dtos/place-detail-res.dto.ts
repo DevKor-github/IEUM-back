@@ -32,10 +32,4 @@ export class PlaceDetailResDto {
   longitude: number; //경도
 
   //이하는 placeDetail에 포함된 부분. 확정 X
-
-  @ApiProperty({ type: 'json' })
-  parkingOptions: JSON; //주차 여부.. json으로 저장?
-
-  @ApiProperty()
-  allowsDogs: string; //반려동물 동반 여부
 }

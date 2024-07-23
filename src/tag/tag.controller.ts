@@ -4,25 +4,25 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTagReqDto } from './dtos/create-tag-req.dto';
 import { TagResDto } from './dtos/tag-res.dto';
 
-@ApiTags('tags')
+// @ApiTags('tags')
 @Controller('tags')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  @ApiOperation({ summary: 'Get all tags' })
-  @Get()
+  // @ApiOperation({ summary: 'Get all tags' })
+  // @Get()
   async getAllTags(): Promise<TagResDto[]> {
     return await this.tagService.getAllTags();
   }
 
-  @ApiOperation({ summary: 'Get tag' })
-  @Get(':tagId')
+  // @ApiOperation({ summary: 'Get tag' })
+  // @Get(':tagId')
   async getTag(@Param('tagId') tagId: string): Promise<TagResDto> {
     return await this.tagService.getTag(parseInt(tagId));
   }
 
-  @ApiOperation({ summary: 'Create tag' })
-  @Post()
+  // @ApiOperation({ summary: 'Create tag' })
+  // @Post()
   async createTag(
     @Body() createTagReqDto: CreateTagReqDto,
   ): Promise<TagResDto> {

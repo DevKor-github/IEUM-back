@@ -9,12 +9,12 @@ import {
 } from './dtos/create-place-relation-req.dto';
 import { CreatePlaceReqDto } from './dtos/create-place-req.dto';
 
-@ApiTags('places')
+@ApiTags('장소 API')
 @Controller('places')
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
-  @ApiOperation({ summary: 'Get a Place by ID' })
+  @ApiOperation({ summary: '특정 장소의 상세 정보 조회' })
   @Get(':placeId')
   async getPlaceDetailById(@Param('placeId') placeId: string) {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
@@ -30,19 +30,19 @@ export class PlaceController {
   //   );
   // }
 
-  @ApiOperation({ summary: 'Search Google Place API by text' })
-  @Post('google')
-  async getGooglePlacesByText(@Body() searchByTextReqDto: SearchByTextReqDto) {
-    return await this.placeService.searchGooglePlacesByText(
-      searchByTextReqDto.text,
-    );
-  }
+  // @ApiOperation({ summary: 'Search Google Place API by text' })
+  // @Post('google')
+  // async getGooglePlacesByText(@Body() searchByTextReqDto: SearchByTextReqDto) {
+  //   return await this.placeService.searchGooglePlacesByText(
+  //     searchByTextReqDto.text,
+  //   );
+  // }
 
-  @ApiOperation({ summary: 'Get Google Place API detail by googlePlaceId' })
-  @Get('google/:googlePlaceId')
-  async getGooglePlaceDeatil(@Param('googlePlaceId') googlePlaceId: string) {
-    return await this.placeService.getPlaceDetailByGooglePlaceId(googlePlaceId);
-  }
+  // @ApiOperation({ summary: 'Get Google Place API detail by googlePlaceId' })
+  // @Get('google/:googlePlaceId')
+  // async getGooglePlaceDeatil(@Param('googlePlaceId') googlePlaceId: string) {
+  //   return await this.placeService.getPlaceDetailByGooglePlaceId(googlePlaceId);
+  // }
 
   @ApiOperation({ summary: 'Search KaKao Place API by keyword' })
   @Post('kakao')
