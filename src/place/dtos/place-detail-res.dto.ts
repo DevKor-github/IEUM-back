@@ -1,49 +1,41 @@
-import { Place } from 'src/entities/place.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class PlaceDetailResDto {
+export class placeDetailResDto {
+  @ApiProperty()
   id: number;
 
+  @ApiProperty()
   name: string;
 
-  address: string;
+  @ApiProperty()
+  url: string;
 
+  @ApiProperty()
+  address: string; //지번 주소
+
+  @ApiProperty()
+  roadAddress: string;
+
+  @ApiProperty()
+  kakaoId: string; //식별을 위한 kakaoId
+
+  @ApiProperty()
+  phone: string;
+
+  @ApiProperty()
+  primaryCategory: string; //주요 카테고리
+
+  @ApiProperty()
   latitude: number; //위도
 
+  @ApiProperty()
   longitude: number; //경도
 
-  googlePlaceId: string; //googlePlaceId 필요
+  //이하는 placeDetail에 포함된 부분. 확정 X
 
-  openHours: string[];
+  @ApiProperty({ type: 'json' })
+  parkingOptions: JSON; //주차 여부.. json으로 저장?
 
-  phoneNumber: string;
-
-  primaryCategory: string;
-
-  categories: string[];
-
-  tags: string[];
-
-  images: string[];
-
-  //인스타 게스트 컬렉션
-  //장소 스케쥴
-  //큐레이션-장소
-  constructor(place: Place) {
-    this.id = place.id;
-    this.name = place.name;
-    this.address = place.address;
-    this.latitude = place.latitude;
-    this.longitude = place.longitude;
-    //this.phoneNumber = place.phoneNumber;
-    this.primaryCategory = place.primaryCategory;
-    this.tags = place.placeTags?.map((placeTag) => placeTag.tag.tagName);
-  }
-
-  static fromCreation(place: Place): PlaceDetailResDto {
-    const placeDetailResDto = new PlaceDetailResDto(place);
-    placeDetailResDto.tags = [];
-    placeDetailResDto.images = [];
-
-    return placeDetailResDto;
-  }
+  @ApiProperty()
+  allowsDogs: string; //반려동물 동반 여부
 }
