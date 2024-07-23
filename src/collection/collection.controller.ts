@@ -34,7 +34,7 @@ export class CollectionController {
 
   @Get(':collectionId/collection-places')
   async getCollectionPlaces(@Param('collectionId') collectionId: number) {
-    return await this.collectionService.getCollectionPlaces(collectionId);
+    return await this.collectionService.getCollectionPlaces(1, collectionId);
   }
 
   @Post('')

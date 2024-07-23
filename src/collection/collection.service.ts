@@ -5,6 +5,7 @@ import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { PlaceService } from 'src/place/place.service';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { UserService } from 'src/user/user.service';
+import { CollectionPlacesListResDto } from './dtos/collection-places-list.dto';
 
 @Injectable()
 export class CollectionService {
@@ -66,4 +67,10 @@ export class CollectionService {
   // }
 
   //getCOllectionDetail 호출 시에 Transaction으로 isViewed Update.
+
+  async getCollectionPlaces(userId: number, collectionId: number) {
+    const collectionPlaces =
+      await this.collectionPlaceRepository.getCollectionPlaces(collectionId);
+    return new CollectionPlacesListResDto(collectionPlaces, collectionId);
+  }
 }

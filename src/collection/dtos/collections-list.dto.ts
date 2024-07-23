@@ -20,16 +20,28 @@ export class CollectionDto {
 
 export class listMetaDto {
   @ApiProperty()
-  length: number;
+  length?: number;
 
   @ApiProperty()
-  take: number;
+  take?: number;
 
   @ApiProperty()
-  hasNextPage: boolean;
+  hasNextPage?: boolean;
 
   @ApiProperty()
-  nextCursorId: number;
+  nextCursorId?: number;
+
+  constructor(
+    length?: number,
+    take?: number,
+    hasNextPage?: boolean,
+    nextCursorId?: number,
+  ) {
+    this.length = length ?? 0;
+    this.take = take;
+    this.hasNextPage = hasNextPage;
+    this.nextCursorId = nextCursorId;
+  }
 }
 
 export class CollectionsListResDto {

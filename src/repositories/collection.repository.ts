@@ -118,13 +118,6 @@ export class CollectionRepository extends Repository<Collection> {
     return await query.getMany();
   }
 
-  async getCollectionDetail(collectionId: number) {
-    return await this.createQueryBuilder('collection')
-      .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
-      .leftJoinAndSelect('collectionPlaces.place', 'place')
-      .select([collection.]);
-  }
-
   //deprecated
   // async getCollections(
   //   instaGuestUserId: number,
