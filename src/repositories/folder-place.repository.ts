@@ -30,11 +30,14 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     await manager.delete(FolderPlace, { folderId: folderId });
   }
 
-  async deleteFolderPlace(folderId: number, placeId: number) {
-    await this.delete({ folderId: folderId, placeId: placeId });
+  async deleteFolderPlace(folderId: number, placeIds: number[]) {
+    placeIds.map(
+      async (placeId) =>
+        await this.delete({ folderId: folderId, placeId: placeId }),
+    );
   }
 
-  async deleteAllFolderPlace(placeId: number) {
-    await this.delete({ placeId: placeId });
+  async deleteAllFolderPlace(placeIds: number[]) {
+    placeIds.map(async (placeId) => await this.delete({ placeId: placeId }));
   }
 }

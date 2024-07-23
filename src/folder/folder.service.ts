@@ -71,7 +71,11 @@ export class FolderService {
     );
   }
 
-  async deleteFolderPlace(userId: number, folderId: number, placeId: number) {
+  async deleteFolderPlace(
+    userId: number,
+    folderId: number,
+    placeIds: number[],
+  ) {
     const targetFolder =
       await this.folderRepository.findFolderByFolderId(folderId);
 
@@ -80,12 +84,12 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
-      return await this.folderPlaceRepository.deleteAllFolderPlace(placeId);
+      return await this.folderPlaceRepository.deleteAllFolderPlace(placeIds);
     }
 
     return await this.folderPlaceRepository.deleteFolderPlace(
       folderId,
-      placeId,
+      placeIds,
     );
   }
 

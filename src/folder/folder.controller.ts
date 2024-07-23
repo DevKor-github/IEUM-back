@@ -19,6 +19,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FolderListResDto } from './dtos/folder-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
+import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
 
 @ApiTags('폴더 관련 api')
 @Controller('folder')
@@ -88,21 +89,21 @@ export class FolderController {
 
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: 'Delete a place from folder.' })
+  @ApiOperation({ summary: 'Delete places from folder.' })
   @ApiResponse({
     status: 200,
     description: '폴더에서 장소 삭제 성공.',
   })
-  @Delete('/place/:folderId/:placeId')
+  @Delete('/place/:folderId')
   async deleteFolderPlace(
     @Param('folderId') folderId: number,
-    @Param('placeId') placeId: number,
+    @Body() deletePlacesReqDto: DeletePlacesReqDto,
     @Req() req,
   ) {
     return await this.folderService.deleteFolderPlace(
       req.user.id,
       folderId,
-      placeId,
+      deletePlacesReqDto.placeIds,
     );
   }
 
