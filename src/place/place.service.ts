@@ -142,6 +142,6 @@ export class PlaceService {
 
   async createPlaceByKeyword(keyword: string) {
     const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
-    return kakaoPlace.documents[0];
+    return this.placeRepository.saveByKakaoPlace(kakaoPlace.documents[0]);
   }
 }
