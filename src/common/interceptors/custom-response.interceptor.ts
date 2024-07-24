@@ -18,7 +18,7 @@ export class CustomResponseInterceptor implements NestInterceptor {
             data !== undefined
               ? CustomResponse.SuccessWithData
               : CustomResponse.SuccessWithoutData,
-          data: data !== undefined ? data : null,
+          response: data !== undefined ? data : null,
         };
       }),
     );
