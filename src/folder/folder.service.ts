@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
 import { FolderRepository } from 'src/repositories/folder.repository';
 import { FolderListResDto } from './dtos/folder-list.res.dto';
@@ -37,10 +37,10 @@ export class FolderService {
     const targetFolder =
       await this.folderRepository.findFolderByFolderId(folderId);
     if (targetFolder.userId != userId) {
-      throw new NotAuthorizedException('해당 권한 없음.');
+      throw new ForbiddenException('해당 권한 없음.');
     }
     if (targetFolder.type == FolderType.Default) {
-      throw new NotAuthorizedException('Default 폴더는 삭제할 수 없습니다.');
+      throw new ForbiddenException('Default 폴더는 삭제할 수 없습니다.');
     }
     //transaction 처리
     const queryRunner = this.dataSource.createQueryRunner();
@@ -80,7 +80,7 @@ export class FolderService {
       await this.folderRepository.findFolderByFolderId(folderId);
 
     if (targetFolder.userId != userId) {
-      throw new NotAuthorizedException('해당 권한 없음.');
+      throw new ForbiddenException('해당 권한 없음.');
     }
 
     if (targetFolder.type == FolderType.Default) {

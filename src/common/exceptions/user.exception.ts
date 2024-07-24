@@ -7,8 +7,8 @@ export class NotValidUserException extends CustomException {
   }
 }
 
-export class NotAuthorizedException extends CustomException {
+export class ForbiddenException extends CustomException {
   constructor(message?: string) {
-    super(ErrorCodeEnum.NotAuthorized, message);
+    super(ErrorCodeEnum.Forbidden, message);
   }
 }
