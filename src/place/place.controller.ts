@@ -21,8 +21,8 @@ import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceListResDto } from './dtos/place-list-pagination-res.dto';
-import { PlaceListReqDto } from './dtos/place-list-pagination-req.dto';
+import { PlaceListResDto } from './dtos/place-list-res.dto';
+import { PlaceListReqDto } from './dtos/place-list-req.dto';
 
 @ApiTags('places')
 @Controller('places')
@@ -75,34 +75,38 @@ export class PlaceController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place markers" })
   @ApiResponse({ type: MarkerResDto })
-  @ApiQuery({ name: 'address', required: false, type: [String] })
-  @ApiQuery({ name: 'category', required: false, type: [String] })
+  @ApiQuery({ name: 'addressList', required: false, type: [String] })
+  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/markers/all')
   async getAllMarkers(
-    @Query('address') address: string[] = [],
-    @Query('category') category: string[] = [],
+    @Query('addressList') addressList: string[] = [],
+    @Query('categoryList') categoryList: string[] = [],
     @Req() req,
   ) {
-    return await this.placeService.getMarkers(req.user.id, address, category);
+    return await this.placeService.getMarkers(
+      req.user.id,
+      addressList,
+      categoryList,
+    );
   }
 
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place markers by folder" })
   @ApiResponse({ type: MarkerResDto })
-  @ApiQuery({ name: 'address', required: false, type: [String] })
-  @ApiQuery({ name: 'category', required: false, type: [String] })
+  @ApiQuery({ name: 'addressList', required: false, type: [String] })
+  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/markers/folder/:id')
   async getMarkersByFolder(
     @Param('id') folderId: number,
-    @Query('address') address: string[] = [],
-    @Query('category') category: string[] = [],
+    @Query('addressList') addressList: string[] = [],
+    @Query('categoryList') categoryList: string[] = [],
     @Req() req,
   ) {
     return await this.placeService.getMarkers(
       req.user.id,
-      address,
-      category,
+      addressList,
+      categoryList,
       folderId,
     );
   }
@@ -121,8 +125,8 @@ export class PlaceController {
   @ApiOperation({ summary: "Get User's place list" })
   @ApiResponse({ type: PlaceListResDto })
   @ApiQuery({ name: 'cursorId', required: false, type: Number })
-  @ApiQuery({ name: 'addressCollection', required: false, type: [String] })
-  @ApiQuery({ name: 'categoryCollection', required: false, type: [String] })
+  @ApiQuery({ name: 'addressList', required: false, type: [String] })
+  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/list/all')
   async getAllPlaceList(
     @Req() req,
@@ -136,8 +140,8 @@ export class PlaceController {
   @ApiOperation({ summary: "Get User's place list by folder" })
   @ApiResponse({ type: PlaceListResDto })
   @ApiQuery({ name: 'cursorId', required: false, type: Number })
-  @ApiQuery({ name: 'addressCollection', required: false, type: [String] })
-  @ApiQuery({ name: 'categoryCollection', required: false, type: [String] })
+  @ApiQuery({ name: 'addressList', required: false, type: [String] })
+  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/list/folder/:id')
   async getPlaceListByFolder(
     @Req() req,

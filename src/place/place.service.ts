@@ -6,11 +6,9 @@ import {
   SEARCH_BY_KEYWORD_KAKAO_URL,
   SEARCH_BY_TEXT_URL,
 } from 'src/common/constants/google-apis.constant';
-import { Place } from 'src/entities/place.entity';
 import { PlaceRepository } from 'src/repositories/place.repository';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import {
-  CreatePlaceCategoryReqDto,
   CreatePlaceImageReqDto,
   CreatePlaceTagReqDto,
 } from './dtos/create-place-relation-req.dto';
@@ -21,11 +19,8 @@ import { Transactional } from 'typeorm-transactional';
 import { UserRepository } from 'src/repositories/user.repository';
 import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceListReqDto } from './dtos/place-list-pagination-req.dto';
-import {
-  PlaceListDataDto,
-  PlaceListResDto,
-} from './dtos/place-list-pagination-res.dto';
+import { PlaceListReqDto } from './dtos/place-list-req.dto';
+import { PlaceListDataDto, PlaceListResDto } from './dtos/place-list-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 
@@ -149,33 +144,28 @@ export class PlaceService {
 
   async getMarkers(
     userId: number,
-    addressCollection: string[],
-    categoryCollection: string[],
+    addressList: string[],
+    categoryList: string[],
     folderId?: number,
   ): Promise<MarkerResDto[]> {
     //입력값이 문자열 1개라 배열이 아닐 때 수동으로 배열로 바꿔줘야 함.
-    addressCollection =
-      typeof addressCollection === 'string'
-        ? [addressCollection]
-        : addressCollection;
+    addressList = typeof addressList === 'string' ? [addressList] : addressList;
 
-    categoryCollection =
-      typeof categoryCollection === 'string'
-        ? [categoryCollection]
-        : categoryCollection;
+    categoryList =
+      typeof categoryList === 'string' ? [categoryList] : categoryList;
 
     if (folderId !== undefined) {
       return await this.userRepository.getMarkers(
         userId,
-        addressCollection,
-        categoryCollection,
+        addressList,
+        categoryList,
         folderId,
       );
     }
     return await this.userRepository.getMarkers(
       userId,
-      addressCollection,
-      categoryCollection,
+      addressList,
+      categoryList,
     );
   }
 
@@ -190,15 +180,15 @@ export class PlaceService {
     placeListReqDto: PlaceListReqDto,
     folderId?: number,
   ): Promise<PlaceListResDto> {
-    placeListReqDto.addressCollection =
-      typeof placeListReqDto.addressCollection === 'string'
-        ? [placeListReqDto.addressCollection]
-        : placeListReqDto.addressCollection;
+    placeListReqDto.addressList =
+      typeof placeListReqDto.addressList === 'string'
+        ? [placeListReqDto.addressList]
+        : placeListReqDto.addressList;
 
-    placeListReqDto.categoryCollection =
-      typeof placeListReqDto.categoryCollection === 'string'
-        ? [placeListReqDto.categoryCollection]
-        : placeListReqDto.categoryCollection;
+    placeListReqDto.categoryList =
+      typeof placeListReqDto.categoryList === 'string'
+        ? [placeListReqDto.categoryList]
+        : placeListReqDto.categoryList;
 
     let placeCollection: PlaceListDataDto[];
     if (folderId !== undefined) {

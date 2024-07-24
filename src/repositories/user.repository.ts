@@ -5,8 +5,8 @@ import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
 import { plainToInstance } from 'class-transformer';
-import { PlaceListReqDto } from 'src/place/dtos/place-list-pagination-req.dto';
-import { PlaceListDataDto } from 'src/place/dtos/place-list-pagination-res.dto';
+import { PlaceListReqDto } from 'src/place/dtos/place-list-req.dto';
+import { PlaceListDataDto } from 'src/place/dtos/place-list-res.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 
 @Injectable()
@@ -46,8 +46,8 @@ export class UserRepository extends Repository<User> {
 
   async getMarkers(
     userId: number,
-    addressCollection: string[],
-    categoryCollection: string[],
+    addressList: string[],
+    categoryList: string[],
     folderId?: number,
   ): Promise<MarkerResDto[]> {
     const markerCollection = this.createQueryBuilder('user')
@@ -73,13 +73,13 @@ export class UserRepository extends Repository<User> {
     }
     //address로 필터링 되어야 한다면
     //place.address LIKE a% OR b%는 지원하지 않아 place.address LIKE a% OR place.address LIKE b%와 같이 작성하여야 함.
-    if (addressCollection && addressCollection.length != 0) {
-      const addressConditions = addressCollection.map(
+    if (addressList && addressList.length != 0) {
+      const addressConditions = addressList.map(
         (address, index) => `place.address LIKE :address${index}`,
       );
       markerCollection.andWhere(
         `(${addressConditions.join(' OR ')})`,
-        addressCollection.reduce((params, address, index) => {
+        addressList.reduce((params, address, index) => {
           params[`address${index}`] = `${address}%`;
           return params;
         }, {}),
@@ -87,10 +87,10 @@ export class UserRepository extends Repository<User> {
     }
 
     //category로 필터링 되어야 한다면
-    if (categoryCollection && categoryCollection.length != 0) {
+    if (categoryList && categoryList.length != 0) {
       markerCollection
         .andWhere('place.primary_category IN (:...categories)')
-        .setParameter('categories', categoryCollection);
+        .setParameter('categories', categoryList);
     }
 
     const result = await markerCollection
@@ -130,27 +130,27 @@ export class UserRepository extends Repository<User> {
     //첫 호출이라 cursor 값이 0이라면
     if (!placeListReqDto.cursorId) {
       if (
-        placeListReqDto.addressCollection &&
-        placeListReqDto.addressCollection.length != 0
+        placeListReqDto.addressList &&
+        placeListReqDto.addressList.length != 0
       ) {
-        const addressConditions = placeListReqDto.addressCollection.map(
+        const addressConditions = placeListReqDto.addressList.map(
           (address, index) => `place.address LIKE :address${index}`,
         );
         placeCollection.andWhere(
           `(${addressConditions.join(' OR ')})`,
-          placeListReqDto.addressCollection.reduce((params, address, index) => {
+          placeListReqDto.addressList.reduce((params, address, index) => {
             params[`address${index}`] = `${address}%`;
             return params;
           }, {}),
         );
       }
       if (
-        placeListReqDto.categoryCollection &&
-        placeListReqDto.categoryCollection.length != 0
+        placeListReqDto.categoryList &&
+        placeListReqDto.categoryList.length != 0
       ) {
         placeCollection
           .andWhere('place.primary_category IN (:...categories)')
-          .setParameter('categories', placeListReqDto.categoryCollection);
+          .setParameter('categories', placeListReqDto.categoryList);
       }
       placeCollection
         .orderBy('place.id', 'DESC')
@@ -164,27 +164,27 @@ export class UserRepository extends Repository<User> {
       });
 
       if (
-        placeListReqDto.addressCollection &&
-        placeListReqDto.addressCollection.length != 0
+        placeListReqDto.addressList &&
+        placeListReqDto.addressList.length != 0
       ) {
-        const addressConditions = placeListReqDto.addressCollection.map(
+        const addressConditions = placeListReqDto.addressList.map(
           (address, index) => `place.address LIKE :address${index}`,
         );
         placeCollection.andWhere(
           `(${addressConditions.join(' OR ')})`,
-          placeListReqDto.addressCollection.reduce((params, address, index) => {
+          placeListReqDto.addressList.reduce((params, address, index) => {
             params[`address${index}`] = `${address}%`;
             return params;
           }, {}),
         );
       }
       if (
-        placeListReqDto.categoryCollection &&
-        placeListReqDto.categoryCollection.length != 0
+        placeListReqDto.categoryList &&
+        placeListReqDto.categoryList.length != 0
       ) {
         placeCollection
           .andWhere('place.primary_category IN (:...categories)')
-          .setParameter('categories', placeListReqDto.categoryCollection);
+          .setParameter('categories', placeListReqDto.categoryList);
       }
       placeCollection
         .orderBy('place.id', 'DESC')

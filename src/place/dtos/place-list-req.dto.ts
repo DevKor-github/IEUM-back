@@ -17,9 +17,9 @@ export class PlaceListReqDto {
 
   @ApiProperty()
   @IsOptional()
-  addressCollection?: string[] = [];
+  addressList?: string[] = [];
 
   @ApiProperty()
   @IsOptional()
-  categoryCollection?: string[] = [];
+  categoryList?: string[] = [];
 }
