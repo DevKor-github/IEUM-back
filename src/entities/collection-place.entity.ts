@@ -18,12 +18,14 @@ export class CollectionPlace {
   collection: Collection;
 
   @RelationId((collectionPlace: CollectionPlace) => collectionPlace.collection)
+  @Column()
   collectionId: number;
 
   @ManyToOne(() => Place, (place) => place.collectionPlaces)
   place: Place;
 
   @RelationId((collectionPlace: CollectionPlace) => collectionPlace.place)
+  @Column()
   placeId: number;
 
   @Column({ default: false })

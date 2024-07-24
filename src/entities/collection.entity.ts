@@ -29,6 +29,7 @@ export class Collection extends BaseEntity {
   user: User;
 
   @RelationId((collection: Collection) => collection.user)
+  @Column()
   userId: number;
 
   @OneToMany(
