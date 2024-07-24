@@ -8,7 +8,7 @@ export class CollectionDto {
   id: number;
 
   @ApiProperty()
-  collectionType: CollectionType;
+  collectionType: string;
 
   @ApiProperty()
   link: string;
@@ -20,16 +20,17 @@ export class CollectionDto {
   collectionPlacesCount: number;
 
   @ApiProperty()
-  savedCollectionPlacesCount: number;
+  savedCollectionPlacesCount?: number;
 
   constructor(rawCollection: RawCollection) {
     this.id = rawCollection.id;
-    this.collectionType = rawCollection.collection_type;
+    this.collectionType = CollectionType[rawCollection.collection_type];
     this.link = rawCollection.link;
     this.content = rawCollection.content;
-    this.collectionPlacesCount = rawCollection.collection_places_count;
-    this.savedCollectionPlacesCount =
-      rawCollection.saved_collection_places_count;
+    this.collectionPlacesCount = Number(rawCollection.collection_places_count);
+    this.savedCollectionPlacesCount = Number(
+      rawCollection.saved_collection_places_count,
+    );
   }
 }
 
@@ -77,16 +78,3 @@ export class CollectionsListResDto {
       : rawCollections.map((rawCollection) => new CollectionDto(rawCollection));
   }
 }
-
-// constructor(collectionsList: InstaCollectionDto[]) {
-//   const hasNextPage = collectionsList.length == INSTA_COLLECTIONS_TAKE + 1;
-//   const nextCursorId = hasNextPage
-//     ? collectionsList[INSTA_COLLECTIONS_TAKE - 1].instaGuestCollectionId
-//     : null;
-
-//   this.hasNextPage = hasNextPage;
-//   this.nextCursorId = nextCursorId;
-//   this.data = hasNextPage
-//     ? collectionsList.slice(0, INSTA_COLLECTIONS_TAKE)
-//     : collectionsList;
-// }

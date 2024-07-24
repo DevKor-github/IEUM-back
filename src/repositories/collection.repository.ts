@@ -65,6 +65,7 @@ export class CollectionRepository extends Repository<Collection> {
       .select([
         'collection.id AS id',
         'collection.link AS link',
+        'collection.collection_type AS collection_type',
         'collection.content AS content',
         'collection.isViewed AS is_viewed',
         'COUNT(collectionPlaces.id) as collection_places_count',
@@ -93,6 +94,7 @@ export class CollectionRepository extends Repository<Collection> {
       .select([
         'collection.id AS id',
         'collection.link AS link',
+        'collection.collection_type AS collection_type',
         'collection.content AS content',
         'collection.isViewed AS is_viewed',
         'COUNT(collectionPlaces.id) as collection_places_count',
