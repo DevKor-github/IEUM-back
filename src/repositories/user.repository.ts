@@ -127,7 +127,7 @@ export class UserRepository extends Repository<User> {
       });
     }
 
-    //첫 호출이라 cursor 값이 0이라면
+    //첫 호출이라 cursor 값이 주어지지 않아 undefined라면
     if (!placeListReqDto.cursorId) {
       if (
         placeListReqDto.addressList &&

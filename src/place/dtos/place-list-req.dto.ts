@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 
@@ -9,17 +9,17 @@ export class PlaceListReqDto {
   @IsInt()
   take: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional({ nullable: true })
   @Type(() => Number)
   @IsOptional()
   @IsInt()
-  cursorId?: number = 0;
+  cursorId?: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   addressList?: string[] = [];
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsOptional()
   categoryList?: string[] = [];
 }

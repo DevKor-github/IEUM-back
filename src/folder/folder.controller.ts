@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Put,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
 import {
@@ -37,6 +39,7 @@ export class FolderController {
     return await this.folderService.getFolderList(req.user.id);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: 'Create a new folder.' })

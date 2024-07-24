@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RawFolderList } from 'src/common/interfaces/raw-folder-list.interface';
+import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 
 export class FolderListResDto {
   @ApiProperty()
@@ -11,7 +11,7 @@ export class FolderListResDto {
   @ApiProperty()
   placeCnt: number;
 
-  constructor(rawFolderList: RawFolderList) {
+  constructor(rawFolderList: RawFolderInfo) {
     this.id = rawFolderList.id;
     this.name = rawFolderList.name;
     this.placeCnt = rawFolderList.placeCnt;

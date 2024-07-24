@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FolderType } from 'src/common/enums/folder-type.enum';
-import { RawFolderList } from 'src/common/interfaces/raw-folder-list.interface';
+import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 import { Folder } from 'src/entities/folder.entity';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 
@@ -36,7 +36,7 @@ export class FolderRepository extends Repository<Folder> {
       newFolder.type = folderType;
     }
     const saveNewFolder = await this.save(newFolder);
-    return;
+    return saveNewFolder;
   }
   async getDefaultFolder(userId: number) {
     let defaultFolder = await this.folderRepository.findOne({
@@ -66,7 +66,7 @@ export class FolderRepository extends Repository<Folder> {
     return instaFolder;
   }
 
-  async getFolderList(userId: number): Promise<RawFolderList[]> {
+  async getFolderList(userId: number): Promise<RawFolderInfo[]> {
     const folderList = await this.find({
       where: { userId: userId },
       relations: ['folderPlaces'],

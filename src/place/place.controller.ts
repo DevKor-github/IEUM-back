@@ -124,9 +124,6 @@ export class PlaceController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place list" })
   @ApiResponse({ type: PlaceListResDto })
-  @ApiQuery({ name: 'cursorId', required: false, type: Number })
-  @ApiQuery({ name: 'addressList', required: false, type: [String] })
-  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/list/all')
   async getAllPlaceList(
     @Req() req,
@@ -139,9 +136,6 @@ export class PlaceController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place list by folder" })
   @ApiResponse({ type: PlaceListResDto })
-  @ApiQuery({ name: 'cursorId', required: false, type: Number })
-  @ApiQuery({ name: 'addressList', required: false, type: [String] })
-  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/list/folder/:id')
   async getPlaceListByFolder(
     @Req() req,

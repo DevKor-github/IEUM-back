@@ -12,7 +12,7 @@ export class PlaceListMetaDto {
 
   @ApiProperty()
   @IsInt()
-  cursorId: number;
+  cursorId: number | null;
 }
 
 export class PlaceListDataDto {
