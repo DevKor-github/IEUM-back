@@ -7,6 +7,7 @@ import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { UserService } from 'src/user/user.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list.dto';
 import { Transactional } from 'typeorm-transactional';
+import { CollectionsListResDto } from './dtos/collections-list.dto';
 
 @Injectable()
 export class CollectionService {
@@ -51,16 +52,22 @@ export class CollectionService {
   //isViewed가 false인 collection은 colleciton-place를 counting만 하고,
   //isViewed가 true인 collection은 collection-place와 JOIN하여 isSaved를 따로 카운팅.
 
-  async getUnviewedCollections(userId: number, cursorId?: number) {
+  async getUnviewedCollections(
+    userId: number,
+    cursorId?: number,
+  ): Promise<CollectionsListResDto> {
     const unviewedCollections =
       await this.collectionRepository.getUnviewedCollections(userId, cursorId);
-    return unviewedCollections;
+    return new CollectionsListResDto(unviewedCollections);
   }
 
-  async getViewedCollections(userId: number, cursorId?: number) {
+  async getViewedCollections(
+    userId: number,
+    cursorId?: number,
+  ): Promise<CollectionsListResDto> {
     const viewedCollections =
       await this.collectionRepository.getViewedCollections(userId, cursorId);
-    return viewedCollections;
+    return new CollectionsListResDto(viewedCollections);
   }
 
   // async getCollectionDetail(collectionId: number) {

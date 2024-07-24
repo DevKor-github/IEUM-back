@@ -8,7 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CollectionService } from './collection.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 
@@ -18,12 +18,14 @@ export class CollectionController {
   constructor(private readonly collectionService: CollectionService) {}
 
   @ApiOperation({ summary: '조회하지 않은 게시글 조회' })
+  @ApiQuery({ name: 'cursorId', required: false })
   @Get('unviewed')
-  async getUnviewedCollections(@Query('cursorId ') cursorId: number) {
+  async getUnviewedCollections(@Query('cursorId') cursorId?: number) {
     return await this.collectionService.getUnviewedCollections(1, cursorId);
   }
 
   @ApiOperation({ summary: '조회한 게시글 조회' })
+  @ApiQuery({ name: 'cursorId', required: false })
   @Get('viewed')
   async getViewedCollection(@Query('cursorId') cursorId?: number) {
     return await this.collectionService.getViewedCollections(1, cursorId);

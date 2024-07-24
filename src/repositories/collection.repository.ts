@@ -11,6 +11,7 @@ import {
 } from 'src/common/interfaces/raw-insta-collection.interface';
 import { Collection } from 'src/entities/collection.entity';
 import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
+import { RawCollection } from 'src/common/interfaces/raw-collection.interface';
 
 @Injectable()
 export class CollectionRepository extends Repository<Collection> {
@@ -55,26 +56,19 @@ export class CollectionRepository extends Repository<Collection> {
     return await this.save(newCollection);
   }
 
-  async getViewedCollections(userId: number, cursorId: number) {
+  async getViewedCollections(
+    userId: number,
+    cursorId: number,
+  ): Promise<RawCollection[]> {
     const query = this.createQueryBuilder('collection')
       .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
-      .loadRelationCountAndMap(
-        'collection.collectionPlacesCount',
-        'collection.collectionPlaces',
-      )
-      .loadRelationCountAndMap(
-        'collection.savedCollectionPlacesCount',
-        'collection.collectionPlaces',
-        'collectionPlace',
-        (qb) =>
-          qb.where('collectionPlace.isSaved = :isSaved', { isSaved: true }),
-      )
       .select([
-        'collection.id',
-        'collection.link',
-        'collection.content',
-        'collection.isViewed',
-        'collection.collectionPlacesCount',
+        'collection.id AS id',
+        'collection.link AS link',
+        'collection.content AS content',
+        'collection.isViewed AS is_viewed',
+        'COUNT(collectionPlaces.id) as collection_places_count',
+        `SUM(CASE WHEN collectionPlaces.isSave = true THEN 1 ELSE 0 END) as saved_collection_places_count`,
       ])
       .where('collection.userId = :userId', { userId })
       .andWhere('collection.isViewed = true')
@@ -87,22 +81,21 @@ export class CollectionRepository extends Repository<Collection> {
         cursorId,
       });
     }
-    return await query.getMany();
+    return await query.getRawMany();
   }
 
-  async getUnviewedCollections(userId: number, cursorId: number) {
+  async getUnviewedCollections(
+    userId: number,
+    cursorId: number,
+  ): Promise<RawCollection[]> {
     const query = this.createQueryBuilder('collection')
       .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
-      .loadRelationCountAndMap(
-        'collection.collectionPlacesCount',
-        'collection.collectionPlaces',
-      )
       .select([
-        'collection.id',
-        'collection.link',
-        'collection.content',
-        'collection.isViewed',
-        'collection.collectionPlacesCount',
+        'collection.id AS id',
+        'collection.link AS link',
+        'collection.content AS content',
+        'collection.isViewed AS is_viewed',
+        'COUNT(collectionPlaces.id) as collection_places_count',
       ])
       .where('collection.userId = :userId', { userId })
       .andWhere('collection.isViewed = false')
@@ -115,7 +108,7 @@ export class CollectionRepository extends Repository<Collection> {
         cursorId,
       });
     }
-    return await query.getMany();
+    return await query.getRawMany();
   }
 
   //deprecated
