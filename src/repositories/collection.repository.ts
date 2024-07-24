@@ -42,18 +42,25 @@ export class CollectionRepository extends Repository<Collection> {
     link: string,
     content?: string,
   ): Promise<Collection> {
-    //   //한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크
-    const existedCollection = await this.findOne({
-      where: { userId: userId, link: link },
-    });
-    if (existedCollection) {
-      return existedCollection;
-    }
+    // 한 아이디로 저장한 장소-게시글 쌍에 대한 중복 체크 -> isDuplicated를 떼서 위임
+    // const existedCollection = await this.findOne({
+    //   where: { userId: userId, link: link },
+    // });
+    // if (existedCollection) {
+    //   return existedCollection;
+    // }
     const newCollection = new Collection();
     newCollection.userId = userId;
     newCollection.link = link;
     newCollection.content = content ? content : null;
     return await this.save(newCollection);
+  }
+
+  async isDuplicatedCollection(userId: number, link: string): Promise<boolean> {
+    const existedCollection = await this.findOne({
+      where: { userId: userId, link: link },
+    });
+    return existedCollection ? true : false;
   }
 
   async getViewedCollections(

@@ -1,7 +1,3 @@
-import {
-  NotFoundInstaCollectionException,
-  NotValidInstaGuestUserException,
-} from './../common/exceptions/insta.exception';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FirstLoginDto } from './dtos/first-login.dto';
 import { UserRepository } from 'src/repositories/user.repository';

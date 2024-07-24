@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CollectionPlaceRepository } from 'src/repositories/collection-place.repository';
 import { CollectionRepository } from 'src/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
@@ -8,6 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list.dto';
 import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/collections-list.dto';
+import { ConflictedCollectionException } from 'src/common/exceptions/collection.exception';
 
 @Injectable()
 export class CollectionService {
@@ -23,6 +24,16 @@ export class CollectionService {
     const user = await this.userService.getUserByUuid(
       createCollectionReq.userUuid,
     );
+
+    if (
+      await this.collectionRepository.isDuplicatedCollection(
+        user.id,
+        createCollectionReq.link,
+      )
+    ) {
+      throw new ConflictedCollectionException('이미 저장한 게시글이에요!');
+    }
+
     const collection = await this.collectionRepository.createCollection(
       user.id,
       createCollectionReq.link,
