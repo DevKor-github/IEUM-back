@@ -8,6 +8,9 @@ export enum ErrorCodeEnum {
   // aa = 30 : Collection
   NotValidCollection = 3001,
   ConflictedCollection = 3002,
+  // aa = 40 : Folder
+  NotValidFolder = 4001,
+  ForbiddenFolder = 4002,
   // aa = 80 : Server Exception
   DefaultInternalServerError = 8000,
   // aa = 90 : Http default exception
