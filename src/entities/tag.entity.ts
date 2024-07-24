@@ -8,7 +8,7 @@ export class Tag {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'enum', enum: TagType, default: TagType.Custom })
   type: TagType;
 
   @Column()

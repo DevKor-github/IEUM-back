@@ -20,6 +20,7 @@ import { Transactional } from 'typeorm-transactional';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
+import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
 
 @Injectable()
 export class PlaceService {
@@ -32,7 +33,9 @@ export class PlaceService {
 
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
-    if (!place) throw new NotFoundException('Place not found');
+    if (!place)
+      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
+    return place;
     return new PlaceDetailResDto();
   }
 
