@@ -34,13 +34,12 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
     const collectionPlaces = await this.createQueryBuilder('collectionPlace')
       .leftJoinAndSelect('collectionPlace.place', 'place')
       .select([
-        'place.id AS placeId',
-        'place.kakaoId AS kakaoId',
-        'place.name AS placeName',
+        'place.id AS place_id',
+        'place.name AS place_name',
         'place.address AS address',
         'place.primaryCategory AS category',
-        'collectionPlace.placeKeyword AS placeKeyword',
-        'collectionPlace.isSaved AS isSaved',
+        'collectionPlace.placeKeyword AS place_keyword',
+        'collectionPlace.isSaved AS is_saved',
       ])
       .where('collectionPlace.collectionId = :collectionId', {
         collectionId: collectionId,

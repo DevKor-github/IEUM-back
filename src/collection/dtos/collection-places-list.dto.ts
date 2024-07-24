@@ -10,9 +10,6 @@ export class CollectionPlaceDto {
   placeId: number;
 
   @ApiProperty()
-  kakaoId: string;
-
-  @ApiProperty()
   placeName: string;
 
   @ApiProperty()
@@ -29,13 +26,12 @@ export class CollectionPlaceDto {
 
   constructor(collectionId: number, rawCollectionPlace: RawCollectionPlace) {
     this.collectionId = collectionId;
-    this.placeId = rawCollectionPlace.placeId;
-    this.kakaoId = rawCollectionPlace.kakaoId;
-    this.placeName = rawCollectionPlace.placeName;
+    this.placeId = rawCollectionPlace.place_id;
+    this.placeName = rawCollectionPlace.place_name;
     this.simplifiedAddress = this.addressSimplifier(rawCollectionPlace.address);
-    this.category = rawCollectionPlace.primaryCategory; //카테고리 매핑 아직 안함
-    this.placeKeyword = rawCollectionPlace.placeKeyword;
-    this.isSaved = rawCollectionPlace.isSaved;
+    this.category = rawCollectionPlace.primary_category; //카테고리 매핑 아직 안함
+    this.placeKeyword = rawCollectionPlace.place_keyword;
+    this.isSaved = rawCollectionPlace.is_saved;
   }
 
   private addressSimplifier(address: string): string {
@@ -57,3 +53,11 @@ export class CollectionPlacesListResDto {
     );
   }
 }
+
+// "place_id": 3,
+//       "kakao_id": "1351221007",
+//       "place_name": "카와카츠 본점",
+//       "address": "서울 마포구 서교동 465-1",
+//       "category": "음식점",
+//       "place_keyword": "망원 카와카츠",
+//       "is_saved": false
