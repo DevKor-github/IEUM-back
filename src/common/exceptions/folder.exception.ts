@@ -1,8 +1,8 @@
 import { ErrorCodeEnum } from '../enums/error-code.enum';
 import { CustomException } from './custom.exception';
 
-export class NotValidUserException extends CustomException {
+export class ForbiddenFolderException extends CustomException {
   constructor(message?: string) {
-    super(ErrorCodeEnum.NotValidUser, message);
+    super(ErrorCodeEnum.ForbiddenFolder, message);
   }
 }
