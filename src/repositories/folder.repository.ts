@@ -80,8 +80,8 @@ export class FolderRepository extends Repository<Folder> {
     return folderListWithPlaceCnt;
   }
 
-  async deleteFolder(folderId: number, manager: EntityManager) {
-    await manager.delete(Folder, { id: folderId });
+  async deleteFolder(folderId: number) {
+    await this.delete({ id: folderId });
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {

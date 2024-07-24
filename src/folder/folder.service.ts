@@ -3,7 +3,6 @@ import { FolderPlaceRepository } from 'src/repositories/folder-place.repository'
 import { FolderRepository } from 'src/repositories/folder.repository';
 import { FolderListResDto } from './dtos/folder-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
-import { NotAuthorizedException } from 'src/common/exceptions/user.exception';
 import { DataSource } from 'typeorm';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 
@@ -42,25 +41,8 @@ export class FolderService {
     if (targetFolder.type == FolderType.Default) {
       throw new ForbiddenException('Default 폴더는 삭제할 수 없습니다.');
     }
-    //transaction 처리
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
-    try {
-      await this.folderPlaceRepository.deleteFolderPlaceFromFolderDeletion(
-        folderId,
-        queryRunner.manager,
-      );
-      await this.folderRepository.deleteFolder(folderId, queryRunner.manager);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    return await this.folderRepository.deleteFolder(folderId);
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {

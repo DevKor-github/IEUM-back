@@ -13,7 +13,9 @@ export class FolderPlace {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Folder, (folder) => folder.folderPlaces)
+  @ManyToOne(() => Folder, (folder) => folder.folderPlaces, {
+    onDelete: 'CASCADE',
+  })
   folder: Folder;
 
   @RelationId((folderPlace: FolderPlace) => folderPlace.folder)
