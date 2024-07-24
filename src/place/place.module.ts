@@ -4,7 +4,6 @@ import { PlaceService } from './place.service';
 import { PlaceRepository } from 'src/repositories/place.repository';
 import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
-import { UserRepository } from 'src/repositories/user.repository';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 
 @Module({
@@ -14,7 +13,6 @@ import { PlaceDetailRepository } from 'src/repositories/place-detail.repository'
     PlaceRepository,
     PlaceTagRepository,
     PlaceImageRepository,
-    UserRepository,
     PlaceDetailRepository,
   ],
   exports: [PlaceService],

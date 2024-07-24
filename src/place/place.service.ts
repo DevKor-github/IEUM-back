@@ -16,11 +16,7 @@ import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
 
 import { Transactional } from 'typeorm-transactional';
-import { UserRepository } from 'src/repositories/user.repository';
-import { MarkerResDto } from './dtos/marker-res.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceListReqDto } from './dtos/place-list-req.dto';
-import { PlaceListDataDto, PlaceListResDto } from './dtos/place-list-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 
@@ -30,7 +26,6 @@ export class PlaceService {
     private readonly placeRepository: PlaceRepository,
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
-    private readonly userRepository: UserRepository,
     private readonly placeDetailRepository: PlaceDetailRepository,
   ) {}
 
@@ -142,99 +137,12 @@ export class PlaceService {
     return await this.placeImageRepository.save(createPlaceImageReqDto);
   }
 
-  async getMarkers(
-    userId: number,
-    addressList: string[],
-    categoryList: string[],
-    folderId?: number,
-  ): Promise<MarkerResDto[]> {
-    //입력값이 문자열 1개라 배열이 아닐 때 수동으로 배열로 바꿔줘야 함.
-    addressList = typeof addressList === 'string' ? [addressList] : addressList;
-
-    categoryList =
-      typeof categoryList === 'string' ? [categoryList] : categoryList;
-
-    if (folderId !== undefined) {
-      return await this.userRepository.getMarkers(
-        userId,
-        addressList,
-        categoryList,
-        folderId,
-      );
-    }
-    return await this.userRepository.getMarkers(
-      userId,
-      addressList,
-      categoryList,
-    );
-  }
-
   async getPlaceInfoFromMarker(placeId: number): Promise<PlacePreviewResDto> {
     return new PlacePreviewResDto(
       await this.placeRepository.getPlaceInfoFromMarker(placeId),
     );
   }
 
-  async getPlaceList(
-    userId: number,
-    placeListReqDto: PlaceListReqDto,
-    folderId?: number,
-  ): Promise<PlaceListResDto> {
-    placeListReqDto.addressList =
-      typeof placeListReqDto.addressList === 'string'
-        ? [placeListReqDto.addressList]
-        : placeListReqDto.addressList;
-
-    placeListReqDto.categoryList =
-      typeof placeListReqDto.categoryList === 'string'
-        ? [placeListReqDto.categoryList]
-        : placeListReqDto.categoryList;
-
-    let placeCollection: PlaceListDataDto[];
-    if (folderId !== undefined) {
-      placeCollection = await this.userRepository.getPlaceList(
-        userId,
-        placeListReqDto,
-        folderId,
-      );
-    } else {
-      placeCollection = await this.userRepository.getPlaceList(
-        userId,
-        placeListReqDto,
-      );
-    }
-
-    //주소 형태 변환
-    placeCollection.map((place) => {
-      const shortAddress = place.address.split(' ');
-      place.address = shortAddress.slice(0, 2).join(' ');
-    });
-
-    let hasNext: boolean;
-    let nextCursorId: number = null;
-
-    if (!placeListReqDto.cursorId) {
-      console.log(placeCollection.length);
-      hasNext = placeCollection.length > placeListReqDto.take * 2;
-    } else {
-      hasNext = placeCollection.length > placeListReqDto.take;
-    }
-
-    if (!hasNext) {
-      nextCursorId = null;
-    } else {
-      nextCursorId = placeCollection[placeCollection.length - 2].id;
-      placeCollection.pop();
-    }
-
-    const placeListResCollection = new PlaceListResDto(placeCollection, {
-      take: placeListReqDto.take,
-      hasNext: hasNext,
-      cursorId: nextCursorId,
-    });
-
-    return placeListResCollection;
-  }
   async createPlaceByKeyword(keyword: string) {
     const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
     return kakaoPlace.documents[0];
