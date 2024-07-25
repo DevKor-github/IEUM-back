@@ -90,9 +90,11 @@ export class CollectionService {
 
   //getCOllectionDetail 호출 시에 Transaction으로 isViewed Update.
 
+  @Transactional()
   async getCollectionPlaces(userId: number, collectionId: number) {
     const collectionPlaces =
       await this.collectionPlaceRepository.getCollectionPlaces(collectionId);
+    await this.collectionRepository.updateIsViewed(userId, collectionId);
     return new CollectionPlacesListResDto(collectionPlaces, collectionId);
   }
 }

@@ -76,7 +76,7 @@ export class CollectionRepository extends Repository<Collection> {
         'collection.content AS content',
         'collection.isViewed AS is_viewed',
         'COUNT(collectionPlaces.id) as collection_places_count',
-        `SUM(CASE WHEN collectionPlaces.isSave = true THEN 1 ELSE 0 END) as saved_collection_places_count`,
+        `SUM(CASE WHEN collectionPlaces.isSaved = true THEN 1 ELSE 0 END) as saved_collection_places_count`,
       ])
       .where('collection.userId = :userId', { userId })
       .andWhere('collection.isViewed = true')
@@ -118,6 +118,15 @@ export class CollectionRepository extends Repository<Collection> {
       });
     }
     return await query.getRawMany();
+  }
+
+  async updateIsViewed(userId: number, collectionId: number): Promise<void> {
+    await this.createQueryBuilder('collection')
+      .update(Collection)
+      .set({ isViewed: true })
+      .where('collection.user_id = :userId', { userId })
+      .andWhere('collection.id = :collectionId', { collectionId })
+      .execute();
   }
 
   //deprecated
