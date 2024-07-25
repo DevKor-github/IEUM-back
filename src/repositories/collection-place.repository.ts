@@ -37,7 +37,7 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
         'place.id AS place_id',
         'place.name AS place_name',
         'place.address AS address',
-        'place.primaryCategory AS category',
+        'place.primaryCategory AS primary_category',
         'collectionPlace.placeKeyword AS place_keyword',
         'collectionPlace.isSaved AS is_saved',
       ])

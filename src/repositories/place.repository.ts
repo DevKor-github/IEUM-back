@@ -42,6 +42,7 @@ export class PlaceRepository extends Repository<Place> {
     if (existedPlace) {
       return existedPlace;
     }
+
     return await this.save({
       name: kakaoLocalSearchRes.place_name,
       url: kakaoLocalSearchRes.place_url,
@@ -49,7 +50,10 @@ export class PlaceRepository extends Repository<Place> {
       roadAddress: kakaoLocalSearchRes.road_address_name,
       kakaoId: kakaoLocalSearchRes.id,
       phone: kakaoLocalSearchRes.phone,
-      primaryCategory: kakaoLocalSearchRes.category_group_name,
+      primaryCategory:
+        kakaoLocalSearchRes.category_group_name.length !== 0
+          ? kakaoLocalSearchRes.category_group_name
+          : kakaoLocalSearchRes.category_name.split(' > ')[1],
       latitude: Number(kakaoLocalSearchRes.y),
       longitude: Number(kakaoLocalSearchRes.x),
     });

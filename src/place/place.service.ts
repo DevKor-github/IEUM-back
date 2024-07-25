@@ -71,13 +71,13 @@ export class PlaceService {
     });
     if (existedPlace) return existedPlace;
 
-    const createdPlace = await this.placeRepository.saveByKakaoPlace(
-      kakaoPlace.documents[0],
-    );
-
     const simplifiedAddress = kakaoPlace.documents[0].address_name.split(' ');
     const categoryTags = kakaoPlace.documents[0].category_name.split(' > ');
     const locationTags = simplifiedAddress.slice(0, 2);
+
+    const createdPlace = await this.placeRepository.saveByKakaoPlace(
+      kakaoPlace.documents[0],
+    );
 
     const createdCategoryTags = await this.tagService.createTags(
       categoryTags,

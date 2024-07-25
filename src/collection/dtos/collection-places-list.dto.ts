@@ -1,6 +1,8 @@
 import { RawCollectionPlace } from 'src/common/interfaces/raw-collection-place.interface';
 import { ApiProperty } from '@nestjs/swagger';
 import { listMetaDto } from './collections-list.dto';
+import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
+import { categoryMapper } from 'src/common/utils/category-mapper.util';
 
 export class CollectionPlaceDto {
   @ApiProperty()
@@ -28,16 +30,10 @@ export class CollectionPlaceDto {
     this.collectionId = collectionId;
     this.placeId = rawCollectionPlace.place_id;
     this.placeName = rawCollectionPlace.place_name;
-    this.simplifiedAddress = this.addressSimplifier(rawCollectionPlace.address);
-    this.category = rawCollectionPlace.primary_category; //카테고리 매핑 아직 안함
+    this.simplifiedAddress = addressSimplifier(rawCollectionPlace.address);
+    this.category = categoryMapper(rawCollectionPlace.primary_category); //카테고리 매핑 아직 안함
     this.placeKeyword = rawCollectionPlace.place_keyword;
     this.isSaved = rawCollectionPlace.is_saved;
-  }
-
-  private addressSimplifier(address: string): string {
-    const addressArray = address.split(' ');
-    const simplifiedAddressParts = addressArray.slice(0, 2);
-    return simplifiedAddressParts.join(' ');
   }
 }
 
