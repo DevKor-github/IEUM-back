@@ -40,15 +40,16 @@ export class CollectionService {
       createCollectionReq.content,
     );
 
-    createCollectionReq.placeKeywords.map(async (placeKeyword) => {
-      const place = await this.placeService.createPlaceByKeyword(placeKeyword);
-      console.log('place', place);
-      await this.collectionPlaceRepository.createCollectionPlace(
-        collection.id,
-        place.id,
-        placeKeyword,
-      );
-    });
+    await Promise.all(
+      createCollectionReq.placeKeywords.map(async (placeKeyword) => {
+        const place = await this.placeService.createPlaceByKakao(placeKeyword);
+        this.collectionPlaceRepository.createCollectionPlace(
+          collection.id,
+          place.id,
+          placeKeyword,
+        );
+      }),
+    );
 
     return collection;
   }

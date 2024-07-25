@@ -13,7 +13,7 @@ export class PlaceTag {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Place, (place) => place.placeTags)
+  @ManyToOne(() => Place, (place) => place.placeTags, { onDelete: 'CASCADE' })
   place: Place;
 
   @RelationId((placeTag: PlaceTag) => placeTag.place)

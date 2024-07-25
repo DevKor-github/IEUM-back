@@ -45,6 +45,9 @@ export class PlaceController {
   // }
 
   @ApiOperation({ summary: 'Search KaKao Place API by keyword' })
+  @ApiBody({
+    schema: { type: 'object', properties: { keyword: { type: 'string' } } },
+  })
   @Post('kakao')
   async getKakaoPlacesByKeyword(@Body() body: { keyword: string }) {
     return await this.placeService.searchKakaoPlaceByKeyword(body.keyword);
