@@ -38,8 +38,7 @@ export class PlaceService {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
     if (!place)
       throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
-    return place;
-    return new PlaceDetailResDto();
+    return new PlaceDetailResDto(place);
   }
 
   async searchKakaoPlaceByKeyword(keyword: string): Promise<any> {

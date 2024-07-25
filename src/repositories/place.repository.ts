@@ -11,12 +11,12 @@ export class PlaceRepository extends Repository<Place> {
     super(Place, dataSource.createEntityManager());
   }
 
-  async getPlaceDetailById(placeId: number): Promise<Place> {
+  async getPlaceDetailById(placeId: number): Promise<any> {
     return await this.createQueryBuilder('place')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
       .leftJoinAndSelect('placeTags.tag', 'tag')
       .leftJoinAndSelect('place.placeImages', 'placeImages')
-      .leftJoinAndSelect('place.placeDetail', 'placeDetail')
+      // .leftJoinAndSelect('place.placeDetail', 'placeDetail')
       .where('place.id = :placeId', { placeId })
       .getOne();
   }
