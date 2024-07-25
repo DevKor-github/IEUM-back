@@ -65,6 +65,12 @@ export class PlaceService {
   @Transactional()
   async createPlaceByKakao(keyword: string) {
     const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
+
+    const existedPlace = await this.placeRepository.findOne({
+      where: { kakaoId: kakaoPlace.documents[0].id },
+    });
+    if (existedPlace) return existedPlace;
+
     const createdPlace = await this.placeRepository.saveByKakaoPlace(
       kakaoPlace.documents[0],
     );
