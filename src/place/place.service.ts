@@ -48,18 +48,7 @@ export class PlaceService {
       params: { query: keyword, size: 3 },
     });
     const kakaoPlace = response.data;
-    const simplifiedAddress = kakaoPlace.documents[0].address_name.split(' ');
-    const simplifiedRoadAddress =
-      kakaoPlace.documents[0].road_address_name.split(' ');
-    const parsedCategories = kakaoPlace.documents[0].category_name.split(' > ');
-    const locationTags = simplifiedAddress.slice(0, 2);
-    // return {
-    //   simplifiedAddress,
-    //   simplifiedRoadAddress,
-    //   parsedCategories,
-    //   locationTags,
-    // };
-    return response.data;
+    return kakaoPlace;
   }
 
   @Transactional()
@@ -81,7 +70,7 @@ export class PlaceService {
 
     const createdCategoryTags = await this.tagService.createTags(
       categoryTags,
-      TagType.OtherCategory,
+      TagType.Category,
     ); // 문자열 Array와 타입을 받아서 태그를 생성하고 생성된 태그 Array를 반환
     const createdLocationTags = await this.tagService.createTags(
       locationTags,
@@ -93,14 +82,7 @@ export class PlaceService {
         await this.createPlaceTag({ placeId: createdPlace.id, tagId: tag.id });
       }
     }
-    // 문자열 Array와 타입을 받아서 태그를 생성하고 생성된 태그 Array를 반환
-    //생성된 태그들을 createPlaceTag를 통해 연결. 위의 created 두개를 Concat하고
-    //반환은 그냥 위치 정보만..
-    //트랜잭션으로 처리하기.
     return createdPlace;
-    // 카테고리 매핑
-    // 카테고리 파싱 및 태그 저장
-    // 위치 파싱 및 태그 저장
   }
 
   async searchGooglePlacesByText(text: string): Promise<any> {
@@ -132,7 +114,7 @@ export class PlaceService {
       },
     });
 
-    return placeDetail.data; //axios의 반환값에서 data만을 반환시켜야 한다.
+    return placeDetail.data;
   }
 
   // deprecated
