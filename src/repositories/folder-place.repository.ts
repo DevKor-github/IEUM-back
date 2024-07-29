@@ -36,7 +36,9 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
   }
 
   async deleteAllFolderPlaces(placeIds: number[]) {
-    placeIds.map(async (placeId) => await this.delete({ placeId: placeId }));
+    await Promise.all(
+      placeIds.map((placeId) => this.delete({ placeId: placeId })),
+    );
   }
 
   async getMarkers(
