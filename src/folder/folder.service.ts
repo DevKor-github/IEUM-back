@@ -115,12 +115,6 @@ export class FolderService {
     categoryList: string[],
     folderId?: number,
   ): Promise<MarkerResDto[]> {
-    //입력값이 문자열 1개라 배열이 아닐 때 수동으로 배열로 바꿔줘야 함.
-    addressList = typeof addressList === 'string' ? [addressList] : addressList;
-
-    categoryList =
-      typeof categoryList === 'string' ? [categoryList] : categoryList;
-
     return await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
@@ -134,16 +128,6 @@ export class FolderService {
     placesListReqDto: PlacesListReqDto,
     folderId?: number,
   ): Promise<PlacesListResDto> {
-    placesListReqDto.addressList =
-      typeof placesListReqDto.addressList === 'string'
-        ? [placesListReqDto.addressList]
-        : placesListReqDto.addressList;
-
-    placesListReqDto.categoryList =
-      typeof placesListReqDto.categoryList === 'string'
-        ? [placesListReqDto.categoryList]
-        : placesListReqDto.categoryList;
-
     const placeCollection = await this.folderPlaceRepository.getPlacesList(
       userId,
       placesListReqDto,

@@ -25,7 +25,10 @@ import { FolderResDto } from './dtos/folder.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
-import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import {
+  MarkersReqDto,
+  PlacesListReqDto,
+} from 'src/place/dtos/places-list-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
 
 @ApiTags('폴더 관련 api')
@@ -119,18 +122,12 @@ export class FolderController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place markers" })
   @ApiResponse({ type: MarkerResDto })
-  @ApiQuery({ name: 'addressList', required: false, type: [String] })
-  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/default/markers')
-  async getAllMarkers(
-    @Query('addressList') addressList: string[] = [],
-    @Query('categoryList') categoryList: string[] = [],
-    @Req() req,
-  ) {
+  async getAllMarkers(@Query() markersReqDto: MarkersReqDto, @Req() req) {
     return await this.folderService.getMarkers(
       req.user.id,
-      addressList,
-      categoryList,
+      markersReqDto.addressList,
+      markersReqDto.categoryList,
     );
   }
 
@@ -138,19 +135,16 @@ export class FolderController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place markers by folder" })
   @ApiResponse({ type: MarkerResDto })
-  @ApiQuery({ name: 'addressList', required: false, type: [String] })
-  @ApiQuery({ name: 'categoryList', required: false, type: [String] })
   @Get('/:folderId/markers')
   async getMarkersByFolder(
     @Param('folderId') folderId: number,
-    @Query('addressList') addressList: string[] = [],
-    @Query('categoryList') categoryList: string[] = [],
+    @Query() markersReqDto: MarkersReqDto,
     @Req() req,
   ) {
     return await this.folderService.getMarkers(
       req.user.id,
-      addressList,
-      categoryList,
+      markersReqDto.addressList,
+      markersReqDto.categoryList,
       folderId,
     );
   }
