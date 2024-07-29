@@ -137,9 +137,9 @@ export class PlaceService {
     return await this.placeImageRepository.save(createPlaceImageReqDto);
   }
 
-  async getPlaceInfoFromMarker(placeId: number): Promise<PlacePreviewResDto> {
+  async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
     return new PlacePreviewResDto(
-      await this.placeRepository.getPlaceInfoFromMarker(placeId),
+      await this.placeRepository.getPlacePreviewInfoById(placeId),
     );
   }
 

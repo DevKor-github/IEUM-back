@@ -35,7 +35,7 @@ export class PlaceRepository extends Repository<Place> {
     });
   }
 
-  async getPlaceInfoFromMarker(placeId: number): Promise<Place> {
+  async getPlacePreviewInfoById(placeId: number): Promise<Place> {
     const placePreviewInfo = await this.createQueryBuilder('place')
       .leftJoinAndSelect('place.placeTags', 'placeTag')
       .leftJoinAndSelect('placeTag.tag', 'tag')

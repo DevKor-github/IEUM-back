@@ -3,8 +3,8 @@ import { plainToInstance } from 'class-transformer';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { FolderPlace } from 'src/entities/folder-place.entity';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
-import { PlaceListReqDto } from 'src/place/dtos/place-list-req.dto';
-import { PlaceListDataDto } from 'src/place/dtos/place-list-res.dto';
+import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import { PlacesListDataDto } from 'src/place/dtos/places-list-res.dto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -28,14 +28,14 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     return saveNewFolderPlace;
   }
 
-  async deleteFolderPlace(folderId: number, placeIds: number[]) {
+  async deleteFolderPlaces(folderId: number, placeIds: number[]) {
     placeIds.map(
       async (placeId) =>
         await this.delete({ folderId: folderId, placeId: placeId }),
     );
   }
 
-  async deleteAllFolderPlace(placeIds: number[]) {
+  async deleteAllFolderPlaces(placeIds: number[]) {
     placeIds.map(async (placeId) => await this.delete({ placeId: placeId }));
   }
 
@@ -95,11 +95,11 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     return plainToInstance(MarkerResDto, result);
   }
 
-  async getPlaceList(
+  async getPlacesList(
     userId: number,
-    placeListReqDto: PlaceListReqDto,
+    placesListReqDto: PlacesListReqDto,
     folderId?: number,
-  ): Promise<PlaceListDataDto[]> {
+  ): Promise<PlacesListDataDto[]> {
     const placeCollection = this.createQueryBuilder('folderPlace')
       .leftJoin('folderPlace.folder', 'folder')
       .leftJoinAndSelect('folderPlace.place', 'place')
@@ -121,67 +121,67 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     }
 
     //첫 호출이라 cursor 값이 주어지지 않아 undefined라면
-    if (!placeListReqDto.cursorId) {
+    if (!placesListReqDto.cursorId) {
       if (
-        placeListReqDto.addressList &&
-        placeListReqDto.addressList.length != 0
+        placesListReqDto.addressList &&
+        placesListReqDto.addressList.length != 0
       ) {
-        const addressConditions = placeListReqDto.addressList.map(
+        const addressConditions = placesListReqDto.addressList.map(
           (address, index) => `place.address LIKE :address${index}`,
         );
         placeCollection.andWhere(
           `(${addressConditions.join(' OR ')})`,
-          placeListReqDto.addressList.reduce((params, address, index) => {
+          placesListReqDto.addressList.reduce((params, address, index) => {
             params[`address${index}`] = `${address}%`;
             return params;
           }, {}),
         );
       }
       if (
-        placeListReqDto.categoryList &&
-        placeListReqDto.categoryList.length != 0
+        placesListReqDto.categoryList &&
+        placesListReqDto.categoryList.length != 0
       ) {
         placeCollection
           .andWhere('place.primary_category IN (:...categories)')
-          .setParameter('categories', placeListReqDto.categoryList);
+          .setParameter('categories', placesListReqDto.categoryList);
       }
       placeCollection
         .orderBy('place.id', 'DESC')
-        .limit(placeListReqDto.take * 2 + 1);
+        .limit(placesListReqDto.take * 2 + 1);
     }
 
     //두 번째 호출부터라 cursor값이 있다면
     else {
       placeCollection.andWhere('place.id < :cursorId', {
-        cursorId: placeListReqDto.cursorId,
+        cursorId: placesListReqDto.cursorId,
       });
 
       if (
-        placeListReqDto.addressList &&
-        placeListReqDto.addressList.length != 0
+        placesListReqDto.addressList &&
+        placesListReqDto.addressList.length != 0
       ) {
-        const addressConditions = placeListReqDto.addressList.map(
+        const addressConditions = placesListReqDto.addressList.map(
           (address, index) => `place.address LIKE :address${index}`,
         );
         placeCollection.andWhere(
           `(${addressConditions.join(' OR ')})`,
-          placeListReqDto.addressList.reduce((params, address, index) => {
+          placesListReqDto.addressList.reduce((params, address, index) => {
             params[`address${index}`] = `${address}%`;
             return params;
           }, {}),
         );
       }
       if (
-        placeListReqDto.categoryList &&
-        placeListReqDto.categoryList.length != 0
+        placesListReqDto.categoryList &&
+        placesListReqDto.categoryList.length != 0
       ) {
         placeCollection
           .andWhere('place.primary_category IN (:...categories)')
-          .setParameter('categories', placeListReqDto.categoryList);
+          .setParameter('categories', placesListReqDto.categoryList);
       }
       placeCollection
         .orderBy('place.id', 'DESC')
-        .limit(placeListReqDto.take + 1);
+        .limit(placesListReqDto.take + 1);
     }
 
     const result = await placeCollection.getRawMany();

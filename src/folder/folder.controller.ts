@@ -21,12 +21,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { FolderListResDto } from './dtos/folder-list.res.dto';
+import { FolderResDto } from './dtos/folder.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
-import { PlaceListResDto } from 'src/place/dtos/place-list-res.dto';
-import { PlaceListReqDto } from 'src/place/dtos/place-list-req.dto';
+import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
 
 @ApiTags('폴더 관련 api')
 @Controller('folders')
@@ -37,11 +37,11 @@ export class FolderController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's folder list." })
   @ApiResponse({
-    type: FolderListResDto,
+    type: FolderResDto,
   })
   @Get('/')
-  async getFolderList(@Req() req): Promise<FolderListResDto[]> {
-    return await this.folderService.getFolderList(req.user.id);
+  async getFoldersList(@Req() req): Promise<FolderResDto[]> {
+    return await this.folderService.getFoldersList(req.user.id);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -102,13 +102,13 @@ export class FolderController {
     status: 200,
     description: '폴더에서 장소 삭제 성공.',
   })
-  @Delete('/:folderId/folder-place')
-  async deleteFolderPlace(
+  @Delete('/:folderId/folder-places')
+  async deleteFolderPlaces(
     @Param('folderId') folderId: number,
     @Body() deletePlacesReqDto: DeletePlacesReqDto,
     @Req() req,
   ) {
-    return await this.folderService.deleteFolderPlace(
+    return await this.folderService.deleteFolderPlaces(
       req.user.id,
       folderId,
       deletePlacesReqDto.placeIds,
@@ -157,29 +157,29 @@ export class FolderController {
 
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's place list" })
-  @ApiResponse({ type: PlaceListResDto })
+  @ApiOperation({ summary: "Get User's places-list" })
+  @ApiResponse({ type: PlacesListReqDto })
   @Get('/default/list')
-  async getAllPlaceList(
+  async getAllPlacesList(
     @Req() req,
-    @Query() placeListReqDto: PlaceListReqDto,
-  ): Promise<PlaceListResDto> {
-    return this.folderService.getPlaceList(req.user.id, placeListReqDto);
+    @Query() placesListReqDto: PlacesListReqDto,
+  ): Promise<PlacesListResDto> {
+    return this.folderService.getPlacesList(req.user.id, placesListReqDto);
   }
 
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's place list by folder" })
-  @ApiResponse({ type: PlaceListResDto })
+  @ApiOperation({ summary: "Get User's places-list by folder" })
+  @ApiResponse({ type: PlacesListReqDto })
   @Get('/:folderId/list')
   async getPlaceListByFolder(
     @Req() req,
     @Param('folderId') folderId: number,
-    @Query() placeListReqDto: PlaceListReqDto,
-  ): Promise<PlaceListResDto> {
-    return this.folderService.getPlaceList(
+    @Query() placesListReqDto: PlacesListReqDto,
+  ): Promise<PlacesListResDto> {
+    return this.folderService.getPlacesList(
       req.user.id,
-      placeListReqDto,
+      placesListReqDto,
       folderId,
     );
   }

@@ -54,10 +54,10 @@ export class PlaceController {
   @ApiOperation({ summary: "Get place's preview info from marker" })
   @ApiResponse({ type: PlacePreviewResDto })
   @Get('/:id/preview')
-  async getPlaceInfoFromMarker(
+  async getPlacePreviewInfoById(
     @Param('id') id: number,
   ): Promise<PlacePreviewResDto> {
-    return await this.placeService.getPlaceInfoFromMarker(id);
+    return await this.placeService.getPlacePreviewInfoById(id);
   }
 
   // @ApiOperation({ summary: 'Create placeImage' })

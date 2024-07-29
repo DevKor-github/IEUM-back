@@ -3,6 +3,5 @@ import { Type } from 'class-transformer';
 
 export class DeletePlacesReqDto {
   @ApiProperty({ type: [Number] })
-  @Type(() => Array)
   placeIds: number[];
 }

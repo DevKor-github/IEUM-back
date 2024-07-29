@@ -66,18 +66,18 @@ export class FolderRepository extends Repository<Folder> {
     return instaFolder;
   }
 
-  async getFolderList(userId: number): Promise<RawFolderInfo[]> {
-    const folderList = await this.find({
+  async getFoldersList(userId: number): Promise<RawFolderInfo[]> {
+    const foldersList = await this.find({
       where: { userId: userId },
       relations: ['folderPlaces'],
     });
 
-    const folderListWithPlaceCnt = folderList.map((folder) => ({
+    const foldersListWithPlaceCnt = foldersList.map((folder) => ({
       id: folder.id,
       name: folder.name,
       placeCnt: folder.folderPlaces.length,
     }));
-    return folderListWithPlaceCnt;
+    return foldersListWithPlaceCnt;
   }
 
   async deleteFolder(folderId: number) {

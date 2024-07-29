@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
 import { FolderRepository } from 'src/repositories/folder.repository';
-import { FolderListResDto } from './dtos/folder-list.res.dto';
+import { FolderResDto } from './dtos/folder.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
-import { PlaceListReqDto } from 'src/place/dtos/place-list-req.dto';
-import {
-  PlaceListDataDto,
-  PlaceListResDto,
-} from 'src/place/dtos/place-list-res.dto';
 import { ForbiddenFolderException } from 'src/common/exceptions/folder.exception';
+import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
 
 @Injectable()
 export class FolderService {
@@ -19,12 +16,12 @@ export class FolderService {
     private readonly folderPlaceRepository: FolderPlaceRepository,
   ) {}
 
-  async getFolderList(userId: number): Promise<FolderListResDto[]> {
-    const rawFolderList = await this.folderRepository.getFolderList(userId);
-    const folderList = rawFolderList.map(
-      (folder) => new FolderListResDto(folder),
+  async getFoldersList(userId: number): Promise<FolderResDto[]> {
+    const rawFoldersList = await this.folderRepository.getFoldersList(userId);
+    const foldersList = rawFoldersList.map(
+      (folder) => new FolderResDto(folder),
     );
-    return folderList;
+    return foldersList;
   }
 
   async createNewFolder(
@@ -62,7 +59,7 @@ export class FolderService {
     );
   }
 
-  async deleteFolderPlace(
+  async deleteFolderPlaces(
     userId: number,
     folderId: number,
     placeIds: number[],
@@ -77,10 +74,10 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
-      return await this.folderPlaceRepository.deleteAllFolderPlace(placeIds);
+      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
     }
 
-    return await this.folderPlaceRepository.deleteFolderPlace(
+    return await this.folderPlaceRepository.deleteFolderPlaces(
       folderId,
       placeIds,
     );
@@ -124,49 +121,34 @@ export class FolderService {
     categoryList =
       typeof categoryList === 'string' ? [categoryList] : categoryList;
 
-    if (folderId !== undefined) {
-      return await this.folderPlaceRepository.getMarkers(
-        userId,
-        addressList,
-        categoryList,
-        folderId,
-      );
-    }
     return await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
       categoryList,
+      folderId,
     );
   }
 
-  async getPlaceList(
+  async getPlacesList(
     userId: number,
-    placeListReqDto: PlaceListReqDto,
+    placesListReqDto: PlacesListReqDto,
     folderId?: number,
-  ): Promise<PlaceListResDto> {
-    placeListReqDto.addressList =
-      typeof placeListReqDto.addressList === 'string'
-        ? [placeListReqDto.addressList]
-        : placeListReqDto.addressList;
+  ): Promise<PlacesListResDto> {
+    placesListReqDto.addressList =
+      typeof placesListReqDto.addressList === 'string'
+        ? [placesListReqDto.addressList]
+        : placesListReqDto.addressList;
 
-    placeListReqDto.categoryList =
-      typeof placeListReqDto.categoryList === 'string'
-        ? [placeListReqDto.categoryList]
-        : placeListReqDto.categoryList;
+    placesListReqDto.categoryList =
+      typeof placesListReqDto.categoryList === 'string'
+        ? [placesListReqDto.categoryList]
+        : placesListReqDto.categoryList;
 
-    let placeCollection: PlaceListDataDto[];
-    if (folderId !== undefined) {
-      placeCollection = await this.folderPlaceRepository.getPlaceList(
-        userId,
-        placeListReqDto,
-        folderId,
-      );
-    } else {
-      placeCollection = await this.folderPlaceRepository.getPlaceList(
-        userId,
-        placeListReqDto,
-      );
-    }
+    const placeCollection = await this.folderPlaceRepository.getPlacesList(
+      userId,
+      placesListReqDto,
+      folderId,
+    );
 
     //주소 형태 변환
     placeCollection.map((place) => {
@@ -177,11 +159,11 @@ export class FolderService {
     let hasNext: boolean;
     let nextCursorId: number = null;
 
-    if (!placeListReqDto.cursorId) {
+    if (!placesListReqDto.cursorId) {
       console.log(placeCollection.length);
-      hasNext = placeCollection.length > placeListReqDto.take * 2;
+      hasNext = placeCollection.length > placesListReqDto.take * 2;
     } else {
-      hasNext = placeCollection.length > placeListReqDto.take;
+      hasNext = placeCollection.length > placesListReqDto.take;
     }
 
     if (!hasNext) {
@@ -191,8 +173,8 @@ export class FolderService {
       placeCollection.pop();
     }
 
-    const placeListResCollection = new PlaceListResDto(placeCollection, {
-      take: placeListReqDto.take,
+    const placeListResCollection = new PlacesListResDto(placeCollection, {
+      take: placesListReqDto.take,
       hasNext: hasNext,
       cursorId: nextCursorId,
     });

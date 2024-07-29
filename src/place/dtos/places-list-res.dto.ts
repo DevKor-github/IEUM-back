@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsInt, IsString } from 'class-validator';
 
-export class PlaceListMetaDto {
+export class PlacesListMetaDto {
   @ApiProperty()
   @IsInt()
   take: number;
@@ -15,7 +15,7 @@ export class PlaceListMetaDto {
   cursorId: number | null;
 }
 
-export class PlaceListDataDto {
+export class PlacesListDataDto {
   @ApiProperty()
   @IsInt()
   id: number;
@@ -37,15 +37,15 @@ export class PlaceListDataDto {
   // url: string;
 }
 
-export class PlaceListResDto {
-  @ApiProperty({ type: [PlaceListDataDto] })
+export class PlacesListResDto {
+  @ApiProperty({ type: [PlacesListDataDto] })
   @IsArray()
-  data: PlaceListDataDto[];
+  data: PlacesListDataDto[];
 
   @ApiProperty()
-  meta: PlaceListMetaDto;
+  meta: PlacesListMetaDto;
 
-  constructor(data: PlaceListDataDto[], meta: PlaceListMetaDto) {
+  constructor(data: PlacesListDataDto[], meta: PlacesListMetaDto) {
     this.data = data;
     this.meta = meta;
   }
