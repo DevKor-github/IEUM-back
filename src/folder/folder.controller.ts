@@ -33,16 +33,15 @@ import {
   PlacesListReqDto,
 } from 'src/place/dtos/places-list-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
+import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 
 @ApiTags('폴더 관련 api')
 @Controller('folders')
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's folders list." })
-  @ApiResponse({
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's folders list.",
     type: FoldersListResDto,
   })
   @Get('/')
@@ -51,12 +50,10 @@ export class FolderController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: 'Create a new folder.' })
-  @ApiResponse({
+  @CustomAuthSwaggerDecorator({
+    summary: 'Create a new folder.',
     status: 201,
-    description: '폴더 생성 성공.',
+    description: '폴더 생성 성공',
   })
   @Post('/')
   async createNewFolder(
@@ -69,10 +66,8 @@ export class FolderController {
     );
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: 'Delete an existing folder.' })
-  @ApiResponse({
+  @CustomAuthSwaggerDecorator({
+    summary: 'Delete an existing folder.',
     status: 200,
     description: '폴더 삭제 성공.',
   })
@@ -81,10 +76,8 @@ export class FolderController {
     return await this.folderService.deleteFolder(req.user.id, folderId);
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: 'Change the name of the folder.' })
-  @ApiResponse({
+  @CustomAuthSwaggerDecorator({
+    summary: 'Change the name of the folder.',
     status: 200,
     description: '폴더 이름 변경 성공.',
   })
@@ -101,10 +94,8 @@ export class FolderController {
     );
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: 'Delete places from folder.' })
-  @ApiResponse({
+  @CustomAuthSwaggerDecorator({
+    summary: 'Delete places from folder.',
     status: 200,
     description: '폴더에서 장소 삭제 성공.',
   })
@@ -121,10 +112,10 @@ export class FolderController {
     );
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's place markers" })
-  @ApiResponse({ type: MarkersListResDto })
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's place-markers list",
+    type: MarkersListResDto,
+  })
   @Get('/default/markers')
   async getAllMarkers(
     @Query() markersReqDto: MarkersReqDto,
@@ -137,10 +128,10 @@ export class FolderController {
     );
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's place markers by folder" })
-  @ApiResponse({ type: MarkersListResDto })
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's place-markers list by folder",
+    type: MarkersListResDto,
+  })
   @Get('/:folderId/markers')
   async getMarkersByFolder(
     @Param('folderId') folderId: number,
@@ -155,10 +146,10 @@ export class FolderController {
     );
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's places-list" })
-  @ApiResponse({ type: PlacesListReqDto })
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's places-list",
+    type: PlacesListReqDto,
+  })
   @Get('/default/list')
   async getAllPlacesList(
     @Req() req,
@@ -167,10 +158,10 @@ export class FolderController {
     return this.folderService.getPlacesList(req.user.id, placesListReqDto);
   }
 
-  @UseGuards(AuthGuard('access'))
-  @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's places-list by folder" })
-  @ApiResponse({ type: PlacesListReqDto })
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's places-list by folder",
+    type: PlacesListReqDto,
+  })
   @Get('/:folderId/list')
   async getPlaceListByFolder(
     @Req() req,
