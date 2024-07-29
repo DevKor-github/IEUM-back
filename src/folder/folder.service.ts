@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
 import { FolderRepository } from 'src/repositories/folder.repository';
-import { FolderResDto } from './dtos/folder.res.dto';
+import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
-import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
+import {
+  MarkerResDto,
+  MarkersListResDto,
+} from 'src/place/dtos/markers-list-res.dto';
 import { ForbiddenFolderException } from 'src/common/exceptions/folder.exception';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
@@ -16,11 +19,9 @@ export class FolderService {
     private readonly folderPlaceRepository: FolderPlaceRepository,
   ) {}
 
-  async getFoldersList(userId: number): Promise<FolderResDto[]> {
+  async getFoldersList(userId: number): Promise<FoldersListResDto> {
     const rawFoldersList = await this.folderRepository.getFoldersList(userId);
-    const foldersList = rawFoldersList.map(
-      (folder) => new FolderResDto(folder),
-    );
+    const foldersList = new FoldersListResDto(rawFoldersList);
     return foldersList;
   }
 
@@ -114,12 +115,14 @@ export class FolderService {
     addressList: string[],
     categoryList: string[],
     folderId?: number,
-  ): Promise<MarkerResDto[]> {
-    return await this.folderPlaceRepository.getMarkers(
-      userId,
-      addressList,
-      categoryList,
-      folderId,
+  ): Promise<MarkersListResDto> {
+    return new MarkersListResDto(
+      await this.folderPlaceRepository.getMarkers(
+        userId,
+        addressList,
+        categoryList,
+        folderId,
+      ),
     );
   }
 

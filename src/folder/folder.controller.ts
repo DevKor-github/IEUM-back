@@ -21,10 +21,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { FolderResDto } from './dtos/folder.res.dto';
+import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
-import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
+import {
+  MarkerResDto,
+  MarkersListResDto,
+} from 'src/place/dtos/markers-list-res.dto';
 import {
   MarkersReqDto,
   PlacesListReqDto,
@@ -38,12 +41,12 @@ export class FolderController {
 
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's folder list." })
+  @ApiOperation({ summary: "Get User's folders list." })
   @ApiResponse({
-    type: FolderResDto,
+    type: FoldersListResDto,
   })
   @Get('/')
-  async getFoldersList(@Req() req): Promise<FolderResDto[]> {
+  async getFoldersList(@Req() req): Promise<FoldersListResDto> {
     return await this.folderService.getFoldersList(req.user.id);
   }
 
@@ -121,9 +124,12 @@ export class FolderController {
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place markers" })
-  @ApiResponse({ type: MarkerResDto })
+  @ApiResponse({ type: MarkersListResDto })
   @Get('/default/markers')
-  async getAllMarkers(@Query() markersReqDto: MarkersReqDto, @Req() req) {
+  async getAllMarkers(
+    @Query() markersReqDto: MarkersReqDto,
+    @Req() req,
+  ): Promise<MarkersListResDto> {
     return await this.folderService.getMarkers(
       req.user.id,
       markersReqDto.addressList,
@@ -134,13 +140,13 @@ export class FolderController {
   @UseGuards(AuthGuard('access'))
   @ApiBearerAuth('Access Token')
   @ApiOperation({ summary: "Get User's place markers by folder" })
-  @ApiResponse({ type: MarkerResDto })
+  @ApiResponse({ type: MarkersListResDto })
   @Get('/:folderId/markers')
   async getMarkersByFolder(
     @Param('folderId') folderId: number,
     @Query() markersReqDto: MarkersReqDto,
     @Req() req,
-  ) {
+  ): Promise<MarkersListResDto> {
     return await this.folderService.getMarkers(
       req.user.id,
       markersReqDto.addressList,

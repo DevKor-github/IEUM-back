@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { FolderType } from 'src/common/enums/folder-type.enum';
+import { RawMarker } from 'src/common/interfaces/raw-marker.interface';
 import { FolderPlace } from 'src/entities/folder-place.entity';
-import { MarkerResDto } from 'src/place/dtos/marker-res.dto';
+import { MarkerResDto } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
 import { PlacesListDataDto } from 'src/place/dtos/places-list-res.dto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
@@ -46,16 +47,16 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     addressList: string[],
     categoryList: string[],
     folderId?: number,
-  ): Promise<MarkerResDto[]> {
+  ): Promise<RawMarker[]> {
     const markerCollection = this.createQueryBuilder('folderPlace')
       .leftJoin('folderPlace.folder', 'folder')
       .leftJoinAndSelect('folderPlace.place', 'place')
       .select([
-        'place.id',
-        'place.name',
-        'place.latitude',
-        'place.longitude',
-        'place.primary_category',
+        'place.id as id',
+        'place.name as name',
+        'place.latitude as latitude',
+        'place.longitude as longitude',
+        'place.primary_category as category',
       ])
       .where('folder.user_id = :userId', { userId });
 
@@ -93,8 +94,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
       .orderBy('place.id', 'DESC')
       .getRawMany();
 
-    //plainToInstance함수는 javascript 객체를 특정 class의 instance로 변환시켜준다.
-    return plainToInstance(MarkerResDto, result);
+    return result;
   }
 
   async getPlacesList(
@@ -157,8 +157,6 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
       .limit(placesListReqDto.take + 1);
 
     const result = await placeCollection.getRawMany();
-    //place_image join 추가해서 image url 반환 해야함.
-
     return result;
   }
 }
