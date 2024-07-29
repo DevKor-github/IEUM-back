@@ -140,15 +140,9 @@ export class FolderService {
       place.address = shortAddress.slice(0, 2).join(' ');
     });
 
-    let hasNext: boolean;
     let nextCursorId: number = null;
 
-    if (!placesListReqDto.cursorId) {
-      console.log(placeCollection.length);
-      hasNext = placeCollection.length > placesListReqDto.take * 2;
-    } else {
-      hasNext = placeCollection.length > placesListReqDto.take;
-    }
+    const hasNext = placeCollection.length > placesListReqDto.take;
 
     if (!hasNext) {
       nextCursorId = null;

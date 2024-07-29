@@ -5,11 +5,13 @@ import { IsArray, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 export class PlacesListReqDto {
   @ApiProperty()
   @IsNotEmpty()
+  @Type(() => Number)
   @IsInt()
   take: number;
 
   @ApiPropertyOptional({ nullable: true })
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   cursorId?: number;
 

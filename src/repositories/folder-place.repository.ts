@@ -122,69 +122,39 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
       });
     }
 
-    //첫 호출이라 cursor 값이 주어지지 않아 undefined라면
-    if (!placesListReqDto.cursorId) {
-      if (
-        placesListReqDto.addressList &&
-        placesListReqDto.addressList.length != 0
-      ) {
-        const addressConditions = placesListReqDto.addressList.map(
-          (address, index) => `place.address LIKE :address${index}`,
-        );
-        placeCollection.andWhere(
-          `(${addressConditions.join(' OR ')})`,
-          placesListReqDto.addressList.reduce((params, address, index) => {
-            params[`address${index}`] = `${address}%`;
-            return params;
-          }, {}),
-        );
-      }
-      if (
-        placesListReqDto.categoryList &&
-        placesListReqDto.categoryList.length != 0
-      ) {
-        placeCollection
-          .andWhere('place.primary_category IN (:...categories)')
-          .setParameter('categories', placesListReqDto.categoryList);
-      }
-      placeCollection
-        .orderBy('place.id', 'DESC')
-        .limit(placesListReqDto.take * 2 + 1);
-    }
-
     //두 번째 호출부터라 cursor값이 있다면
-    else {
+    if (placesListReqDto.cursorId) {
       placeCollection.andWhere('place.id < :cursorId', {
         cursorId: placesListReqDto.cursorId,
       });
-
-      if (
-        placesListReqDto.addressList &&
-        placesListReqDto.addressList.length != 0
-      ) {
-        const addressConditions = placesListReqDto.addressList.map(
-          (address, index) => `place.address LIKE :address${index}`,
-        );
-        placeCollection.andWhere(
-          `(${addressConditions.join(' OR ')})`,
-          placesListReqDto.addressList.reduce((params, address, index) => {
-            params[`address${index}`] = `${address}%`;
-            return params;
-          }, {}),
-        );
-      }
-      if (
-        placesListReqDto.categoryList &&
-        placesListReqDto.categoryList.length != 0
-      ) {
-        placeCollection
-          .andWhere('place.primary_category IN (:...categories)')
-          .setParameter('categories', placesListReqDto.categoryList);
-      }
-      placeCollection
-        .orderBy('place.id', 'DESC')
-        .limit(placesListReqDto.take + 1);
     }
+
+    if (
+      placesListReqDto.addressList &&
+      placesListReqDto.addressList.length != 0
+    ) {
+      const addressConditions = placesListReqDto.addressList.map(
+        (address, index) => `place.address LIKE :address${index}`,
+      );
+      placeCollection.andWhere(
+        `(${addressConditions.join(' OR ')})`,
+        placesListReqDto.addressList.reduce((params, address, index) => {
+          params[`address${index}`] = `${address}%`;
+          return params;
+        }, {}),
+      );
+    }
+    if (
+      placesListReqDto.categoryList &&
+      placesListReqDto.categoryList.length != 0
+    ) {
+      placeCollection
+        .andWhere('place.primary_category IN (:...categories)')
+        .setParameter('categories', placesListReqDto.categoryList);
+    }
+    placeCollection
+      .orderBy('place.id', 'DESC')
+      .limit(placesListReqDto.take + 1);
 
     const result = await placeCollection.getRawMany();
     //place_image join 추가해서 image url 반환 해야함.
