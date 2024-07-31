@@ -146,7 +146,7 @@ export class FolderController {
     summary: "Get User's places-list",
     type: PlacesListReqDto,
   })
-  @Get('/default/list')
+  @Get('/default/places-list')
   async getAllPlacesList(
     @Req() req,
     @Query() placesListReqDto: PlacesListReqDto,
@@ -158,7 +158,7 @@ export class FolderController {
     summary: "Get User's places-list by folder",
     type: PlacesListReqDto,
   })
-  @Get('/:folderId/list')
+  @Get('/:folderId/places-list')
   async getPlaceListByFolder(
     @Req() req,
     @Param('folderId') folderId: number,
