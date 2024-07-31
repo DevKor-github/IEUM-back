@@ -10,6 +10,7 @@ import { User } from './user.entity';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { FolderPlace } from './folder-place.entity';
 import { FolderTag } from './folder-tag.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Folder {
@@ -22,6 +23,7 @@ export class Folder {
   @ManyToOne(() => User, (user) => user.folders)
   user: User;
 
+  @Exclude()
   @RelationId((Folder: Folder) => Folder.user)
   @Column()
   userId: number;

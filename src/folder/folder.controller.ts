@@ -1,15 +1,177 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FolderService } from './folder.service';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
+import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
+import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
+import {
+  MarkerResDto,
+  MarkersListResDto,
+} from 'src/place/dtos/markers-list-res.dto';
+import {
+  MarkersReqDto,
+  PlacesListReqDto,
+} from 'src/place/dtos/places-list-req.dto';
+import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
+import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 
 @ApiTags('폴더 관련 api')
-@Controller('folder')
+@Controller('folders')
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's folders list.",
+    type: FoldersListResDto,
+  })
   @Get('/')
-  async getFoldersList() {}
+  async getFoldersList(@Req() req): Promise<FoldersListResDto> {
+    return await this.folderService.getFoldersList(req.user.id);
+  }
 
-  @Get('/:folderId')
-  async getFolderByFolderId() {}
+  @UseInterceptors(ClassSerializerInterceptor)
+  @CustomAuthSwaggerDecorator({
+    summary: 'Create a new folder.',
+    status: 201,
+    description: '폴더 생성 성공',
+  })
+  @Post('/')
+  async createNewFolder(
+    @Body() createFolderReqDto: CreateFolderReqDto,
+    @Req() req,
+  ) {
+    return await this.folderService.createNewFolder(
+      req.user.id,
+      createFolderReqDto,
+    );
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: 'Delete an existing folder.',
+    status: 200,
+    description: '폴더 삭제 성공.',
+  })
+  @Delete('/:id')
+  async deleteFolder(@Param('id') folderId: number, @Req() req) {
+    return await this.folderService.deleteFolder(req.user.id, folderId);
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: 'Change the name of the folder.',
+    status: 200,
+    description: '폴더 이름 변경 성공.',
+  })
+  @Put('/:id')
+  async changeFolderName(
+    @Param('id') folderId: number,
+    @Body() newFolderNameDto: CreateFolderReqDto,
+    @Req() req,
+  ) {
+    return await this.folderService.changeFolderName(
+      req.user.id,
+      folderId,
+      newFolderNameDto.name,
+    );
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: 'Delete places from folder.',
+    status: 200,
+    description: '폴더에서 장소 삭제 성공.',
+  })
+  @Delete('/:folderId/folder-places')
+  async deleteFolderPlaces(
+    @Param('folderId') folderId: number,
+    @Body() deletePlacesReqDto: DeletePlacesReqDto,
+    @Req() req,
+  ) {
+    return await this.folderService.deleteFolderPlaces(
+      req.user.id,
+      folderId,
+      deletePlacesReqDto.placeIds,
+    );
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's place-markers list",
+    type: MarkersListResDto,
+  })
+  @Get('/default/markers')
+  async getAllMarkers(
+    @Query() markersReqDto: MarkersReqDto,
+    @Req() req,
+  ): Promise<MarkersListResDto> {
+    return await this.folderService.getMarkers(
+      req.user.id,
+      markersReqDto.addressList,
+      markersReqDto.categoryList,
+    );
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's place-markers list by folder",
+    type: MarkersListResDto,
+  })
+  @Get('/:folderId/markers')
+  async getMarkersByFolder(
+    @Param('folderId') folderId: number,
+    @Query() markersReqDto: MarkersReqDto,
+    @Req() req,
+  ): Promise<MarkersListResDto> {
+    return await this.folderService.getMarkers(
+      req.user.id,
+      markersReqDto.addressList,
+      markersReqDto.categoryList,
+      folderId,
+    );
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's places-list",
+    type: PlacesListReqDto,
+  })
+  @Get('/default/list')
+  async getAllPlacesList(
+    @Req() req,
+    @Query() placesListReqDto: PlacesListReqDto,
+  ): Promise<PlacesListResDto> {
+    return this.folderService.getPlacesList(req.user.id, placesListReqDto);
+  }
+
+  @CustomAuthSwaggerDecorator({
+    summary: "Get User's places-list by folder",
+    type: PlacesListReqDto,
+  })
+  @Get('/:folderId/list')
+  async getPlaceListByFolder(
+    @Req() req,
+    @Param('folderId') folderId: number,
+    @Query() placesListReqDto: PlacesListReqDto,
+  ): Promise<PlacesListResDto> {
+    return this.folderService.getPlacesList(
+      req.user.id,
+      placesListReqDto,
+      folderId,
+    );
+  }
 }

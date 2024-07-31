@@ -6,11 +6,9 @@ import {
   SEARCH_BY_KEYWORD_KAKAO_URL,
   SEARCH_BY_TEXT_URL,
 } from 'src/common/constants/google-apis.constant';
-import { Place } from 'src/entities/place.entity';
 import { PlaceRepository } from 'src/repositories/place.repository';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import {
-  CreatePlaceCategoryReqDto,
   CreatePlaceImageReqDto,
   CreatePlaceTagReqDto,
 } from './dtos/create-place-relation-req.dto';
@@ -18,6 +16,7 @@ import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
 
 import { Transactional } from 'typeorm-transactional';
+import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 
@@ -136,6 +135,12 @@ export class PlaceService {
     });
     if (existedRelation) return existedRelation;
     return await this.placeImageRepository.save(createPlaceImageReqDto);
+  }
+
+  async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
+    return new PlacePreviewResDto(
+      await this.placeRepository.getPlacePreviewInfoById(placeId),
+    );
   }
 
   async createPlaceByKeyword(keyword: string) {
