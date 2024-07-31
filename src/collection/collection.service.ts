@@ -5,9 +5,9 @@ import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { PlaceService } from 'src/place/place.service';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { UserService } from 'src/user/user.service';
-import { CollectionPlacesListResDto } from './dtos/collection-places-list.dto';
+import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
-import { CollectionsListResDto } from './dtos/collections-list.dto';
+import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { ConflictedCollectionException } from 'src/common/exceptions/collection.exception';
 
 @Injectable()
@@ -55,14 +55,8 @@ export class CollectionService {
   }
 
   async sendForCrawling(body: CrawlingCollectionReqDto) {
-    //그냥 앱단에서 바로 크롤링 서버로 보내면 되지 않을까?
-    //
     return;
   }
-
-  //기 조회 여부에 따라 다르게 메서드 호출
-  //isViewed가 false인 collection은 colleciton-place를 counting만 하고,
-  //isViewed가 true인 collection은 collection-place와 JOIN하여 isSaved를 따로 카운팅.
 
   async getUnviewedCollections(
     userId: number,
@@ -81,14 +75,6 @@ export class CollectionService {
       await this.collectionRepository.getViewedCollections(userId, cursorId);
     return new CollectionsListResDto(viewedCollections);
   }
-
-  // async getCollectionDetail(collectionId: number) {
-  //   const collectionDetail =
-  //     await this.collectionRepository.getCollectionDetail(collectionId);
-  //   return collectionDetail;
-  // }
-
-  //getCOllectionDetail 호출 시에 Transaction으로 isViewed Update.
 
   @Transactional()
   async getCollectionPlaces(userId: number, collectionId: number) {

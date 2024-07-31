@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-type RawDataForCursorPagination = { id: number };
+export type RawDataForCursorPagination = { id: number };
 
 export class CursorPaginationMeta<T extends RawDataForCursorPagination> {
   @ApiProperty()

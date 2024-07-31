@@ -1,6 +1,7 @@
 import { CollectionType } from '../enums/collection-type.enum';
+import { RawDataForCursorPagination } from '../utils/cursor-pagination.util';
 
-export interface RawCollection {
+export interface RawCollection extends RawDataForCursorPagination {
   id: number;
   link: string;
   collection_type: CollectionType;
