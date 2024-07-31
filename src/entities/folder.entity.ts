@@ -29,7 +29,7 @@ export class Folder {
   userId: number;
 
   @Column({ type: 'enum', enum: FolderType, default: FolderType.Custom })
-  type: number;
+  type: FolderType;
 
   @OneToMany(() => FolderPlace, (folderPlace) => folderPlace.folder)
   folderPlaces: FolderPlace[];
