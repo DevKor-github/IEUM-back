@@ -3,7 +3,6 @@ import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { NotValidUserException } from 'src/common/exceptions/user.exception';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -27,9 +26,9 @@ export class UserRepository extends Repository<User> {
     await this.softDelete({ id: id });
   }
 
-  async renewRefreshToken(oAuthId: string, refreshToken: string) {
+  async renewRefreshToken(oAuthId: string, jti: string) {
     const user = await this.findUserByAppleOAuthId(oAuthId);
-    user.refreshToken = refreshToken;
+    user.jti = jti;
     return await this.save(user);
   }
 

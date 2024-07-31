@@ -1,13 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PlaceService } from './place.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
-import {
-  CreatePlaceCategoryReqDto,
-  CreatePlaceImageReqDto,
-  CreatePlaceTagReqDto,
-} from './dtos/create-place-relation-req.dto';
-import { CreatePlaceReqDto } from './dtos/create-place-req.dto';
+import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 
 @ApiTags('장소 API')
 @Controller('places')
@@ -58,6 +53,15 @@ export class PlaceController {
   // async createPlaceTag(@Body() createPlaceTagReqDto: CreatePlaceTagReqDto) {
   //   return await this.placeService.createPlaceTag(createPlaceTagReqDto);
   // }
+
+  @ApiOperation({ summary: "Get place's preview info from marker" })
+  @ApiResponse({ type: PlacePreviewResDto })
+  @Get('/:id/preview')
+  async getPlacePreviewInfoById(
+    @Param('id') id: number,
+  ): Promise<PlacePreviewResDto> {
+    return await this.placeService.getPlacePreviewInfoById(id);
+  }
 
   // @ApiOperation({ summary: 'Create placeImage' })
   // @Post('place-images')

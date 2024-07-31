@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -24,6 +25,7 @@ export class Place {
   url: string;
 
   @Column({ nullable: true })
+  @Index()
   address: string;
 
   @Column({ nullable: true })
@@ -36,6 +38,7 @@ export class Place {
   phone: string;
 
   @Column({ nullable: true })
+  @Index()
   primaryCategory: string; //주요 카테고리
 
   @Column('decimal', { nullable: true })

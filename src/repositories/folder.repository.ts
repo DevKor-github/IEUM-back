@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { FolderType } from 'src/common/enums/folder-type.enum';
+import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 import { Folder } from 'src/entities/folder.entity';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
 export class FolderRepository extends Repository<Folder> {
@@ -11,6 +12,9 @@ export class FolderRepository extends Repository<Folder> {
     super(Folder, dataSource.createEntityManager());
   }
 
+  async findFolderByFolderId(folderId: number) {
+    return await this.findOne({ where: { id: folderId } });
+  }
   async createFolder(
     userId: number,
     folderName: string,
@@ -66,5 +70,27 @@ export class FolderRepository extends Repository<Folder> {
       );
     }
     return instaFolder;
+  }
+
+  async getFoldersList(userId: number): Promise<RawFolderInfo[]> {
+    const foldersList = await this.find({
+      where: { userId: userId },
+      relations: ['folderPlaces'],
+    });
+
+    const foldersListWithPlaceCnt = foldersList.map((folder) => ({
+      id: folder.id,
+      name: folder.name,
+      placeCnt: folder.folderPlaces.length,
+    }));
+    return foldersListWithPlaceCnt;
+  }
+
+  async deleteFolder(folderId: number) {
+    await this.delete({ id: folderId });
+  }
+
+  async changeFolderName(userId: number, folderId: number, folderName: string) {
+    await this.update({ id: folderId, userId: userId }, { name: folderName });
   }
 }

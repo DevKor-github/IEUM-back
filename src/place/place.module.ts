@@ -4,7 +4,6 @@ import { PlaceService } from './place.service';
 import { PlaceRepository } from 'src/repositories/place.repository';
 import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
-
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 import { TagModule } from 'src/tag/tag.module';
 
