@@ -4,11 +4,6 @@ import {
   COLLECTIONS_TAKE,
   INSTA_COLLECTIONS_TAKE,
 } from 'src/common/constants/pagination.constant';
-import {
-  RawInstaCollection,
-  RawInstaCollectionDetail,
-  RawInstaPlaceMarker,
-} from 'src/common/interfaces/raw-insta-collection.interface';
 import { Collection } from 'src/entities/collection.entity';
 import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
 import { RawCollection } from 'src/common/interfaces/raw-collection.interface';

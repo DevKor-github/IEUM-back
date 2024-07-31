@@ -59,8 +59,8 @@ export class PlaceService {
     if (existedPlace) return existedPlace;
 
     const simplifiedAddress = kakaoPlace.documents[0].address_name.split(' ');
-    const categoryTags = kakaoPlace.documents[0].category_name.split(' > ');
     const locationTags = simplifiedAddress.slice(0, 2);
+    const categoryTags = kakaoPlace.documents[0].category_name.split(' > ');
 
     const createdPlace = await this.placeRepository.saveByKakaoPlace(
       kakaoPlace.documents[0],
@@ -74,7 +74,6 @@ export class PlaceService {
       locationTags,
       TagType.Location,
     );
-    console.log(createdCategoryTags.concat(createdLocationTags));
     for (const tag of createdCategoryTags.concat(createdLocationTags)) {
       {
         await this.createPlaceTag({ placeId: createdPlace.id, tagId: tag.id });

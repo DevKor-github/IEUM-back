@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { KakaoLocalSearchRes } from 'src/common/interfaces/places.interface';
 import { Place } from 'src/entities/place.entity';
 import { DataSource, Repository } from 'typeorm';
 import { TagType } from 'src/common/enums/tag-type.enum';
 import { Tag } from 'src/entities/tag.entity';
+import { KakaoLocalSearchRes } from 'src/common/interfaces/kakao-local-search-res.interface';
 
 @Injectable()
 export class PlaceRepository extends Repository<Place> {

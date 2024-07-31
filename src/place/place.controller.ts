@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PlaceService } from './place.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 

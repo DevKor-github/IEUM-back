@@ -17,5 +17,5 @@ export function createNormalList<T, U>(
 
   const data = rawData.map(transformFn);
 
-  return { data, meta };
+  return { meta, data };
 }
