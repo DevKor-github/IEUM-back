@@ -178,14 +178,14 @@ export class FolderService {
     categoryList: string[],
     folderId?: number,
   ): Promise<MarkersListResDto> {
-    return new MarkersListResDto(
-      await this.folderPlaceRepository.getMarkers(
-        userId,
-        addressList,
-        categoryList,
-        folderId,
-      ),
+    const rawMarkersList = await this.folderPlaceRepository.getMarkers(
+      userId,
+      addressList,
+      categoryList,
+      folderId,
     );
+
+    return new MarkersListResDto(rawMarkersList);
   }
 
   async getPlacesList(
@@ -198,7 +198,6 @@ export class FolderService {
       placesListReqDto,
       folderId,
     );
-
     return new PlacesListResDto(rawPlacesInfoList);
   }
 }

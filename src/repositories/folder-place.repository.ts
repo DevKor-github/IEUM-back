@@ -48,7 +48,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     categoryList: string[],
     folderId?: number,
   ): Promise<RawMarker[]> {
-    const markerCollection = this.createQueryBuilder('folderPlace')
+    const query = this.createQueryBuilder('folderPlace')
       .leftJoin('folderPlace.folder', 'folder')
       .leftJoinAndSelect('folderPlace.place', 'place')
       .select([
@@ -62,9 +62,9 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
 
     //folder별로 보여줘야 한다면
     if (folderId !== undefined) {
-      markerCollection.andWhere('folder.id = :folderId', { folderId });
+      query.andWhere('folder.id = :folderId', { folderId });
     } else {
-      markerCollection.andWhere('folder.type = :folderType', {
+      query.andWhere('folder.type = :folderType', {
         folderType: FolderType.Default,
       });
     }
@@ -74,7 +74,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
       const addressConditions = addressList.map(
         (address, index) => `place.address LIKE :address${index}`,
       );
-      markerCollection.andWhere(
+      query.andWhere(
         `(${addressConditions.join(' OR ')})`,
         addressList.reduce((params, address, index) => {
           params[`address${index}`] = `${address}%`;
@@ -85,16 +85,14 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
 
     //category로 필터링 되어야 한다면
     if (categoryList && categoryList.length != 0) {
-      markerCollection
+      query
         .andWhere('place.primary_category IN (:...categories)')
         .setParameter('categories', categoryList);
     }
 
-    const result = await markerCollection
-      .orderBy('place.id', 'DESC')
-      .getRawMany();
+    const rawMarkersList = await query.orderBy('place.id', 'DESC').getRawMany();
 
-    return result;
+    return rawMarkersList;
   }
 
   async getPlacesList(

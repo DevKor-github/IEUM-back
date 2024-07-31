@@ -26,10 +26,10 @@ import {
   MarkersReqDto,
   PlacesListReqDto,
 } from 'src/place/dtos/places-list-req.dto';
-import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
+import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 
 @ApiTags('폴더 API')
 @Controller('folders')

@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
 import { RawMarker } from 'src/common/interfaces/raw-marker.interface';
+import { categoryMapper } from 'src/common/utils/category-mapper.util';
+import {
+  createNormalList,
+  NormalListMeta,
+} from 'src/common/utils/normal-list.util';
 
 export class MarkerResDto {
   @ApiProperty()
@@ -10,7 +15,7 @@ export class MarkerResDto {
   name: string;
 
   @ApiProperty()
-  category: string;
+  mappedCategory: string;
 
   @ApiProperty()
   latitude: number; //위도
@@ -21,20 +26,26 @@ export class MarkerResDto {
   constructor(rawMarker: RawMarker) {
     this.id = rawMarker.id;
     this.name = rawMarker.name;
-    this.category = rawMarker.category;
+    this.mappedCategory = categoryMapper(rawMarker.category);
     this.latitude = rawMarker.latitude;
     this.longitude = rawMarker.longitude;
   }
 }
 
 export class MarkersListResDto {
+  @ApiProperty()
+  meta: NormalListMeta<RawMarker>;
+
   @ApiProperty({ type: [MarkerResDto] })
   @IsArray()
-  markersList: MarkerResDto[];
+  data: MarkerResDto[];
 
   constructor(rawMarkersList: RawMarker[]) {
-    this.markersList = rawMarkersList.map(
+    const { meta, data } = createNormalList(
+      rawMarkersList,
       (rawMarker) => new MarkerResDto(rawMarker),
     );
+    this.meta = meta;
+    this.data = data;
   }
 }
