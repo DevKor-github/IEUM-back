@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-type HasId = { id: number };
+type RawDataForCursorPagination = { id: number };
 
-export class cursorPaginationMeta<T extends HasId> {
+export class CursorPaginationMeta<T extends RawDataForCursorPagination> {
   @ApiProperty()
   length?: number;
 
@@ -23,12 +23,12 @@ export class cursorPaginationMeta<T extends HasId> {
   }
 }
 
-export function paginateData<T extends HasId, U>(
+export function cursorPaginateData<T extends RawDataForCursorPagination, U>(
   rawData: T[],
   take: number,
   transformFn: (item: T) => U,
-): { data: U[]; meta: cursorPaginationMeta<T> } {
-  const meta = new cursorPaginationMeta(take, rawData);
+): { data: U[]; meta: CursorPaginationMeta<T> } {
+  const meta = new CursorPaginationMeta(take, rawData);
   const hasNextPage = meta.hasNextPage;
 
   const data = hasNextPage
