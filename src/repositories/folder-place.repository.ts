@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { RawMarker } from 'src/common/interfaces/raw-marker.interface';
+import { RawPlaceInfo } from 'src/common/interfaces/raw-place-info.interface';
 import { FolderPlace } from 'src/entities/folder-place.entity';
 import { MarkerResDto } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
-import { PlacesListDataDto } from 'src/place/dtos/places-list-res.dto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -101,8 +101,8 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     userId: number,
     placesListReqDto: PlacesListReqDto,
     folderId?: number,
-  ): Promise<PlacesListDataDto[]> {
-    const placeCollection = this.createQueryBuilder('folderPlace')
+  ): Promise<RawPlaceInfo[]> {
+    const query = this.createQueryBuilder('folderPlace')
       .leftJoin('folderPlace.folder', 'folder')
       .leftJoinAndSelect('folderPlace.place', 'place')
       .select([
@@ -115,16 +115,16 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
 
     //folder별로 보여줘야 한다면
     if (folderId !== undefined) {
-      placeCollection.andWhere('folder.id = :folderId', { folderId });
+      query.andWhere('folder.id = :folderId', { folderId });
     } else {
-      placeCollection.andWhere('folder.type = :folderType', {
+      query.andWhere('folder.type = :folderType', {
         folderType: FolderType.Default,
       });
     }
 
     //두 번째 호출부터라 cursor값이 있다면
     if (placesListReqDto.cursorId) {
-      placeCollection.andWhere('place.id < :cursorId', {
+      query.andWhere('place.id < :cursorId', {
         cursorId: placesListReqDto.cursorId,
       });
     }
@@ -136,7 +136,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
       const addressConditions = placesListReqDto.addressList.map(
         (address, index) => `place.address LIKE :address${index}`,
       );
-      placeCollection.andWhere(
+      query.andWhere(
         `(${addressConditions.join(' OR ')})`,
         placesListReqDto.addressList.reduce((params, address, index) => {
           params[`address${index}`] = `${address}%`;
@@ -148,15 +148,13 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
       placesListReqDto.categoryList &&
       placesListReqDto.categoryList.length != 0
     ) {
-      placeCollection
+      query
         .andWhere('place.primary_category IN (:...categories)')
         .setParameter('categories', placesListReqDto.categoryList);
     }
-    placeCollection
-      .orderBy('place.id', 'DESC')
-      .limit(placesListReqDto.take + 1);
+    query.orderBy('place.id', 'DESC').limit(placesListReqDto.take + 1);
 
-    const result = await placeCollection.getRawMany();
-    return result;
+    const rawPlacesInfoList = await query.getRawMany();
+    return rawPlacesInfoList;
   }
 }

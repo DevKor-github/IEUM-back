@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
 import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
+import {
+  createNormalList,
+  NormalListMeta,
+} from 'src/common/utils/normal-list.util';
 
 export class FolderResDto {
   @ApiProperty()
@@ -20,13 +24,19 @@ export class FolderResDto {
 }
 
 export class FoldersListResDto {
+  @ApiProperty()
+  meta: NormalListMeta<RawFolderInfo>;
+
   @ApiProperty({ type: [FolderResDto] })
   @IsArray()
-  foldersList: FolderResDto[];
+  data: FolderResDto[];
 
   constructor(rawFoldersInfoList: RawFolderInfo[]) {
-    this.foldersList = rawFoldersInfoList.map(
+    const { meta, data } = createNormalList(
+      rawFoldersInfoList,
       (rawFolderInfo) => new FolderResDto(rawFolderInfo),
     );
+    this.meta = meta;
+    this.data = data;
   }
 }

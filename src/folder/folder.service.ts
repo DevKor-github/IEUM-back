@@ -9,7 +9,6 @@ import {
   MarkersListResDto,
 } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
-import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 import {
   ForbiddenFolderException,
@@ -17,6 +16,7 @@ import {
 } from 'src/common/exceptions/folder.exception';
 import { Transactional } from 'typeorm-transactional';
 import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
+import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 
 @Injectable()
 export class FolderService {
@@ -193,35 +193,12 @@ export class FolderService {
     placesListReqDto: PlacesListReqDto,
     folderId?: number,
   ): Promise<PlacesListResDto> {
-    const placeCollection = await this.folderPlaceRepository.getPlacesList(
+    const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
       placesListReqDto,
       folderId,
     );
 
-    //주소 형태 변환
-    placeCollection.map((place) => {
-      const shortAddress = place.address.split(' ');
-      place.address = shortAddress.slice(0, 2).join(' ');
-    });
-
-    let nextCursorId: number = null;
-
-    const hasNext = placeCollection.length > placesListReqDto.take;
-
-    if (!hasNext) {
-      nextCursorId = null;
-    } else {
-      nextCursorId = placeCollection[placeCollection.length - 2].id;
-      placeCollection.pop();
-    }
-
-    const placeListResCollection = new PlacesListResDto(placeCollection, {
-      take: placesListReqDto.take,
-      hasNext: hasNext,
-      cursorId: nextCursorId,
-    });
-
-    return placeListResCollection;
+    return new PlacesListResDto(rawPlacesInfoList);
   }
 }
