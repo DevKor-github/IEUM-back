@@ -42,10 +42,10 @@ export class PlacesListResDto {
   @IsArray()
   data: PlaceInfoDto[];
 
-  constructor(rawData: RawPlaceInfo[]) {
+  constructor(rawData: RawPlaceInfo[], take: number) {
     const { meta, data } = cursorPaginateData(
       rawData,
-      PLACES_TAKE,
+      take,
       (item) => new PlaceInfoDto(item),
     );
 

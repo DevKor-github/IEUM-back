@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateFolderPlacesReqDto {
-  @ApiProperty()
+  @ApiProperty({ type: [Number] })
   placeIds: number[];
 }

@@ -188,6 +188,6 @@ export class FolderService {
       placesListReqDto,
       folderId,
     );
-    return new PlacesListResDto(rawPlacesInfoList);
+    return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
 }
