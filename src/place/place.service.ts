@@ -115,44 +115,6 @@ export class PlaceService {
     return placeDetail.data;
   }
 
-  // deprecated
-
-  // @Transactional()
-  // async createPlaceByGooglePlaceId(
-  //   googlePlaceId: string,
-  // ): Promise<PlaceDetailResDto> {
-  //   const existedPlace = await this.placeRepository.findOne({
-  //     where: { kakaoId: googlePlaceId },
-  //   });
-  //   if (existedPlace) return this.getPlaceDetailById(existedPlace.id);
-  //   console.log(existedPlace);
-  //   const placeDetail = await this.getPlaceDetailByGooglePlaceId(googlePlaceId);
-  //   console.log(placeDetail);
-  //   const createdPlace =
-  //     await this.placeRepository.saveByGooglePlaceDetail(placeDetail);
-  //   console.log(createdPlace);
-  //   // if (placeDetail.regularOpeningHours) {
-  //   //   OpenHours = await this.openHoursRepository.save({
-  //   //     opening: placeDetail.regularOpeningHours.weekdayDescriptions,
-  //   //     place: createdPlace,
-  //   //   });
-  //   // }
-
-  //   // if (placeDetail.addressComponents) {
-  //   //   await this.addressComponentsRepository.saveAddressComponents(
-  //   //     placeDetail.addressComponents,
-  //   //     createdPlace,
-  //   //   );
-  //   // }
-
-  //   const createdPlaceDetail =
-  //     await this.placeDetailRepository.saveByPlaceDetailByGoogle(
-  //       createdPlace.id,
-  //       placeDetail,
-  //     );
-  //   return PlaceDetailResDto.fromCreation(createdPlace);
-  // }
-
   async createPlaceTag(createPlaceTagReqDto: CreatePlaceTagReqDto) {
     const existedRelation = await this.placeTagRepository.findOne({
       where: {

@@ -21,7 +21,7 @@ export class CollectionPlaceDto {
   simplifiedAddress: string; //제주 서귀포시
 
   @ApiProperty()
-  category: string; //Restaurant, Cafe.. etc.
+  mappedCategory: string; //Restaurant, Cafe.. etc.
 
   @ApiProperty()
   placeKeyword: string;
@@ -34,7 +34,7 @@ export class CollectionPlaceDto {
     this.placeId = rawCollectionPlace.place_id;
     this.placeName = rawCollectionPlace.place_name;
     this.simplifiedAddress = addressSimplifier(rawCollectionPlace.address);
-    this.category = categoryMapper(rawCollectionPlace.primary_category);
+    this.mappedCategory = categoryMapper(rawCollectionPlace.primary_category);
     this.placeKeyword = rawCollectionPlace.place_keyword;
     this.isSaved = rawCollectionPlace.is_saved;
   }

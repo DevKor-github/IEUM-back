@@ -1,5 +1,8 @@
+import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { ApiProperty } from '@nestjs/swagger';
+import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/entities/place.entity';
+import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 
 export class PlacePreviewResDto {
   @ApiProperty()
@@ -9,16 +12,19 @@ export class PlacePreviewResDto {
   name: string;
 
   @ApiProperty()
-  category: string;
+  mappedCategory: string;
 
   @ApiProperty()
-  address: string;
+  simplifiedAddress: string;
 
   @ApiProperty()
-  hashTags: string[] = [];
+  locationTags: string[];
 
   @ApiProperty()
-  url: string;
+  categoryTags: string[];
+
+  @ApiProperty()
+  imageUrl: string;
 
   @ApiProperty()
   latitude: number;
@@ -27,20 +33,15 @@ export class PlacePreviewResDto {
   longitude: number;
 
   constructor(place: Place) {
+    const { locationTags, categoryTags } = tagParser(place.placeTags);
     this.id = place.id;
     this.name = place.name;
-    this.category = place.primaryCategory;
-    const depth2Address = place.address.split(' ');
-    this.address = depth2Address.slice(0, 2).join(' ');
-    this.url = place.placeImages.length != 0 ? place.placeImages[0].url : null;
-    this.hashTags = place.placeTags
-      .filter(
-        (placeTag) =>
-          placeTag.tag.type == 1 ||
-          placeTag.tag.type == 2 ||
-          placeTag.tag.type == 3,
-      )
-      .map((placeTag) => placeTag.tag.tagName);
+    this.mappedCategory = categoryMapper(place.primaryCategory);
+    this.simplifiedAddress = addressSimplifier(place.address);
+    this.imageUrl =
+      place.placeImages.length != 0 ? place.placeImages[0].url : null;
+    this.locationTags = locationTags;
+    this.categoryTags = categoryTags;
     this.latitude = place.latitude;
     this.longitude = place.longitude;
   }

@@ -162,16 +162,6 @@ export class FolderService {
     );
   }
 
-  // deprecated
-  // async appendPlaceToInstaFolder(connectedUserId: number, placeId: number) {
-  //   const instaFolder = await this.getInstaFolder(connectedUserId);
-  //   const createdFolderPlace = await this.createFolderPlace(
-  //     instaFolder.id,
-  //     placeId,
-  //   );
-  //   return createdFolderPlace;
-  // }
-
   async getMarkers(
     userId: number,
     addressList: string[],

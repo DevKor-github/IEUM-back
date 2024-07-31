@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
+import { categoryMapper } from 'src/common/utils/category-mapper.util';
+import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/entities/place.entity';
 
 export class PlaceDetailResDto {
@@ -28,7 +30,7 @@ export class PlaceDetailResDto {
   phone: string;
 
   @ApiProperty()
-  primaryCategory: string; //주요 카테고리
+  mappedCateogory: string; //이음 카테고리
 
   @ApiProperty()
   latitude: number; //위도
@@ -46,17 +48,7 @@ export class PlaceDetailResDto {
   imageUrls: string[]; //이미지 URL
 
   constructor(placeDetail: Place) {
-    const { locationTags, categoryTags } = placeDetail.placeTags.reduce(
-      (acc, placeTag) => {
-        if (placeTag.tag.type === 0) {
-          acc.locationTags.push(placeTag.tag.tagName);
-        } else if (placeTag.tag.type === 2) {
-          acc.categoryTags.push(placeTag.tag.tagName);
-        }
-        return acc;
-      },
-      { locationTags: [], categoryTags: [] },
-    );
+    const { locationTags, categoryTags } = tagParser(placeDetail.placeTags);
 
     this.id = placeDetail.id;
     this.name = placeDetail.name;
@@ -66,7 +58,7 @@ export class PlaceDetailResDto {
     this.roadAddress = placeDetail.roadAddress;
     this.kakaoId = placeDetail.kakaoId;
     this.phone = placeDetail.phone;
-    this.primaryCategory = placeDetail.primaryCategory;
+    this.mappedCateogory = categoryMapper(placeDetail.primaryCategory);
     this.latitude = placeDetail.latitude;
     this.longitude = placeDetail.longitude;
     this.locationTags = locationTags;
