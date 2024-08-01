@@ -13,13 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
@@ -32,10 +26,12 @@ import {
   MarkersReqDto,
   PlacesListReqDto,
 } from 'src/place/dtos/places-list-req.dto';
-import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
+import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 
-@ApiTags('폴더 관련 api')
+@ApiTags('폴더 API')
 @Controller('folders')
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
@@ -46,7 +42,7 @@ export class FolderController {
   })
   @Get('/')
   async getFoldersList(@Req() req): Promise<FoldersListResDto> {
-    return await this.folderService.getFoldersList(req.user.id);
+    return await this.folderService.getFoldersList(1);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -60,10 +56,7 @@ export class FolderController {
     @Body() createFolderReqDto: CreateFolderReqDto,
     @Req() req,
   ) {
-    return await this.folderService.createNewFolder(
-      req.user.id,
-      createFolderReqDto,
-    );
+    return await this.folderService.createNewFolder(1, createFolderReqDto);
   }
 
   @CustomAuthSwaggerDecorator({
@@ -73,7 +66,7 @@ export class FolderController {
   })
   @Delete('/:id')
   async deleteFolder(@Param('id') folderId: number, @Req() req) {
-    return await this.folderService.deleteFolder(req.user.id, folderId);
+    return await this.folderService.deleteFolder(1, folderId);
   }
 
   @CustomAuthSwaggerDecorator({
@@ -88,7 +81,7 @@ export class FolderController {
     @Req() req,
   ) {
     return await this.folderService.changeFolderName(
-      req.user.id,
+      1,
       folderId,
       newFolderNameDto.name,
     );
@@ -106,7 +99,7 @@ export class FolderController {
     @Req() req,
   ) {
     return await this.folderService.deleteFolderPlaces(
-      req.user.id,
+      1,
       folderId,
       deletePlacesReqDto.placeIds,
     );
@@ -122,7 +115,7 @@ export class FolderController {
     @Req() req,
   ): Promise<MarkersListResDto> {
     return await this.folderService.getMarkers(
-      req.user.id,
+      1,
       markersReqDto.addressList,
       markersReqDto.categoryList,
     );
@@ -139,7 +132,7 @@ export class FolderController {
     @Req() req,
   ): Promise<MarkersListResDto> {
     return await this.folderService.getMarkers(
-      req.user.id,
+      1,
       markersReqDto.addressList,
       markersReqDto.categoryList,
       folderId,
@@ -150,27 +143,47 @@ export class FolderController {
     summary: "Get User's places-list",
     type: PlacesListReqDto,
   })
-  @Get('/default/list')
+  @Get('/default/places-list')
   async getAllPlacesList(
     @Req() req,
     @Query() placesListReqDto: PlacesListReqDto,
   ): Promise<PlacesListResDto> {
-    return this.folderService.getPlacesList(req.user.id, placesListReqDto);
+    return this.folderService.getPlacesList(1, placesListReqDto);
   }
 
   @CustomAuthSwaggerDecorator({
     summary: "Get User's places-list by folder",
     type: PlacesListReqDto,
   })
-  @Get('/:folderId/list')
+  @Get('/:folderId/places-list')
   async getPlaceListByFolder(
     @Req() req,
     @Param('folderId') folderId: number,
     @Query() placesListReqDto: PlacesListReqDto,
   ): Promise<PlacesListResDto> {
-    return this.folderService.getPlacesList(
-      req.user.id,
-      placesListReqDto,
+    return this.folderService.getPlacesList(1, placesListReqDto, folderId);
+  }
+
+  @ApiOperation({ summary: '디폴트 폴더에 장소 추가' })
+  @Post('/default/folder-places')
+  async createFolderPlacesIntoDefaultFolder(
+    @Body() createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+  ) {
+    return await this.folderService.createFolderPlacesIntoDefaultFolder(
+      1,
+      createFolderPlacesReqDto,
+    );
+  }
+
+  @ApiOperation({ summary: '특정 폴더에 장소 추가' })
+  @Post('/:folderId/folder-places')
+  async createFolderPlacesIntoFolder(
+    @Param('folderId') folderId: number,
+    @Body() createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+  ) {
+    return await this.folderService.createFolderPlacesIntoSpecificFolder(
+      1,
+      createFolderPlacesReqDto,
       folderId,
     );
   }

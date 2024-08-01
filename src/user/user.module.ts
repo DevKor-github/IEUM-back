@@ -24,5 +24,6 @@ import { FolderPlaceRepository } from 'src/repositories/folder-place.repository'
     JwtAccessStrategy,
     JwtAccessNicknameCheckStrategy,
   ],
+  exports: [UserService],
 })
 export class UserModule {}

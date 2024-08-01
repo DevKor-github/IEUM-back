@@ -1,49 +1,69 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
+import { categoryMapper } from 'src/common/utils/category-mapper.util';
+import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/entities/place.entity';
 
 export class PlaceDetailResDto {
+  @ApiProperty()
   id: number;
 
+  @ApiProperty()
   name: string;
 
-  address: string;
+  @ApiProperty()
+  url: string;
 
+  @ApiProperty()
+  simplifiedAddress: string; //간략 주소
+
+  @ApiProperty()
+  address: string; //지번 주소
+
+  @ApiProperty()
+  roadAddress: string;
+
+  @ApiProperty()
+  kakaoId: string; //식별을 위한 kakaoId
+
+  @ApiProperty()
+  phone: string;
+
+  @ApiProperty()
+  mappedCateogory: string; //이음 카테고리
+
+  @ApiProperty()
   latitude: number; //위도
 
+  @ApiProperty()
   longitude: number; //경도
 
-  googlePlaceId: string; //googlePlaceId 필요
+  @ApiProperty()
+  locationTags: string[]; //위치 태그
 
-  openHours: string[];
+  @ApiProperty()
+  categoryTags: string[]; //카테고리 태그
 
-  phoneNumber: string;
+  @ApiProperty()
+  imageUrls: string[]; //이미지 URL
 
-  primaryCategory: string;
+  constructor(placeDetail: Place) {
+    const { locationTags, categoryTags } = tagParser(placeDetail.placeTags);
 
-  categories: string[];
-
-  tags: string[];
-
-  images: string[];
-
-  //인스타 게스트 컬렉션
-  //장소 스케쥴
-  //큐레이션-장소
-  constructor(place: Place) {
-    this.id = place.id;
-    this.name = place.name;
-    this.address = place.address;
-    this.latitude = place.latitude;
-    this.longitude = place.longitude;
-    //this.phoneNumber = place.phoneNumber;
-    this.primaryCategory = place.primaryCategory;
-    this.tags = place.placeTags?.map((placeTag) => placeTag.tag.tagName);
+    this.id = placeDetail.id;
+    this.name = placeDetail.name;
+    this.url = placeDetail.url;
+    this.simplifiedAddress = addressSimplifier(placeDetail.address);
+    this.address = placeDetail.address;
+    this.roadAddress = placeDetail.roadAddress;
+    this.kakaoId = placeDetail.kakaoId;
+    this.phone = placeDetail.phone;
+    this.mappedCateogory = categoryMapper(placeDetail.primaryCategory);
+    this.latitude = placeDetail.latitude;
+    this.longitude = placeDetail.longitude;
+    this.locationTags = locationTags;
+    this.categoryTags = categoryTags;
+    this.imageUrls = placeDetail.placeImages.map((image) => image.url);
   }
-
-  static fromCreation(place: Place): PlaceDetailResDto {
-    const placeDetailResDto = new PlaceDetailResDto(place);
-    placeDetailResDto.tags = [];
-    placeDetailResDto.images = [];
-
-    return placeDetailResDto;
-  }
+  //이하는 placeDetail에 포함된 부분. 확정 X
 }

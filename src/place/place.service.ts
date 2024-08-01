@@ -7,7 +7,6 @@ import {
   SEARCH_BY_TEXT_URL,
 } from 'src/common/constants/google-apis.constant';
 import { PlaceRepository } from 'src/repositories/place.repository';
-import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import {
   CreatePlaceImageReqDto,
   CreatePlaceTagReqDto,
@@ -19,6 +18,10 @@ import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
+import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
+import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
+import { TagService } from 'src/tag/tag.service';
+import { TagType } from 'src/common/enums/tag-type.enum';
 
 @Injectable()
 export class PlaceService {
@@ -27,11 +30,13 @@ export class PlaceService {
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
     private readonly placeDetailRepository: PlaceDetailRepository,
+    private readonly tagService: TagService,
   ) {}
 
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
-    if (!place) throw new NotFoundException('Place not found');
+    if (!place)
+      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
     return new PlaceDetailResDto(place);
   }
 
@@ -40,12 +45,41 @@ export class PlaceService {
       headers: { Authorization: `KakaoAK ${process.env.KAKAO_REST_API_KEY}` },
       params: { query: keyword, size: 3 },
     });
-    return response.data;
+    const kakaoPlace = response.data;
+    return kakaoPlace;
   }
 
+  @Transactional()
   async createPlaceByKakao(keyword: string) {
     const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
-    return this.placeRepository.saveByKakaoPlace(kakaoPlace.documents[0]);
+
+    const existedPlace = await this.placeRepository.findOne({
+      where: { kakaoId: kakaoPlace.documents[0].id },
+    });
+    if (existedPlace) return existedPlace;
+
+    const simplifiedAddress = kakaoPlace.documents[0].address_name.split(' ');
+    const locationTags = simplifiedAddress.slice(0, 2);
+    const categoryTags = kakaoPlace.documents[0].category_name.split(' > ');
+
+    const createdPlace = await this.placeRepository.saveByKakaoPlace(
+      kakaoPlace.documents[0],
+    );
+
+    const createdCategoryTags = await this.tagService.createTags(
+      categoryTags,
+      TagType.Category,
+    ); // 문자열 Array와 타입을 받아서 태그를 생성하고 생성된 태그 Array를 반환
+    const createdLocationTags = await this.tagService.createTags(
+      locationTags,
+      TagType.Location,
+    );
+    for (const tag of createdCategoryTags.concat(createdLocationTags)) {
+      {
+        await this.createPlaceTag({ placeId: createdPlace.id, tagId: tag.id });
+      }
+    }
+    return createdPlace;
   }
 
   async searchGooglePlacesByText(text: string): Promise<any> {
@@ -77,43 +111,7 @@ export class PlaceService {
       },
     });
 
-    return placeDetail.data; //axios의 반환값에서 data만을 반환시켜야 한다.
-  }
-
-  @Transactional()
-  async createPlaceByGooglePlaceId(
-    googlePlaceId: string,
-  ): Promise<PlaceDetailResDto> {
-    const existedPlace = await this.placeRepository.findOne({
-      where: { kakaoId: googlePlaceId },
-    });
-    if (existedPlace) return this.getPlaceDetailById(existedPlace.id);
-    console.log(existedPlace);
-    const placeDetail = await this.getPlaceDetailByGooglePlaceId(googlePlaceId);
-    console.log(placeDetail);
-    const createdPlace =
-      await this.placeRepository.saveByGooglePlaceDetail(placeDetail);
-    console.log(createdPlace);
-    // if (placeDetail.regularOpeningHours) {
-    //   OpenHours = await this.openHoursRepository.save({
-    //     opening: placeDetail.regularOpeningHours.weekdayDescriptions,
-    //     place: createdPlace,
-    //   });
-    // }
-
-    // if (placeDetail.addressComponents) {
-    //   await this.addressComponentsRepository.saveAddressComponents(
-    //     placeDetail.addressComponents,
-    //     createdPlace,
-    //   );
-    // }
-
-    const createdPlaceDetail =
-      await this.placeDetailRepository.saveByPlaceDetailByGoogle(
-        createdPlace.id,
-        placeDetail,
-      );
-    return PlaceDetailResDto.fromCreation(createdPlace);
+    return placeDetail.data;
   }
 
   async createPlaceTag(createPlaceTagReqDto: CreatePlaceTagReqDto) {
@@ -145,6 +143,6 @@ export class PlaceService {
 
   async createPlaceByKeyword(keyword: string) {
     const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
-    return kakaoPlace.documents[0];
+    return await this.placeRepository.saveByKakaoPlace(kakaoPlace.documents[0]);
   }
 }

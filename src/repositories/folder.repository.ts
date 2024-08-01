@@ -20,8 +20,7 @@ export class FolderRepository extends Repository<Folder> {
     folderName: string,
     folderType?: FolderType,
   ) {
-    if (folderType === (FolderType.Insta | FolderType.Default)) {
-      //default, insta 폴더는 최대 1개 존재
+    if (folderType === FolderType.Default) {
       const folder = await this.findOne({
         where: { userId: userId, type: folderType, name: folderName },
       });
@@ -32,16 +31,19 @@ export class FolderRepository extends Repository<Folder> {
     const newFolder = new Folder();
     newFolder.userId = userId;
     newFolder.name = folderName;
-    if (folderType) {
+    if (folderType !== undefined) {
       newFolder.type = folderType;
     }
     const saveNewFolder = await this.save(newFolder);
     return saveNewFolder;
   }
+
   async getDefaultFolder(userId: number) {
-    let defaultFolder = await this.folderRepository.findOne({
+    console.log(userId);
+    let defaultFolder = await this.findOne({
       where: { userId: userId, type: FolderType.Default },
     });
+    console.log('defaultFolder', defaultFolder);
     if (!defaultFolder) {
       defaultFolder = await this.createFolder(
         userId,
@@ -50,6 +52,10 @@ export class FolderRepository extends Repository<Folder> {
       );
     }
     return defaultFolder;
+  }
+
+  async getFolderByFolderId(folderId: number) {
+    return await this.findOne({ where: { id: folderId } });
   }
 
   async getInstaFolder(userId: number) {

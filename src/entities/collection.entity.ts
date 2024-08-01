@@ -10,6 +10,8 @@ import { Place } from './place.entity';
 import { CollectionPlace } from './collection-place.entity';
 import { BaseEntity } from './base-entity.entity';
 import { User } from './user.entity';
+import { CollectionType } from 'src/common/enums/collection-type.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Collection extends BaseEntity {
@@ -22,13 +24,19 @@ export class Collection extends BaseEntity {
   @Column({ nullable: true })
   content: string;
 
-  @Column({ nullable: true })
-  embeddedTag: string;
+  @Column({
+    type: 'enum',
+    enum: CollectionType,
+    default: CollectionType.INSTAGRAM,
+  })
+  collectionType: CollectionType;
 
   @ManyToOne(() => User, (user) => user.collections)
   user: User;
 
   @RelationId((collection: Collection) => collection.user)
+  @Exclude()
+  @Column()
   userId: number;
 
   @OneToMany(

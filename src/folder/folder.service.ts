@@ -8,9 +8,15 @@ import {
   MarkerResDto,
   MarkersListResDto,
 } from 'src/place/dtos/markers-list-res.dto';
-import { ForbiddenFolderException } from 'src/common/exceptions/folder.exception';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
-import { PlacesListResDto } from 'src/place/dtos/places-list-res.dto';
+import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
+import {
+  ForbiddenFolderException,
+  NotValidFolderException,
+} from 'src/common/exceptions/folder.exception';
+import { Transactional } from 'typeorm-transactional';
+import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
+import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 
 @Injectable()
 export class FolderService {
@@ -84,7 +90,9 @@ export class FolderService {
     );
   }
 
-  async getFolderByFolderId(folderId: number) {}
+  async getFolderByFolderId(folderId: number) {
+    return await this.folderRepository.getFolderByFolderId(folderId);
+  }
 
   async getInstaFolder(userId: number) {
     return await this.folderRepository.getInstaFolder(userId);
@@ -94,20 +102,64 @@ export class FolderService {
     return await this.folderRepository.getDefaultFolder(userId);
   }
 
-  async createFolderPlace(folderId: number, placeId: number) {
-    return await this.folderPlaceRepository.createFolderPlace(
-      folderId,
-      placeId,
-    );
+  async createFolderPlacesIntoFolder(
+    //기본 Folder-place 저장 로직
+    userId: number,
+    createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+    folderId: number,
+  ) {
+    const placeIds = createFolderPlacesReqDto.placeIds;
+
+    const folder = await this.getFolderByFolderId(folderId);
+    if (!folder) {
+      throw new NotValidFolderException('폴더가 존재하지 않아요.');
+    }
+    if (folder.userId !== userId) {
+      throw new ForbiddenFolderException('폴더에 대한 권한이 없어요.');
+    }
+
+    placeIds.forEach(async (placeId) => {
+      await this.folderPlaceRepository.createFolderPlace(folderId, placeId);
+    });
   }
 
-  async appendPlaceToInstaFolder(connectedUserId: number, placeId: number) {
-    const instaFolder = await this.getInstaFolder(connectedUserId);
-    const createdFolderPlace = await this.createFolderPlace(
-      instaFolder.id,
-      placeId,
+  @Transactional()
+  async createFolderPlacesIntoDefaultFolder(
+    // Default 폴더에만 저장할 때 호출되는 메서드
+    userId: number,
+    createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+  ): Promise<CreateFolderPlaceResDto> {
+    const defaultFolder = await this.getDefaultFolder(userId);
+    await this.createFolderPlacesIntoFolder(
+      userId,
+      createFolderPlacesReqDto,
+      defaultFolder.id,
     );
-    return createdFolderPlace;
+
+    return new CreateFolderPlaceResDto(createFolderPlacesReqDto.placeIds);
+  }
+
+  @Transactional()
+  async createFolderPlacesIntoSpecificFolder(
+    // 특정 폴더에 저장할 때 호출되는 메서드. default 폴더에도 저장하고, 특정 폴더에도 저장
+    userId: number,
+    createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+    folderId: number,
+  ): Promise<CreateFolderPlaceResDto> {
+    await this.createFolderPlacesIntoDefaultFolder(
+      userId,
+      createFolderPlacesReqDto,
+    );
+    await this.createFolderPlacesIntoFolder(
+      userId,
+      createFolderPlacesReqDto,
+      folderId,
+    );
+
+    return new CreateFolderPlaceResDto(
+      createFolderPlacesReqDto.placeIds,
+      folderId,
+    );
   }
 
   async getMarkers(
@@ -116,14 +168,14 @@ export class FolderService {
     categoryList: string[],
     folderId?: number,
   ): Promise<MarkersListResDto> {
-    return new MarkersListResDto(
-      await this.folderPlaceRepository.getMarkers(
-        userId,
-        addressList,
-        categoryList,
-        folderId,
-      ),
+    const rawMarkersList = await this.folderPlaceRepository.getMarkers(
+      userId,
+      addressList,
+      categoryList,
+      folderId,
     );
+
+    return new MarkersListResDto(rawMarkersList);
   }
 
   async getPlacesList(
@@ -131,35 +183,11 @@ export class FolderService {
     placesListReqDto: PlacesListReqDto,
     folderId?: number,
   ): Promise<PlacesListResDto> {
-    const placeCollection = await this.folderPlaceRepository.getPlacesList(
+    const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
       placesListReqDto,
       folderId,
     );
-
-    //주소 형태 변환
-    placeCollection.map((place) => {
-      const shortAddress = place.address.split(' ');
-      place.address = shortAddress.slice(0, 2).join(' ');
-    });
-
-    let nextCursorId: number = null;
-
-    const hasNext = placeCollection.length > placesListReqDto.take;
-
-    if (!hasNext) {
-      nextCursorId = null;
-    } else {
-      nextCursorId = placeCollection[placeCollection.length - 2].id;
-      placeCollection.pop();
-    }
-
-    const placeListResCollection = new PlacesListResDto(placeCollection, {
-      take: placesListReqDto.take,
-      hasNext: hasNext,
-      cursorId: nextCursorId,
-    });
-
-    return placeListResCollection;
+    return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
 }

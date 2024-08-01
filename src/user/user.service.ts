@@ -1,7 +1,3 @@
-import {
-  NotFoundInstaCollectionException,
-  NotValidInstaGuestUserException,
-} from './../common/exceptions/insta.exception';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FirstLoginDto } from './dtos/first-login.dto';
 import { UserRepository } from 'src/repositories/user.repository';
@@ -42,5 +38,13 @@ export class UserService {
       throw new NotValidUserException('해당 유저가 존재하지 않아요.');
     }
     await this.userRepository.softDeleteUser(id);
+  }
+
+  async getUserByUuid(uuid: string) {
+    const user = await this.userRepository.findUserByUuid(uuid);
+    if (!user) {
+      throw new NotValidUserException('존재하지 않는 계정이에요.');
+    }
+    return user;
   }
 }
