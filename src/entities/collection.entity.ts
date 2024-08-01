@@ -11,6 +11,7 @@ import { CollectionPlace } from './collection-place.entity';
 import { BaseEntity } from './base-entity.entity';
 import { User } from './user.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Collection extends BaseEntity {
@@ -34,6 +35,7 @@ export class Collection extends BaseEntity {
   user: User;
 
   @RelationId((collection: Collection) => collection.user)
+  @Exclude()
   @Column()
   userId: number;
 
