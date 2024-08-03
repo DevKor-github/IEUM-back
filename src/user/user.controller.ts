@@ -33,8 +33,11 @@ export class UserController {
   @ApiOperation({
     summary: '최초 유저 정보 기입',
   })
-  async fillUserInfo(@Body() firstLoginDto: FirstLoginDto, @Req() req) {
-    return await this.userService.fillUserInfo(firstLoginDto, req.user.id);
+  async fillUserInfoAnd(@Body() firstLoginDto: FirstLoginDto, @Req() req) {
+    return await this.userService.fillUserInfoAndPreference(
+      firstLoginDto,
+      req.user.id,
+    );
   }
 
   @UseGuards(AuthGuard('access'))

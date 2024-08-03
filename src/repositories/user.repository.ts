@@ -26,8 +26,8 @@ export class UserRepository extends Repository<User> {
     await this.softDelete({ id: id });
   }
 
-  async renewRefreshToken(oAuthId: string, jti: string) {
-    const user = await this.findUserByAppleOAuthId(oAuthId);
+  async renewRefreshToken(id: number, jti: string) {
+    const user = await this.findUserById(id);
     user.jti = jti;
     return await this.save(user);
   }
@@ -43,18 +43,26 @@ export class UserRepository extends Repository<User> {
     return await this.save(user);
   }
 
-  // ----------------------------애플 --------------------------------
+  // ----------------------------소셜 --------------------------------
 
-  async findUserByAppleOAuthId(authId: string): Promise<User> {
-    const user = this.findOne({ where: { oAuthId: authId } });
+  async findUserByOAuthIdAndPlatform(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ): Promise<User> {
+    const user = this.findOne({
+      where: { oAuthId: oAuthId, oAuthPlatform: oAuthPlatform },
+    });
     return user;
   }
 
-  async appleSignIn(oAuthId: string): Promise<User> {
+  async socialSignIn(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ): Promise<User> {
     //로그인 후 앱 자체 회원가입 직후 flow 통한 나머지 field 채워야 함.
     const user = this.create({
       oAuthId: oAuthId,
-      oAuthPlatform: OAuthPlatform.Apple,
+      oAuthPlatform: oAuthPlatform,
     });
     return await this.save(user);
   }

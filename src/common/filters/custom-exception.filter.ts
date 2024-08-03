@@ -7,6 +7,7 @@ import {
 import { CustomException } from '../exceptions/custom.exception';
 import {
   DefaultBadRequestException,
+  DefaultForbiddenException,
   DefaultInternalServerErrorException,
   DefaultUnauthorizedException,
   DefaultUndefinedException,
@@ -50,6 +51,10 @@ export class CustomExceptionFilter implements ExceptionFilter {
         );
       case 401:
         return new DefaultUnauthorizedException(
+          this.getResponseMessage(exception),
+        );
+      case 403:
+        return new DefaultForbiddenException(
           this.getResponseMessage(exception),
         );
       default:

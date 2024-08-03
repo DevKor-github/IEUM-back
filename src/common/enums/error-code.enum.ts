@@ -18,5 +18,6 @@ export enum ErrorCodeEnum {
   // aa = 90 : Http default exception
   DefaultBadRequest = 9000,
   DefaultUnauthorized = 9001,
+  DefaultForbidden = 9003,
   DefaultUndefined = 9999,
 }

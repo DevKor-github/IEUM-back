@@ -17,7 +17,7 @@ export class UserService {
   ) {}
 
   //최초 유저 정보 기입
-  async fillUserInfo(firstLoginDto: FirstLoginDto, id: number) {
+  async fillUserInfoAndPreference(firstLoginDto: FirstLoginDto, id: number) {
     const user = await this.userRepository.findUserById(id);
     if (!user) {
       throw new NotValidUserException('해당 유저가 존재하지 않아요.');
@@ -28,7 +28,7 @@ export class UserService {
       id,
     );
     const createdUser = await this.userRepository.findUserById(id);
-    return { message: `${createdUser.nickname}에 대한 최초 정보 기입 성공.` };
+    return createdUser;
   }
 
   //회원탈퇴

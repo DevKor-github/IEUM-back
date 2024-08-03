@@ -24,3 +24,9 @@ export class DefaultInternalServerErrorException extends CustomException {
     super(ErrorCodeEnum.DefaultInternalServerError, message);
   }
 }
+
+export class DefaultForbiddenException extends CustomException {
+  constructor(message?: string) {
+    super(ErrorCodeEnum.DefaultForbidden, message);
+  }
+}

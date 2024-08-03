@@ -11,16 +11,12 @@ import {
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiConsumes,
-  ApiBody,
   ApiTags,
   ApiOperation,
-  ApiCreatedResponse,
-  ApiProperty,
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { AppleLoginDto } from './dtos/apple-login.dto';
+import { LoginDto } from './dtos/login.dto';
 
 @Controller('auth')
 @ApiTags('인증/인가 API')
@@ -45,15 +41,18 @@ export class AuthController {
     );
   }
 
-  // -------------------------- 애플 --------------------------------
-  //애플 로그인
-  @Post('/login/apple')
+  // -------------------------- 소셜 로그인 --------------------------------
+
+  @Post('/login/social')
   @ApiOperation({
-    summary: '애플 sign in',
+    summary: 'social sign in / login',
   })
-  @ApiResponse({ status: 201, description: '애플 로그인 성공' })
-  async appleLogin(@Body() appleLoginDto: AppleLoginDto) {
-    return this.authService.appleLogin(appleLoginDto.oAuthId);
+  @ApiResponse({ status: 201, description: '소셜 로그인 성공' })
+  async socialLogin(@Body() loginDto: LoginDto) {
+    return this.authService.socialLogin(
+      loginDto.oAuthId,
+      loginDto.oAuthPlatform,
+    );
   }
   //애플에서 유저가 "이메일 변경, 앱 서비스 해지, 애플 계정 탈퇴"를 했을 경우,
   //App ID apple sign in 에서 입력한 Endpoint URL로 유저 정보와 이벤트에 대한 PAYLOAD 데이터를 전송.
@@ -66,4 +65,6 @@ export class AuthController {
   async endpoint() {
     //추후 논의 후 구현.
   }
+
+  //카카오, 네이버 회원 탈퇴 시?
 }
