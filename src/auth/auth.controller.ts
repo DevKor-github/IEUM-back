@@ -17,6 +17,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login.dto';
+import { UserLoginResDto } from './dtos/user-login-res.dto';
 
 @Controller('auth')
 @ApiTags('인증/인가 API')
@@ -48,7 +49,7 @@ export class AuthController {
     summary: 'social sign in / login',
   })
   @ApiResponse({ status: 201, description: '소셜 로그인 성공' })
-  async socialLogin(@Body() loginDto: LoginDto) {
+  async socialLogin(@Body() loginDto: LoginDto): Promise<UserLoginResDto> {
     return this.authService.socialLogin(
       loginDto.oAuthId,
       loginDto.oAuthPlatform,

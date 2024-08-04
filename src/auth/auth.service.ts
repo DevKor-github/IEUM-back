@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'src/repositories/user.repository';
 import { User } from 'src/entities/user.entity';
-import { UserInfoDto } from './dtos/user-info.dto';
+import { UserLoginResDto } from './dtos/user-login-res.dto';
 import { NotValidRefreshException } from 'src/common/exceptions/auth.exception';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
@@ -66,7 +66,10 @@ export class AuthService {
   }
 
   //-------------------------소셜 로그인 ---------------------------
-  async socialLogin(oAuthId: string, oAuthPlatform: OAuthPlatform) {
+  async socialLogin(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ): Promise<UserLoginResDto> {
     const user = await this.userRepository.findUserByOAuthIdAndPlatform(
       oAuthId,
       oAuthPlatform,
@@ -76,7 +79,7 @@ export class AuthService {
     if (user) {
       const accessToken = this.getAccessToken(user);
       const refreshToken = await this.getRefreshToken(user);
-      return UserInfoDto.fromCreation(
+      return UserLoginResDto.fromCreation(
         user.uuid,
         user.oAuthPlatform,
         accessToken,
@@ -91,7 +94,7 @@ export class AuthService {
     );
     const accessToken = this.getAccessToken(newUser);
     const refreshToken = await this.getRefreshToken(newUser);
-    return UserInfoDto.fromCreation(
+    return UserLoginResDto.fromCreation(
       newUser.uuid,
       newUser.oAuthPlatform,
       accessToken,

@@ -17,7 +17,7 @@ import {
   ApiTags,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { FirstLoginDto } from './dtos/first-login.dto';
+import { FirstLoginReqDto, FirstLoginResDto } from './dtos/first-login.dto';
 import { UserService } from './user.service';
 
 @ApiTags('유저 API')
@@ -29,13 +29,20 @@ export class UserController {
   @UseGuards(AuthGuard('access'))
   @Put('/me/info')
   @ApiBearerAuth('Access Token')
-  @ApiResponse({ status: 201, description: '유저 정보 입력 성공' })
+  @ApiResponse({
+    status: 201,
+    description: '유저 정보 입력 성공',
+    type: FirstLoginResDto,
+  })
   @ApiOperation({
     summary: '최초 유저 정보 기입',
   })
-  async fillUserInfoAnd(@Body() firstLoginDto: FirstLoginDto, @Req() req) {
+  async fillUserInfoAndPreference(
+    @Body() firstLoginReqDto: FirstLoginReqDto,
+    @Req() req,
+  ): Promise<FirstLoginResDto> {
     return await this.userService.fillUserInfoAndPreference(
-      firstLoginDto,
+      firstLoginReqDto,
       req.user.id,
     );
   }

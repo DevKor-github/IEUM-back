@@ -1,7 +1,7 @@
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 
-export class UserInfoDto {
+export class UserLoginResDto {
   @IsString()
   uuid: string;
 
@@ -22,8 +22,8 @@ export class UserInfoDto {
     oAuthPlatform: OAuthPlatform,
     accessToken: string,
     refreshToken: string,
-  ): UserInfoDto {
-    const dto = new UserInfoDto();
+  ): UserLoginResDto {
+    const dto = new UserLoginResDto();
     dto.uuid = uuid;
     dto.oAuthPlatform = oAuthPlatform;
     dto.accessToken = accessToken;

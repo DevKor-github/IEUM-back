@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
-import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
+import { FirstLoginReqDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 
 @Injectable()
@@ -12,6 +12,11 @@ export class UserRepository extends Repository<User> {
 
   async findUserById(id: number): Promise<User> {
     const user = this.findOne({ where: { id: id } });
+    return user;
+  }
+
+  async getUserInfoAndPreferenceById(id: number): Promise<User> {
+    const user = this.findOne({ where: { id: id }, relations: ['preference'] });
     return user;
   }
 
@@ -32,13 +37,13 @@ export class UserRepository extends Repository<User> {
     return await this.save(user);
   }
 
-  async fillUserInfo(firstLoginDto: FirstLoginDto, id: number) {
+  async fillUserInfo(firstLoginReqDto: FirstLoginReqDto, id: number) {
     const user = await this.findUserById(id);
 
-    user.nickname = firstLoginDto.nickname;
-    user.birthDate = new Date(firstLoginDto.birthDate);
-    user.sex = firstLoginDto.sex;
-    user.mbti = firstLoginDto.mbti;
+    user.nickname = firstLoginReqDto.nickname;
+    user.birthDate = new Date(firstLoginReqDto.birthDate);
+    user.sex = firstLoginReqDto.sex;
+    user.mbti = firstLoginReqDto.mbti;
 
     return await this.save(user);
   }
