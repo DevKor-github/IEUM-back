@@ -12,12 +12,16 @@ import { UserLoginResDto } from './dtos/user-login-res.dto';
 import { NotValidRefreshException } from 'src/common/exceptions/auth.exception';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
+import * as jwt from 'jsonwebtoken';
+import { AppleNotificationPayload } from 'src/common/interfaces/apple-notification-jwt-format.interface';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
   ) {}
 
   //AccessToken 발급
@@ -100,5 +104,35 @@ export class AuthService {
       accessToken,
       refreshToken,
     );
+  }
+
+  async handleAppleNotification(payload: string) {
+    const decodedToken = jwt.decode(payload) as AppleNotificationPayload;
+
+    decodedToken.events.map(async (event) => {
+      switch (event.type) {
+        case 'email-disabled':
+          console.log('email-disabled');
+          break;
+        case 'email-enabled':
+          console.log('email-enabled');
+          break;
+        case 'consent-revoked' || 'account-delete':
+          console.log('유저가 애플 ID 연동을 해제');
+          console.log('유저가 apple ID를 삭제했을 때');
+          const userToDelete =
+            await this.userRepository.findUserByOAuthIdAndPlatform(
+              event.sub,
+              OAuthPlatform.Apple,
+            );
+          if (userToDelete) {
+            await this.userService.deleteUser(userToDelete.id);
+          }
+          break;
+        default:
+          console.log('알 수 없는 요청:' + event.type);
+          break;
+      }
+    });
   }
 }
