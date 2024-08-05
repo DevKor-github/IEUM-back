@@ -1,3 +1,4 @@
+import { CollectionModule } from './../collection/collection.module';
 import { Module } from '@nestjs/common';
 
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
@@ -30,6 +31,8 @@ import { SlackAlertService } from './slack-alert.service';
       ],
       prefetchCount: 1,
     }),
+    ,
+    CollectionModule,
   ],
   providers: [MessageBrokerService, SlackAlertService],
 })

@@ -14,5 +14,6 @@ import { UserModule } from 'src/user/user.module';
     CollectionPlaceRepository,
   ],
   imports: [PlaceModule, UserModule],
+  exports: [CollectionService],
 })
 export class CollectionModule {}
