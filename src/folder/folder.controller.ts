@@ -42,7 +42,7 @@ export class FolderController {
   @ApiResponse({ type: FoldersListResDto })
   @Get('/')
   async getFoldersList(@Req() req): Promise<FoldersListResDto> {
-    return await this.folderService.getFoldersList(req.id);
+    return await this.folderService.getFoldersList(req.user.id);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

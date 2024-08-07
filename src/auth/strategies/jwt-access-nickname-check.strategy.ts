@@ -29,6 +29,7 @@ export class JwtAccessNicknameCheckStrategy extends PassportStrategy(
       );
     }
 
+    console.log(payload.id);
     return {
       id: payload.id,
       oAuthId: payload.oAuthId,
