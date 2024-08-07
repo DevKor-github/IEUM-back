@@ -16,7 +16,7 @@ import { CustomResponseInterceptor } from './common/interceptors/custom-response
 import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
-import { MessageBrokerModule } from './message-broker/message-broker.module';
+import { CrawlingModule } from './crawling/crawling.module';
 
 @Module({
   imports: [
@@ -50,7 +50,7 @@ import { MessageBrokerModule } from './message-broker/message-broker.module';
     TripModule,
     FolderModule,
     CollectionModule,
-    MessageBrokerModule,
+    CrawlingModule,
   ],
   controllers: [AppController],
   providers: [
