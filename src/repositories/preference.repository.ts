@@ -14,6 +14,6 @@ export class PreferenceRepository extends Repository<Preference> {
     const user = new User();
     user.id = id;
     const userPreference = this.create({ ...userPreferenceDto, user });
-    await this.save(userPreference);
+    return await this.save(userPreference);
   }
 }
