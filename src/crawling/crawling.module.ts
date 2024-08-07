@@ -29,15 +29,15 @@ import { CrawlingController } from './crawling.controller';
           // },
           // bindQueueArguments: {},
         },
-        {
-          name: 'result_queue',
-          exchange: 'ieum_exchange',
-          routingKey: 'result',
-          // bindQueueArguments: {
-          //   'x-dead-letter-exchange': 'ieum_retry',
-          // },
-          // options: { deadLetterExchange: 'ieum_retry' },
-        },
+        // {
+        //   name: 'result_queue',
+        //   exchange: 'ieum_exchange',
+        //   routingKey: 'result',
+        //   // bindQueueArguments: {
+        //   //   'x-dead-letter-exchange': 'ieum_retry',
+        //   // },
+        //   // options: { deadLetterExchange: 'ieum_retry' },
+        // },
         {
           name: 'retry_queue',
           exchange: 'ieum_retry',
