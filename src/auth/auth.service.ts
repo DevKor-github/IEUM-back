@@ -13,11 +13,29 @@ import { NotValidRefreshException } from 'src/common/exceptions/auth.exception';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import * as jwt from 'jsonwebtoken';
-import { AppleNotificationPayload } from 'src/common/interfaces/apple-notification-jwt-format.interface';
+import * as jwksClient from 'jwks-rsa';
+
+import {
+  AppleNotificationPayload,
+  DecodedToken,
+} from 'src/common/interfaces/apple-notification-jwt-format.interface';
 import { UserService } from 'src/user/user.service';
+import {
+  DefaultBadRequestException,
+  DefaultUndefinedException,
+} from 'src/common/exceptions/default.exception';
+import { json } from 'body-parser';
+import { NotValidUserException } from 'src/common/exceptions/user.exception';
 
 @Injectable()
 export class AuthService {
+  private jwksClientInstance = jwksClient({
+    jwksUri: 'https://appleid.apple.com/auth/keys',
+    cache: true, // 캐시 사용 //서버 메모리에 캐싱되는듯?
+    cacheMaxEntries: 4, // 최대 4개의 키 캐시
+    cacheMaxAge: 600000, // 캐시된 키의 유효 기간 (10분)
+  });
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
@@ -69,7 +87,7 @@ export class AuthService {
     };
   }
 
-  //-------------------------소셜 로그인 ---------------------------
+  //-------------------------소셜 ---------------------------
   async socialLogin(
     oAuthId: string,
     oAuthPlatform: OAuthPlatform,
@@ -106,33 +124,91 @@ export class AuthService {
     );
   }
 
-  async handleAppleNotification(payload: string) {
-    const decodedToken = jwt.decode(payload) as AppleNotificationPayload;
-
-    decodedToken.events.map(async (event) => {
-      switch (event.type) {
-        case 'email-disabled':
-          console.log('email-disabled');
-          break;
-        case 'email-enabled':
-          console.log('email-enabled');
-          break;
-        case 'consent-revoked' || 'account-delete':
-          console.log('유저가 애플 ID 연동을 해제');
-          console.log('유저가 apple ID를 삭제했을 때');
-          const userToDelete =
-            await this.userRepository.findUserByOAuthIdAndPlatform(
-              event.sub,
-              OAuthPlatform.Apple,
-            );
-          if (userToDelete) {
-            await this.userService.deleteUser(userToDelete.id);
-          }
-          break;
-        default:
-          console.log('알 수 없는 요청:' + event.type);
-          break;
-      }
+  private async getAppleSigningKey(kid: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.jwksClientInstance.getSigningKey(kid, (err, key) => {
+        if (err) {
+          reject(err); //catch handler로 보냄.
+          return;
+        }
+        const signingKey = key.getPublicKey();
+        resolve(signingKey); //에러 발생 안했을 때의 반환 값.
+      });
     });
+  }
+
+  async handleAppleNotification(payload: string) {
+    const decodedToken = jwt.decode(payload, {
+      complete: true,
+    }) as DecodedToken;
+
+    console.log(decodedToken);
+    const kid = decodedToken.header.kid;
+    let signingKey: string;
+
+    //애플 공개키중 kid 일치하는 키 가져오기.
+    try {
+      signingKey = await this.getAppleSigningKey(kid);
+      console.log(signingKey);
+    } catch (error) {
+      throw new BadRequestException(
+        `kid가 일치하는 공개키 찾을 수 없음: ${error.message}`,
+      );
+      return;
+    }
+
+    //애플 공개키로 받은 jwt 검증하고 type에 따라 다른 처리하기.
+    let type: string;
+    let sub: string;
+    jwt.verify(
+      payload,
+      signingKey,
+      {
+        algorithms: ['RS256'],
+      },
+      (err, decoded) => {
+        if (err) {
+          throw new BadRequestException(`토큰 검증 실패: ${err.message}`);
+          return;
+        }
+        //토큰 검증 됐을 시
+        const jsonEvents = JSON.parse(decodedToken.payload.events);
+        type = jsonEvents.type;
+        sub = jsonEvents.sub;
+        console.log(type);
+        console.log(sub);
+      },
+    );
+
+    switch (type) {
+      case 'email-disabled':
+        console.log('email-disabled');
+        break;
+      case 'email-enabled':
+        console.log('email-enabled');
+        break;
+      case 'consent-revoked':
+        console.log('유저가 애플 ID 연동을 해제');
+      case 'account-delete':
+        console.log('유저가 apple ID를 삭제했을 때');
+        const userToDelete =
+          await this.userRepository.findUserByOAuthIdAndPlatform(
+            sub,
+            OAuthPlatform.Apple,
+          );
+        if (!userToDelete) {
+          throw new NotValidUserException('해당 유저가 존재하지 않습니다.');
+        }
+        await this.userService.deleteUser(userToDelete.id);
+        console.log(`id: ${userToDelete.id} 유저가 회원탈퇴 하였습니다.`);
+        break;
+      default:
+        throw new DefaultUndefinedException(
+          '알 수 없는 값이 애플 서버로부터 들어옴.',
+        );
+        break;
+    }
+
+    return;
   }
 }

@@ -18,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login.dto';
 import { UserLoginResDto } from './dtos/user-login-res.dto';
+import { AppleNotificationDto } from './dtos/apple-notification.dto';
 
 @Controller('auth')
 @ApiTags('인증/인가 API')
@@ -63,11 +64,13 @@ export class AuthController {
     description:
       '애플에서 유저가 "이메일 수신 중단/활성화, 앱 서비스 해지, 애플 계정 탈퇴"를 했을 경우',
   })
-  async handleAppleNotification(@Body('payload') payload: string) {
-    //추후 논의 후 구현.
-
-    return this.authService.handleAppleNotification(payload);
+  async handleAppleNotification(
+    @Body() appleNotificationDto: AppleNotificationDto,
+  ) {
+    //논의 필요.
+    return this.authService.handleAppleNotification(
+      appleNotificationDto.payload,
+    );
   }
-
-  //카카오, 네이버 회원 탈퇴 시?
+  //카카오, 네이버 회원 정보 수정됐을 시 받는 endpoint
 }

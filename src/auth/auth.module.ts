@@ -10,6 +10,9 @@ import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { JwtAccessNicknameCheckStrategy } from './strategies/jwt-access-nickname-check.strategy';
 import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
+import { PreferenceRepository } from 'src/repositories/preference.repository';
+import { FolderRepository } from 'src/repositories/folder.repository';
+import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
 
 @Global()
 @Module({
@@ -26,6 +29,9 @@ import { UserModule } from 'src/user/user.module';
     UserRepository,
     JwtAccessNicknameCheckStrategy,
     UserService,
+    PreferenceRepository,
+    FolderRepository,
+    FolderPlaceRepository,
   ],
   exports: [JwtAccessStrategy, JwtAccessNicknameCheckStrategy],
 })
