@@ -14,7 +14,7 @@ import { CrawlingController } from './crawling.controller';
         { name: 'ieum_exchange', type: 'direct', options: { durable: true } },
         {
           name: 'ieum_retry',
-          type: 'fanout',
+          type: 'direct',
           options: { durable: true },
         },
         { name: 'ieum_failure', type: 'direct', options: { durable: true } },
@@ -33,23 +33,25 @@ import { CrawlingController } from './crawling.controller';
         //   name: 'result_queue',
         //   exchange: 'ieum_exchange',
         //   routingKey: 'result',
-        //   // bindQueueArguments: {
-        //   //   'x-dead-letter-exchange': 'ieum_retry',
-        //   // },
-        //   // options: { deadLetterExchange: 'ieum_retry' },
         // },
-        {
-          name: 'retry_queue',
-          exchange: 'ieum_retry',
-        },
-        {
-          name: 'failed_queue',
-          exchange: 'ieum_failure',
-          routingKey: 'failure',
-        },
+        // {
+        //   name: 'retry_queue',
+        //   exchange: 'ieum_retry',
+        //   routingKey: 'retry',
+        //   bindQueueArguments: {
+        //     'x-dead-letter-exchange': 'ieum_retry',
+        //     'x-dead-letter-routing-key': 'retry',
+        //   },
+        // },
+        // {
+        //   name: 'failed_queue',
+        //   exchange: 'ieum_failure',
+        //   routingKey: 'failure',
+        // },
       ],
       prefetchCount: 1,
       connectionInitOptions: { wait: true, timeout: 20000 },
+      enableDirectReplyTo: false,
     }),
     CollectionModule,
   ],
