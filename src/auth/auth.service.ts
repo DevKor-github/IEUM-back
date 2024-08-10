@@ -101,12 +101,7 @@ export class AuthService {
     if (user) {
       const accessToken = this.getAccessToken(user);
       const refreshToken = await this.getRefreshToken(user);
-      return UserLoginResDto.fromCreation(
-        user.uuid,
-        user.oAuthPlatform,
-        accessToken,
-        refreshToken,
-      );
+      return new UserLoginResDto(user, accessToken, refreshToken);
     }
 
     //계정이 없다면 새로 추가
@@ -116,12 +111,7 @@ export class AuthService {
     );
     const accessToken = this.getAccessToken(newUser);
     const refreshToken = await this.getRefreshToken(newUser);
-    return UserLoginResDto.fromCreation(
-      newUser.uuid,
-      newUser.oAuthPlatform,
-      accessToken,
-      refreshToken,
-    );
+    return new UserLoginResDto(newUser, accessToken, refreshToken);
   }
 
   private async getAppleSigningKey(kid: string): Promise<string> {

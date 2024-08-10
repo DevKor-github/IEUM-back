@@ -1,5 +1,6 @@
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
+import { User } from 'src/entities/user.entity';
 
 export class UserLoginResDto {
   @IsString()
@@ -14,20 +15,10 @@ export class UserLoginResDto {
   @IsEnum(OAuthPlatform)
   oAuthPlatform: OAuthPlatform;
 
-  // @IsBoolean()
-  // initialLogin: boolean;
-
-  static fromCreation(
-    uuid: string,
-    oAuthPlatform: OAuthPlatform,
-    accessToken: string,
-    refreshToken: string,
-  ): UserLoginResDto {
-    const dto = new UserLoginResDto();
-    dto.uuid = uuid;
-    dto.oAuthPlatform = oAuthPlatform;
-    dto.accessToken = accessToken;
-    dto.refreshToken = refreshToken;
-    return dto;
+  constructor(user: User, accessToken: string, refreshToken: string) {
+    this.uuid = user.uuid;
+    this.oAuthPlatform = user.oAuthPlatform;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 }
