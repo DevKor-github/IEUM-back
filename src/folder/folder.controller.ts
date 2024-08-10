@@ -36,13 +36,13 @@ import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
-  @CustomAuthSwaggerDecorator({
-    summary: "Get User's folders list.",
-    type: FoldersListResDto,
-  })
+  @UseGuards(AuthGuard('NCaccess'))
+  @ApiBearerAuth('Access Token')
+  @ApiOperation({ summary: "Get User's folders list." })
+  @ApiResponse({ type: FoldersListResDto })
   @Get('/')
   async getFoldersList(@Req() req): Promise<FoldersListResDto> {
-    return await this.folderService.getFoldersList(1);
+    return await this.folderService.getFoldersList(req.user.id);
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

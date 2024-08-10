@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
-import { FirstLoginDto } from 'src/user/dtos/first-login.dto';
+import { FirstLoginReqDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 
 @Injectable()
@@ -12,6 +12,11 @@ export class UserRepository extends Repository<User> {
 
   async findUserById(id: number): Promise<User> {
     const user = this.findOne({ where: { id: id } });
+    return user;
+  }
+
+  async getUserInfoAndPreferenceById(id: number): Promise<User> {
+    const user = this.findOne({ where: { id: id }, relations: ['preference'] });
     return user;
   }
 
@@ -26,35 +31,43 @@ export class UserRepository extends Repository<User> {
     await this.softDelete({ id: id });
   }
 
-  async renewRefreshToken(oAuthId: string, jti: string) {
-    const user = await this.findUserByAppleOAuthId(oAuthId);
+  async renewRefreshToken(id: number, jti: string) {
+    const user = await this.findUserById(id);
     user.jti = jti;
     return await this.save(user);
   }
 
-  async fillUserInfo(firstLoginDto: FirstLoginDto, id: number) {
+  async fillUserInfo(firstLoginReqDto: FirstLoginReqDto, id: number) {
     const user = await this.findUserById(id);
 
-    user.nickname = firstLoginDto.nickname;
-    user.birthDate = new Date(firstLoginDto.birthDate);
-    user.sex = firstLoginDto.sex;
-    user.mbti = firstLoginDto.mbti;
+    user.nickname = firstLoginReqDto.nickname;
+    user.birthDate = new Date(firstLoginReqDto.birthDate);
+    user.sex = firstLoginReqDto.sex;
+    user.mbti = firstLoginReqDto.mbti;
 
     return await this.save(user);
   }
 
-  // ----------------------------애플 --------------------------------
+  // ----------------------------소셜 --------------------------------
 
-  async findUserByAppleOAuthId(authId: string): Promise<User> {
-    const user = this.findOne({ where: { oAuthId: authId } });
+  async findUserByOAuthIdAndPlatform(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ): Promise<User> {
+    const user = this.findOne({
+      where: { oAuthId: oAuthId, oAuthPlatform: oAuthPlatform },
+    });
     return user;
   }
 
-  async appleSignIn(oAuthId: string): Promise<User> {
+  async socialSignIn(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ): Promise<User> {
     //로그인 후 앱 자체 회원가입 직후 flow 통한 나머지 field 채워야 함.
     const user = this.create({
       oAuthId: oAuthId,
-      oAuthPlatform: OAuthPlatform.Apple,
+      oAuthPlatform: oAuthPlatform,
     });
     return await this.save(user);
   }
