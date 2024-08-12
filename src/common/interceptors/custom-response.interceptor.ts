@@ -16,7 +16,6 @@ export class CustomResponseInterceptor implements NestInterceptor {
         if (context.getType() === 'rmq') {
           return data;
         }
-        console.log(context.getType());
         return {
           statusCode:
             data !== undefined

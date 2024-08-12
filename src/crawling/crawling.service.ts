@@ -8,6 +8,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SlackAlertService } from './slack-alert.service';
 import { CollectionService } from 'src/collection/collection.service';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
+import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 
 @Injectable()
 export class CrawlingService {
@@ -57,7 +58,7 @@ export class CrawlingService {
 
     this.logger.log(`${originalQueue}에서 Dead Letter가 전송됨`);
 
-    this.logger.log(amqpMsg.properties.headers['x-death']);
+    // this.logger.log(amqpMsg.properties.headers['x-death']);
 
     const retryCount = amqpMsg.properties.headers?.['x-death']?.[0]?.count
       ? amqpMsg.properties.headers?.['x-death']?.[0]?.count
@@ -68,7 +69,7 @@ export class CrawlingService {
       await this.amqpConnection.publish('ieum_failure', 'failure', msg, {
         headers: { ...amqpMsg.properties.headers },
       });
-      this.logger.log('최대 재시도 초과, 실패 큐로 이동');
+      this.logger.log('최대 재시도 횟수 초과, 실패 큐로 이동');
     } else {
       await this.amqpConnection.publish(
         originalExchange,
@@ -77,7 +78,6 @@ export class CrawlingService {
         {
           headers: {
             ...amqpMsg.properties.headers,
-            // retryCount: retryCount + 1,
           },
         },
       );
@@ -93,6 +93,13 @@ export class CrawlingService {
     queue: 'failed_queue',
   })
   async handleFailedMessage(msg: any, amqpMsg: any) {
-    await this.slackAlertService.sendSlackAlert('Crawling Failed', msg);
+    const XDeath: RabbitMqXDeath = amqpMsg.properties.headers?.['x-death']?.[0];
+    let errorMsg = 'Unexpected Error';
+    if (XDeath.queue === 'request_queue') {
+      errorMsg = '크롤링 및 장소 추출 중 오류가 발생했습니다!';
+    } else if (XDeath.queue === 'result_queue') {
+      errorMsg = '장소 키워드를 통한 게시글/장소 생성 중 오류가 발생했습니다!';
+    }
+    await this.slackAlertService.sendSlackAlert(errorMsg, msg, XDeath);
   }
 }
