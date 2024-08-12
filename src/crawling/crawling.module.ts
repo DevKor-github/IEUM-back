@@ -24,30 +24,7 @@ import { CrawlingController } from './crawling.controller';
           name: 'request_queue',
           exchange: 'ieum_exchange',
           routingKey: 'request',
-          // bindQueueArguments: {
-          //   'x-dead-letter-exchange': 'ieum_retry',
-          // },
-          // bindQueueArguments: {},
         },
-        // {
-        //   name: 'result_queue',
-        //   exchange: 'ieum_exchange',
-        //   routingKey: 'result',
-        // },
-        // {
-        //   name: 'retry_queue',
-        //   exchange: 'ieum_retry',
-        //   routingKey: 'retry',
-        //   bindQueueArguments: {
-        //     'x-dead-letter-exchange': 'ieum_retry',
-        //     'x-dead-letter-routing-key': 'retry',
-        //   },
-        // },
-        // {
-        //   name: 'failed_queue',
-        //   exchange: 'ieum_failure',
-        //   routingKey: 'failure',
-        // },
       ],
       prefetchCount: 1,
       connectionInitOptions: { wait: true, timeout: 20000 },
