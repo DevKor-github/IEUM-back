@@ -48,8 +48,17 @@ export class CrawlingService {
     queue: 'retry_queue',
   })
   async handleDeadLetter(msg: any, amqpMsg: any) {
-    this.logger.log('Dead Letter Queue로부터 메시지 수신');
+    const originalExchange =
+      amqpMsg.properties.headers?.['x-death']?.[0]?.exchange;
+
+    const originalQueue = amqpMsg.properties.headers?.['x-death']?.[0]?.queue;
+    const originalRoutingKey =
+      amqpMsg.properties.headers?.['x-death']?.[0]?.['routing-keys']?.[0];
+
+    this.logger.log(`${originalQueue}에서 Dead Letter가 전송됨`);
+
     this.logger.log(amqpMsg.properties.headers['x-death']);
+
     const retryCount = amqpMsg.properties.headers?.['x-death']?.[0]?.count
       ? amqpMsg.properties.headers?.['x-death']?.[0]?.count
       : 0;
@@ -57,15 +66,24 @@ export class CrawlingService {
 
     if (retryCount >= this.MAX_RETRY_COUNT) {
       await this.amqpConnection.publish('ieum_failure', 'failure', msg, {
-        headers: { ...amqpMsg.properties.headers, retryCount: retryCount },
+        headers: { ...amqpMsg.properties.headers },
       });
-      this.logger.log('실패 큐로 이동');
+      this.logger.log('최대 재시도 초과, 실패 큐로 이동');
     } else {
-      this.logger.log(amqpMsg);
-      this.logger.log('재시도를 위해 re-publish');
-      await this.amqpConnection.publish('ieum_exchange', 'result', msg, {
-        headers: { ...amqpMsg.properties.headers, retryCount: retryCount + 1 },
-      });
+      await this.amqpConnection.publish(
+        originalExchange,
+        originalRoutingKey,
+        msg,
+        {
+          headers: {
+            ...amqpMsg.properties.headers,
+            // retryCount: retryCount + 1,
+          },
+        },
+      );
+      this.logger.log(
+        `재시도를 위해 ${originalExchange}로 ${originalRoutingKey}를 통해 re-publish`,
+      );
     }
   }
 

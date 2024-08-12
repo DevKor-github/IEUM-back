@@ -4,7 +4,7 @@ import axios from 'axios';
 @Injectable()
 export class SlackAlertService {
   private readonly WEBHOOK_URL =
-    'https://hooks.slack.com/services/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';
+    'https://hooks.slack.com/services/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';
 
   async sendSlackAlert(message: string, data: any) {
     const payload = {

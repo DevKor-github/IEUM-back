@@ -20,11 +20,15 @@ import { CrawlingController } from './crawling.controller';
         { name: 'ieum_failure', type: 'direct', options: { durable: true } },
       ],
       queues: [
-        {
-          name: 'request_queue',
-          exchange: 'ieum_exchange',
-          routingKey: 'request',
-        },
+        // {
+        //   name: 'request_queue',
+        //   exchange: 'ieum_exchange',
+        //   routingKey: 'request',
+        //   options: {
+        //     deadLetterExchange: 'ieum_retry',
+        //     deadLetterRoutingKey: 'retry',
+        //   },
+        // },
       ],
       prefetchCount: 1,
       connectionInitOptions: { wait: true, timeout: 20000 },
