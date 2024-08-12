@@ -4,9 +4,6 @@ import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface'
 
 @Injectable()
 export class SlackAlertService {
-  private readonly WEBHOOK_URL =
-    'https://hooks.slack.com/services/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';
-
   async sendSlackAlert(errorMsg: string, msg: any, XDeath: RabbitMqXDeath) {
     const payload = {
       text: `🚨 에러 발생 : ${errorMsg}`,
@@ -29,9 +26,14 @@ export class SlackAlertService {
       ],
     };
     try {
-      await axios.post(this.WEBHOOK_URL, payload);
+      await axios.post(process.env.WEBHOOK_URL, payload);
     } catch (error) {
-      console.error('Failed to send Slack alert:', error);
+      console.error(
+        'Failed to send Slack alert:',
+        error.response.status,
+        error.response.statusText,
+        error.response.data,
+      );
     }
   }
 }
