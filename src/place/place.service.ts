@@ -136,9 +136,10 @@ export class PlaceService {
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
-    return new PlacePreviewResDto(
-      await this.placeRepository.getPlacePreviewInfoById(placeId),
-    );
+    const place = await this.placeRepository.getPlacePreviewInfoById(placeId);
+    if (!place)
+      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
+    return new PlacePreviewResDto(place);
   }
 
   async createPlaceByKeyword(keyword: string) {
