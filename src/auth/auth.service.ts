@@ -8,7 +8,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'src/repositories/user.repository';
 import { User } from 'src/entities/user.entity';
-import { UserLoginResDto } from './dtos/user-login-res.dto';
+import {
+  NewAccessTokenResDto,
+  UserLoginResDto,
+} from './dtos/user-login-res.dto';
 import { NotValidRefreshException } from 'src/common/exceptions/auth.exception';
 import { v4 as uuidv4 } from 'uuid';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
@@ -72,7 +75,7 @@ export class AuthService {
   }
 
   //AccessToken 재발급
-  async newAccessToken(id: number, jti: string) {
+  async newAccessToken(id: number, jti: string): Promise<NewAccessTokenResDto> {
     const user = await this.userRepository.findUserById(id);
 
     //refreshToken이 해당 유저의 refreshtoken이 맞는지 체크
@@ -82,9 +85,7 @@ export class AuthService {
     }
     const newAccessToken = this.getAccessToken(user);
 
-    return {
-      accessToken: newAccessToken,
-    };
+    return new NewAccessTokenResDto(newAccessToken);
   }
 
   //-------------------------소셜 ---------------------------
