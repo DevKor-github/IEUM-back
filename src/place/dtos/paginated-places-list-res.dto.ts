@@ -26,11 +26,16 @@ export class PlaceInfoDto {
   @IsString()
   mappedCategory: string;
 
+  @ApiProperty()
+  @IsString()
+  imageUrl: string;
+
   constructor(rawPlaceInfo: RawPlaceInfo) {
     this.id = rawPlaceInfo.id;
     this.name = rawPlaceInfo.name;
     this.simplifiedAddress = addressSimplifier(rawPlaceInfo.address);
     this.mappedCategory = categoryMapper(rawPlaceInfo.category);
+    this.imageUrl = rawPlaceInfo.imageUrls[0];
   }
 }
 

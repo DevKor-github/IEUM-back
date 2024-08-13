@@ -148,7 +148,7 @@ export class FolderController {
     @Req() req,
     @Query() placesListReqDto: PlacesListReqDto,
   ): Promise<PlacesListResDto> {
-    return this.folderService.getPlacesList(1, placesListReqDto);
+    return this.folderService.getPlacesList(req.user.id, placesListReqDto);
   }
 
   @CustomAuthSwaggerDecorator({
@@ -161,7 +161,11 @@ export class FolderController {
     @Param('folderId') folderId: number,
     @Query() placesListReqDto: PlacesListReqDto,
   ): Promise<PlacesListResDto> {
-    return this.folderService.getPlacesList(1, placesListReqDto, folderId);
+    return this.folderService.getPlacesList(
+      req.user.id,
+      placesListReqDto,
+      folderId,
+    );
   }
 
   @ApiOperation({ summary: '디폴트 폴더에 장소 추가' })
