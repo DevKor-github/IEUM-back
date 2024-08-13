@@ -30,6 +30,8 @@ import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.d
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
+import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
+import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 
 @ApiTags('폴더 API')
 @Controller('folders')
@@ -70,6 +72,12 @@ export class FolderController {
     status: 200,
     description: '폴더 삭제 성공.',
   })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.ForbiddenFolder,
+      message: '해당 폴더의 소유주가 아니거나 Default 폴더는 삭제 할 수 없음.',
+    },
+  ])
   @Delete('/:id')
   async deleteFolder(@Param('id') folderId: number, @Req() req) {
     return await this.folderService.deleteFolder(req.user.id, folderId);
@@ -98,6 +106,12 @@ export class FolderController {
     status: 200,
     description: '폴더에서 장소 삭제 성공.',
   })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.ForbiddenFolder,
+      message: '해당 폴더의 소유주가 아님.',
+    },
+  ])
   @Delete('/:folderId/folder-places')
   async deleteFolderPlaces(
     @Param('folderId') folderId: number,
