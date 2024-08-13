@@ -38,7 +38,10 @@ export class FolderController {
 
   @UseGuards(AuthGuard('NCaccess'))
   @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's folders list." })
+  @ApiOperation({
+    summary:
+      "Get User's folders list: type 0= Default, type 1=Insta, type 2= Custom",
+  })
   @ApiResponse({ type: FoldersListResDto })
   @Get('/')
   async getFoldersList(@Req() req): Promise<FoldersListResDto> {
