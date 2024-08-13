@@ -147,7 +147,7 @@ export class FolderController {
 
   @CustomAuthSwaggerDecorator({
     summary: "Get User's places-list",
-    type: PlacesListReqDto,
+    type: PlacesListResDto,
   })
   @Get('/default/places-list')
   async getAllPlacesList(
@@ -159,7 +159,7 @@ export class FolderController {
 
   @CustomAuthSwaggerDecorator({
     summary: "Get User's places-list by folder",
-    type: PlacesListReqDto,
+    type: PlacesListResDto,
   })
   @Get('/:folderId/places-list')
   async getPlaceListByFolder(
