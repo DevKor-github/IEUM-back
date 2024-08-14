@@ -22,6 +22,7 @@ import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class PlaceService {
@@ -31,6 +32,7 @@ export class PlaceService {
     private readonly placeImageRepository: PlaceImageRepository,
     private readonly placeDetailRepository: PlaceDetailRepository,
     private readonly tagService: TagService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
@@ -145,5 +147,16 @@ export class PlaceService {
   async createPlaceByKeyword(keyword: string) {
     const kakaoPlace = await this.searchKakaoPlaceByKeyword(keyword);
     return await this.placeRepository.saveByKakaoPlace(kakaoPlace.documents[0]);
+  }
+
+  async savePlaceImage(placeName: string, placeImage: Express.Multer.File) {
+    //transaction적용.
+    const place = await this.placeRepository.getPlaceByPlaceName(placeName);
+    if (!place) {
+      throw new NotValidPlaceException('해당 명의 장소가 존재하지 않습니다.');
+    }
+    const imageUrl = await this.s3Service.uploadPlaceImage(placeImage);
+
+    return await this.placeImageRepository.savePlaceImage(place.id, imageUrl);
   }
 }

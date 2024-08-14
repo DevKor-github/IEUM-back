@@ -6,6 +6,7 @@ import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/repositories/place-image.repository';
 import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 import { TagModule } from 'src/tag/tag.module';
+import { S3Service } from 'src/s3/s3.service';
 
 @Module({
   controllers: [PlaceController],
@@ -15,6 +16,7 @@ import { TagModule } from 'src/tag/tag.module';
     PlaceTagRepository,
     PlaceImageRepository,
     PlaceDetailRepository,
+    S3Service,
   ],
   imports: [TagModule],
   exports: [PlaceService],
