@@ -10,7 +10,7 @@ import {
 import { CollectionService } from './collection.service';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
-import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
+import { CrawlingCollectionReqDto } from '../crawling/dtos/crawling-collection-req.dto';
 
 @ApiTags('게시글 API')
 @Controller('collections')
@@ -42,18 +42,18 @@ export class CollectionController {
     return await this.collectionService.getCollectionPlaces(1, collectionId);
   }
 
-  @ApiOperation({ summary: '크롤링을 위해 링크 전송' })
-  @Post('')
-  async sendForCrawling(@Body() body: CrawlingCollectionReqDto) {
-    return await this.collectionService.sendForCrawling(body);
-  }
+  // @ApiOperation({ summary: '크롤링을 위해 링크 전송' })
+  // @Post('')
+  // async sendForCrawling(@Body() body: CrawlingCollectionReqDto) {
+  //   return await this.collectionService.sendForCrawling(body);
+  // }
 
-  @ApiOperation({ summary: '크롤링 결과를 통해 게시글 생성' })
-  @Post('crawled-results')
-  async createCollection(
-    @Body()
-    body: CreateCollectionReqDto,
-  ) {
-    return await this.collectionService.createCollection(body);
-  }
+  // @ApiOperation({ summary: '크롤링 결과를 통해 게시글 생성' })
+  // @Post('crawled-results')
+  // async createCollection(
+  //   @Body()
+  //   body: CreateCollectionReqDto,
+  // ) {
+  //   return await this.collectionService.createCollection(body);
+  // }
 }

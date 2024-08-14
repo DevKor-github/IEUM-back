@@ -13,6 +13,9 @@ export class CustomResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) => {
+        if (context.getType() === 'rmq') {
+          return data;
+        }
         return {
           statusCode:
             data !== undefined

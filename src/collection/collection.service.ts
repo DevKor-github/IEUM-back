@@ -3,7 +3,7 @@ import { CollectionPlaceRepository } from 'src/repositories/collection-place.rep
 import { CollectionRepository } from 'src/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { PlaceService } from 'src/place/place.service';
-import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
+import { CrawlingCollectionReqDto } from '../crawling/dtos/crawling-collection-req.dto';
 import { UserService } from 'src/user/user.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
