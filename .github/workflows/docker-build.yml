@@ -94,4 +94,4 @@ jobs:
           sudo docker stop ${{ env.DOCKER_CONTAINER_DEV }} || true
           sudo docker rm ${{ env.DOCKER_CONTAINER_DEV }} || true
           sudo docker rmi ${{ env.DOCKER_IMAGE_DEV }}:latest || true
-          sudo docker run --env-file ./.env --platform linux/amd64 -p 4040:${{secrets.PORT}} -d --name ${{ env.DOCKER_CONTAINER_DEV }} --restart always ${{ env.DOCKER_IMAGE_DEV }}:latest
+          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_DEV }} --network host --restart always ${{ env.DOCKER_IMAGE_DEV }}:latest
