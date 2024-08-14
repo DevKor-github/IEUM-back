@@ -8,31 +8,22 @@ import { CrawlingController } from './crawling.controller';
 
 @Module({
   imports: [
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: 'amqp://localhost:5672',
-      exchanges: [
-        { name: 'ieum_exchange', type: 'direct', options: { durable: true } },
-        {
-          name: 'ieum_retry',
-          type: 'direct',
-          options: { durable: true },
-        },
-        { name: 'ieum_failure', type: 'direct', options: { durable: true } },
-      ],
-      queues: [
-        // {
-        //   name: 'request_queue',
-        //   exchange: 'ieum_exchange',
-        //   routingKey: 'request',
-        //   options: {
-        //     deadLetterExchange: 'ieum_retry',
-        //     deadLetterRoutingKey: 'retry',
-        //   },
-        // },
-      ],
-      prefetchCount: 1,
-      connectionInitOptions: { wait: true, timeout: 20000 },
-      enableDirectReplyTo: false,
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      useFactory: async () => ({
+        uri: process.env.RABBITMQ_URI,
+        exchanges: [
+          { name: 'ieum_exchange', type: 'direct', options: { durable: true } },
+          {
+            name: 'ieum_retry',
+            type: 'direct',
+            options: { durable: true },
+          },
+          { name: 'ieum_failure', type: 'direct', options: { durable: true } },
+        ],
+        prefetchCount: 1,
+        connectionInitOptions: { wait: true, timeout: 20000 },
+        enableDirectReplyTo: false,
+      }),
     }),
     CollectionModule,
   ],
