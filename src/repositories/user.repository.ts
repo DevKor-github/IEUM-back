@@ -45,6 +45,9 @@ export class UserRepository extends Repository<User> {
   async fillUserInfo(firstLoginReqDto: FirstLoginReqDto, id: number) {
     const user = await this.findUserById(id);
 
+    user.isAdConfirmed = firstLoginReqDto.isAdConfirmed
+      ? firstLoginReqDto.isAdConfirmed
+      : false;
     user.nickname = firstLoginReqDto.nickname;
     user.birthDate = new Date(firstLoginReqDto.birthDate);
     user.sex = firstLoginReqDto.sex;

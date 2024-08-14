@@ -13,11 +13,17 @@ import {
   MinLength,
   MaxLength,
   IsEnum,
+  IsOptional,
 } from 'class-validator';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import { User } from 'src/entities/user.entity';
 
 export class FirstLoginReqDto {
+  @ApiProperty({ nullable: true })
+  @IsBoolean()
+  @IsOptional()
+  isAdConfirmed?: boolean;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -115,6 +121,7 @@ export class UserPreferenceDto extends PickType(FirstLoginReqDto, [
 }
 
 export class FirstLoginResDto extends PickType(FirstLoginReqDto, [
+  'isAdConfirmed',
   'nickname',
   'birthDate',
   'sex',
@@ -142,6 +149,7 @@ export class FirstLoginResDto extends PickType(FirstLoginReqDto, [
 
   constructor(user: User) {
     super(FirstLoginReqDto);
+    this.isAdConfirmed = user.isAdConfirmed;
     this.uuid = user.uuid;
     this.oAuthId = user.oAuthId;
     this.oAuthPlatform = user.oAuthPlatform;
