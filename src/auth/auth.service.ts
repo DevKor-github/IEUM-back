@@ -32,6 +32,10 @@ import {
   KakaoAccessTokenData,
   KakaoAccessTokenPayload,
 } from 'src/common/interfaces/kakao-jwt-format.interface';
+import {
+  NaverAccessTokenData,
+  NaverAccessTokenResponse,
+} from 'src/common/interfaces/naver-jwt-format.interface';
 
 @Injectable()
 export class AuthService {
@@ -107,10 +111,13 @@ export class AuthService {
       case OAuthPlatform.Kakao:
         oAuthId = await this.verifyKakaoAccessToken(oAuthToken);
         break;
-      // case OAuthPlatform.Naver:
-      //   oAuthId =
-      //   break;
+      case OAuthPlatform.Naver:
+        oAuthId = await this.verifyNaverAccessToken(oAuthToken);
+        break;
       default:
+        throw new BadRequestException(
+          '해당 플랫폼의 social login 존재하지 않음.',
+        );
         break;
     }
     return await this.socialLogin(oAuthId, oAuthPlatform);
@@ -289,6 +296,26 @@ export class AuthService {
       );
       console.log(response.data);
       return String(response.data.id);
+    } catch (error) {
+      throw new BadRequestException(`토큰 검증 실패: ${error}`);
+    }
+  }
+
+  //-----------------------------------네이버------------------------------------------------------------
+
+  async verifyNaverAccessToken(accessToken: string): Promise<string> {
+    try {
+      const response: NaverAccessTokenData = await axios.get(
+        'https://openapi.naver.com/v1/nid/me',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      // console.log(response);
+      console.log(response.data.response);
+      return response.data.response.id;
     } catch (error) {
       throw new BadRequestException(`토큰 검증 실패: ${error}`);
     }
