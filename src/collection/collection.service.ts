@@ -1,9 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CollectionPlaceRepository } from 'src/repositories/collection-place.repository';
 import { CollectionRepository } from 'src/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { PlaceService } from 'src/place/place.service';
-import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
+import { CrawlingCollectionReqDto } from '../crawling/dtos/crawling-collection-req.dto';
 import { UserService } from 'src/user/user.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
@@ -12,6 +12,7 @@ import { ConflictedCollectionException } from 'src/common/exceptions/collection.
 
 @Injectable()
 export class CollectionService {
+  private readonly logger = new Logger(CollectionService.name);
   constructor(
     private readonly collectionRepository: CollectionRepository,
     private readonly collectionPlaceRepository: CollectionPlaceRepository,
@@ -21,37 +22,42 @@ export class CollectionService {
 
   @Transactional()
   async createCollection(createCollectionReq: CreateCollectionReqDto) {
-    const user = await this.userService.getUserByUuid(
-      createCollectionReq.userUuid,
-    );
+    try {
+      const user = await this.userService.getUserByUuid(
+        createCollectionReq.userUuid,
+      );
 
-    if (
-      await this.collectionRepository.isDuplicatedCollection(
+      if (
+        await this.collectionRepository.isDuplicatedCollection(
+          user.id,
+          createCollectionReq.link,
+        )
+      ) {
+        throw new ConflictedCollectionException('이미 저장한 게시글이에요!');
+      }
+
+      const collection = await this.collectionRepository.createCollection(
         user.id,
         createCollectionReq.link,
-      )
-    ) {
-      throw new ConflictedCollectionException('이미 저장한 게시글이에요!');
+        createCollectionReq.content,
+      );
+
+      await Promise.all(
+        createCollectionReq.placeKeywords.map(async (placeKeyword) => {
+          const place =
+            await this.placeService.createPlaceByKakao(placeKeyword);
+          this.collectionPlaceRepository.createCollectionPlace(
+            collection.id,
+            place.id,
+            placeKeyword,
+          );
+        }),
+      );
+
+      return collection;
+    } catch (e) {
+      this.logger.error(e.message, e.stack);
     }
-
-    const collection = await this.collectionRepository.createCollection(
-      user.id,
-      createCollectionReq.link,
-      createCollectionReq.content,
-    );
-
-    await Promise.all(
-      createCollectionReq.placeKeywords.map(async (placeKeyword) => {
-        const place = await this.placeService.createPlaceByKakao(placeKeyword);
-        this.collectionPlaceRepository.createCollectionPlace(
-          collection.id,
-          place.id,
-          placeKeyword,
-        );
-      }),
-    );
-
-    return collection;
   }
 
   async sendForCrawling(body: CrawlingCollectionReqDto) {

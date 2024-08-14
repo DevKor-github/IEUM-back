@@ -10,8 +10,6 @@ import {
 } from '@nestjs/common';
 import { CollectionService } from './collection.service';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
-import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
@@ -76,18 +74,18 @@ export class CollectionController {
     );
   }
 
-  @ApiOperation({ summary: '크롤링을 위해 링크 전송' })
-  @Post('')
-  async sendForCrawling(@Body() body: CrawlingCollectionReqDto) {
-    return await this.collectionService.sendForCrawling(body);
-  }
+  // @ApiOperation({ summary: '크롤링을 위해 링크 전송' })
+  // @Post('')
+  // async sendForCrawling(@Body() body: CrawlingCollectionReqDto) {
+  //   return await this.collectionService.sendForCrawling(body);
+  // }
 
-  @ApiOperation({ summary: '크롤링 결과를 통해 게시글 생성' })
-  @Post('crawled-results')
-  async createCollection(
-    @Body()
-    body: CreateCollectionReqDto,
-  ) {
-    return await this.collectionService.createCollection(body);
-  }
+  // @ApiOperation({ summary: '크롤링 결과를 통해 게시글 생성' })
+  // @Post('crawled-results')
+  // async createCollection(
+  //   @Body()
+  //   body: CreateCollectionReqDto,
+  // ) {
+  //   return await this.collectionService.createCollection(body);
+  // }
 }
