@@ -110,7 +110,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
         'place.address AS address',
         'place.primary_category AS category ',
         // 'placeImage.url',
-        'ARRAY_AGG(placeImage.url) AS "imageUrls"',
+        'ARRAY_AGG(placeImage.url ORDER BY placeImage.id DESC) AS "imageUrls"',
       ])
       .where('folder.user_id = :userId', { userId })
       .groupBy('place.id');

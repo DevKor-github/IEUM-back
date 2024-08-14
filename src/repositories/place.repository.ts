@@ -56,6 +56,7 @@ export class PlaceRepository extends Repository<Place> {
         'placeImage',
       ])
       .where('place.id = :placeId', { placeId })
+      .orderBy('placeImage.id', 'DESC')
       .getOne();
 
     return placePreviewInfo;
