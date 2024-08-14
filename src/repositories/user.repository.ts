@@ -24,6 +24,11 @@ export class UserRepository extends Repository<User> {
     return await this.findOne({ where: { uuid: uuid } });
   }
 
+  async findUserByNickname(nickname: string): Promise<User> {
+    const user = this.findOne({ where: { nickname: nickname } });
+    return user;
+  }
+
   async softDeleteUser(id: number) {
     // const user = await this.findUserById(id);
     // user.deletedAt = new Date();

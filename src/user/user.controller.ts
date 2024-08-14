@@ -19,11 +19,25 @@ import {
 } from '@nestjs/swagger';
 import { FirstLoginReqDto, FirstLoginResDto } from './dtos/first-login.dto';
 import { UserService } from './user.service';
+import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 
 @ApiTags('유저 API')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @ApiOperation({ summary: '닉네임 중복 확인.' })
+  @ApiResponse({
+    status: 200,
+    description: '닉네임 중복 여부 반환: true= 중복됨, false= 중복안됨',
+    type: NickNameDuplicateCheckResDto,
+  })
+  @Get('/nickname')
+  async checkDuplicateNickName(
+    @Query('nickname') nickname: string,
+  ): Promise<NickNameDuplicateCheckResDto> {
+    return this.userService.checkDuplicateNickName(nickname);
+  }
 
   //최초 로그인시 유저 정보 받아오기.
   @UseGuards(AuthGuard('access'))
