@@ -89,6 +89,10 @@ jobs:
           echo "WEBHOOK_URL=${{ secrets.WEBHOOK_URL}}" >> .env
           echo "RABBITMQ_URI=${{ secrets.RABBITMQ_URI}}" >> .env
           echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY}}" >> .env
+          echo "AWS_REGION=${{ secrets.AWS_REGION}}" >> .env
+          echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME}}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID}}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY}}" >> .env
 
           cat .env
       - name: Run Docker for develop
