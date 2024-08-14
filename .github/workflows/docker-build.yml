@@ -86,6 +86,7 @@ jobs:
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY}}" >> .env
           echo "SECRET_KEY_ACCESS=${{ secrets.SECRET_KEY_ACCESS}}" >> .env
           echo "SECRET_KEY_REFRESH=${{ secrets.SECRET_KEY_REFRESH}}" >> .env
+          echo "WEBHOOK_URL=${{ secrets.WEBHOOK_URL}}" >> .env
 
           cat .env
       - name: Run Docker for develop

@@ -1,5 +1,6 @@
 import {
   CallHandler,
+  ContextType,
   ExecutionContext,
   Injectable,
   NestInterceptor,
@@ -8,12 +9,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CustomResponse } from '../enums/custom-response.enum';
 
+type ExtendedContextType = ContextType | 'rmq';
+
 @Injectable()
 export class CustomResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) => {
-        if (context.getType() === 'rmq') {
+        if ((context.getType() as ExtendedContextType) === 'rmq') {
           return data;
         }
         return {
