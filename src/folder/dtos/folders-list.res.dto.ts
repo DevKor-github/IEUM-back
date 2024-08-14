@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
+import { FolderType } from 'src/common/enums/folder-type.enum';
 import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 import {
   createNormalList,
@@ -14,11 +15,15 @@ export class FolderResDto {
   name: string;
 
   @ApiProperty()
+  type: FolderType;
+
+  @ApiProperty()
   placeCnt: number;
 
   constructor(rawFolderInfo: RawFolderInfo) {
     this.id = rawFolderInfo.id;
     this.name = rawFolderInfo.name;
+    this.type = rawFolderInfo.type;
     this.placeCnt = rawFolderInfo.placeCnt;
   }
 }

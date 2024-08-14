@@ -16,6 +16,7 @@ import { CustomResponseInterceptor } from './common/interceptors/custom-response
 import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
+import { S3Service } from './s3/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
 
 @Module({
@@ -60,6 +61,7 @@ import { CrawlingModule } from './crawling/crawling.module';
       useClass: CustomResponseInterceptor,
     },
     { provide: APP_FILTER, useClass: CustomExceptionFilter },
+    S3Service,
   ],
 })
 export class AppModule {}

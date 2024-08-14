@@ -1,8 +1,28 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { PlaceService } from './place.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
+import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
+import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
+import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadPlaceImageReqDto } from './dtos/upload-place-image-req.dto';
+import { PlaceImage } from 'src/entities/place-image.entity';
 
 @ApiTags('장소 API')
 @Controller('places')
@@ -10,6 +30,13 @@ export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
   @ApiOperation({ summary: '특정 장소의 상세 정보 조회' })
+  @ApiResponse({ status: 200, type: PlaceDetailResDto })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.NotValidPlace,
+      message: '해당 장소가 존재하지 않음.',
+    },
+  ])
   @Get(':placeId')
   async getPlaceDetailById(@Param('placeId') placeId: string) {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
@@ -55,7 +82,13 @@ export class PlaceController {
   // }
 
   @ApiOperation({ summary: "Get place's preview info from marker" })
-  @ApiResponse({ type: PlacePreviewResDto })
+  @ApiResponse({ status: 200, type: PlacePreviewResDto })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.NotValidPlace,
+      message: '해당 장소가 존재하지 않음.',
+    },
+  ])
   @Get('/:id/preview')
   async getPlacePreviewInfoById(
     @Param('id') id: number,
@@ -70,4 +103,37 @@ export class PlaceController {
   // ) {
   //   return await this.placeService.createPlaceImage(createPlaceImageReqDto);
   // }
+
+  @ApiResponse({
+    status: 201,
+    description: '장소 이미지 저장 성공',
+    type: PlaceImage,
+  })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.NotValidPlace,
+      message: '해당 장소가 존재하지 않음.',
+    },
+    {
+      statusCode: ErrorCodeEnum.BadRequestImageFile,
+      message: '파일이 업로드 되지 않았거나 파일명이 존재하지 않음.',
+    },
+    {
+      statusCode: ErrorCodeEnum.AWSS3Error,
+      message: 'S3에 파일 업로드 중 문제 발생.',
+    },
+  ])
+  @ApiOperation({ summary: '장소 사진 장소명으로 저장' })
+  @UseInterceptors(FileInterceptor('placeImage'))
+  @ApiConsumes('multipart/form-data')
+  @Post('/image')
+  async savePlaceImage(
+    @Body() uploadPlaceImageReqDto: UploadPlaceImageReqDto,
+    @UploadedFile() placeImage: Express.Multer.File,
+  ) {
+    return await this.placeService.savePlaceImage(
+      uploadPlaceImageReqDto.placeName,
+      placeImage,
+    );
+  }
 }

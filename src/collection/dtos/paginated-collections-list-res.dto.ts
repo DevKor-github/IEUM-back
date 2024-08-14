@@ -39,7 +39,9 @@ export class CollectionDto {
 }
 
 export class CollectionsListResDto {
+  @ApiProperty()
   meta: CursorPaginationMeta<RawCollection>;
+  @ApiProperty({ type: [CollectionDto] })
   data: CollectionDto[];
 
   constructor(rawCollections: RawCollection[]) {

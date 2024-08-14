@@ -188,6 +188,7 @@ export class FolderService {
       placesListReqDto,
       folderId,
     );
+    console.log(rawPlacesInfoList);
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
 }

@@ -13,7 +13,7 @@ export function CustomAuthSwaggerDecorator(
   options: CustomAuthSwaggerDecoratorOptions,
 ) {
   return applyDecorators(
-    //UseGuards(AuthGuard('access')),
+    UseGuards(AuthGuard('access')),
     ApiBearerAuth('Access Token'),
     ApiOperation({ summary: options.summary }),
     ApiResponse({

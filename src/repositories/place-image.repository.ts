@@ -9,4 +9,12 @@ export class PlaceImageRepository extends Repository<PlaceImage> {
   constructor(private readonly dataSource: DataSource) {
     super(PlaceImage, dataSource.createEntityManager());
   }
+
+  async savePlaceImage(placeId: number, imageUrl: string): Promise<PlaceImage> {
+    const placeImage = new PlaceImage();
+    placeImage.placeId = placeId;
+    placeImage.url = imageUrl;
+
+    return await this.save(placeImage);
+  }
 }

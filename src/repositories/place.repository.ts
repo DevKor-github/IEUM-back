@@ -13,6 +13,10 @@ export class PlaceRepository extends Repository<Place> {
     super(Place, dataSource.createEntityManager());
   }
 
+  async getPlaceByPlaceName(placeName: string): Promise<Place> {
+    return await this.findOne({ where: { name: placeName } });
+  }
+
   async getPlaceDetailById(placeId: number): Promise<any> {
     return await this.createQueryBuilder('place')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
@@ -52,6 +56,7 @@ export class PlaceRepository extends Repository<Place> {
         'placeImage',
       ])
       .where('place.id = :placeId', { placeId })
+      .orderBy('placeImage.id', 'DESC')
       .getOne();
 
     return placePreviewInfo;

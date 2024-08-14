@@ -13,6 +13,11 @@ export enum ErrorCodeEnum {
   ForbiddenFolder = 4002,
   // aa - 50 : place
   NotValidPlace = 5001,
+  BadRequestImageFile = 5002,
+
+  // aa = 70 : AWS Error
+  AWSS3Error = 7000,
+
   // aa = 80 : Server Exception
   DefaultInternalServerError = 8000,
   // aa = 90 : Http default exception
