@@ -51,8 +51,8 @@ export class AuthController {
   })
   @ApiResponse({ status: 201, description: '소셜 로그인 성공' })
   async socialLogin(@Body() loginDto: LoginDto): Promise<UserLoginResDto> {
-    return this.authService.socialLogin(
-      loginDto.oAuthId,
+    return this.authService.socialLoginTokenVerification(
+      loginDto.oAuthToken,
       loginDto.oAuthPlatform,
     );
   }
