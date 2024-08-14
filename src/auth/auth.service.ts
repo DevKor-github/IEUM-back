@@ -19,7 +19,7 @@ import {
   AppleNotificationPayload,
   DecodedAppleIdToken,
   DecodedAppleNotificationToken,
-} from 'src/common/interfaces/apple-notification-jwt-format.interface';
+} from 'src/common/interfaces/apple-jwt-format.interface';
 import { UserService } from 'src/user/user.service';
 import {
   DefaultBadRequestException,
@@ -27,6 +27,11 @@ import {
 } from 'src/common/exceptions/default.exception';
 import { json } from 'body-parser';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
+import axios from 'axios';
+import {
+  KakaoAccessTokenData,
+  KakaoAccessTokenPayload,
+} from 'src/common/interfaces/kakao-jwt-format.interface';
 
 @Injectable()
 export class AuthService {
@@ -99,9 +104,9 @@ export class AuthService {
       case OAuthPlatform.Apple:
         oAuthId = await this.verifyAppleIdToken(oAuthToken);
         break;
-      // case OAuthPlatform.Kakao:
-      //   oAuthId =
-      //   break;
+      case OAuthPlatform.Kakao:
+        oAuthId = await this.verifyKakaoAccessToken(oAuthToken);
+        break;
       // case OAuthPlatform.Naver:
       //   oAuthId =
       //   break;
@@ -272,5 +277,20 @@ export class AuthService {
 
   // ------------------------------------카카오 ----------------------------------------------------------
 
-  // async verifyKakaoAccessToken(accessToken: string) {}
+  async verifyKakaoAccessToken(accessToken: string): Promise<string> {
+    try {
+      const response: KakaoAccessTokenData = await axios.get(
+        'https://kapi.kakao.com/v1/user/access_token_info',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response.data);
+      return String(response.data.id);
+    } catch (error) {
+      throw new BadRequestException(`토큰 검증 실패: ${error}`);
+    }
+  }
 }
