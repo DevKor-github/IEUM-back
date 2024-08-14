@@ -17,8 +17,14 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login.dto';
-import { UserLoginResDto } from './dtos/user-login-res.dto';
+import {
+  NewAccessTokenResDto,
+  UserLoginResDto,
+} from './dtos/user-login-res.dto';
 import { AppleNotificationDto } from './dtos/apple-notification.dto';
+import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
+import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
+import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 
 @Controller('auth')
 @ApiTags('인증/인가 API')
@@ -28,14 +34,28 @@ export class AuthController {
   @UseGuards(AuthGuard('refresh'))
   @Get('/refresh')
   @ApiBearerAuth('Refresh Token')
-  @ApiResponse({ status: 200, description: 'Access Token 재발급 성공' })
+  @ApiResponse({
+    status: 200,
+    description: 'Access Token 재발급 성공',
+    type: NewAccessTokenResDto,
+  })
   @ApiOperation({
     summary: 'Access Token 재발급',
   })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.NotValidRefresh,
+      message: '유효한 refresh 토큰이 아님.',
+    },
+    {
+      statusCode: ErrorCodeEnum.DefaultUnauthorized,
+      message: '인증 실패로 인한 권한 없음.',
+    },
+  ])
   //header 값 가져오는 데코레이터
   //header에 authorization 필드가 인증 정보를 가지고 있음.
   // req.headers.authorization.substring(7),
-  renewAccessToken(@Req() req) {
+  renewAccessToken(@Req() req): Promise<NewAccessTokenResDto> {
     return this.authService.newAccessToken(
       //passport 인증은 jwt에서 추출한 정보를 user 속성에 담는다!!!
       req.user.id,
@@ -49,7 +69,11 @@ export class AuthController {
   @ApiOperation({
     summary: 'social sign in / login',
   })
-  @ApiResponse({ status: 201, description: '소셜 로그인 성공' })
+  @ApiResponse({
+    status: 201,
+    description: '소셜 로그인 성공',
+    type: UserLoginResDto,
+  })
   async socialLogin(@Body() loginDto: LoginDto): Promise<UserLoginResDto> {
     return this.authService.socialLoginTokenVerification(
       loginDto.oAuthToken,

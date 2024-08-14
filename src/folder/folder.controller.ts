@@ -30,6 +30,8 @@ import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.d
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
+import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
+import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 
 @ApiTags('폴더 API')
 @Controller('folders')
@@ -38,7 +40,10 @@ export class FolderController {
 
   @UseGuards(AuthGuard('NCaccess'))
   @ApiBearerAuth('Access Token')
-  @ApiOperation({ summary: "Get User's folders list." })
+  @ApiOperation({
+    summary:
+      "Get User's folders list: type 0= Default, type 1=Insta, type 2= Custom",
+  })
   @ApiResponse({ type: FoldersListResDto })
   @Get('/')
   async getFoldersList(@Req() req): Promise<FoldersListResDto> {
@@ -56,7 +61,10 @@ export class FolderController {
     @Body() createFolderReqDto: CreateFolderReqDto,
     @Req() req,
   ) {
-    return await this.folderService.createNewFolder(1, createFolderReqDto);
+    return await this.folderService.createNewFolder(
+      req.user.id,
+      createFolderReqDto,
+    );
   }
 
   @CustomAuthSwaggerDecorator({
@@ -64,9 +72,15 @@ export class FolderController {
     status: 200,
     description: '폴더 삭제 성공.',
   })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.ForbiddenFolder,
+      message: '해당 폴더의 소유주가 아니거나 Default 폴더는 삭제 할 수 없음.',
+    },
+  ])
   @Delete('/:id')
   async deleteFolder(@Param('id') folderId: number, @Req() req) {
-    return await this.folderService.deleteFolder(1, folderId);
+    return await this.folderService.deleteFolder(req.user.id, folderId);
   }
 
   @CustomAuthSwaggerDecorator({
@@ -81,7 +95,7 @@ export class FolderController {
     @Req() req,
   ) {
     return await this.folderService.changeFolderName(
-      1,
+      req.user.id,
       folderId,
       newFolderNameDto.name,
     );
@@ -92,6 +106,12 @@ export class FolderController {
     status: 200,
     description: '폴더에서 장소 삭제 성공.',
   })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.ForbiddenFolder,
+      message: '해당 폴더의 소유주가 아님.',
+    },
+  ])
   @Delete('/:folderId/folder-places')
   async deleteFolderPlaces(
     @Param('folderId') folderId: number,
@@ -99,7 +119,7 @@ export class FolderController {
     @Req() req,
   ) {
     return await this.folderService.deleteFolderPlaces(
-      1,
+      req.user.id,
       folderId,
       deletePlacesReqDto.placeIds,
     );
@@ -115,7 +135,7 @@ export class FolderController {
     @Req() req,
   ): Promise<MarkersListResDto> {
     return await this.folderService.getMarkers(
-      1,
+      req.user.id,
       markersReqDto.addressList,
       markersReqDto.categoryList,
     );
@@ -132,7 +152,7 @@ export class FolderController {
     @Req() req,
   ): Promise<MarkersListResDto> {
     return await this.folderService.getMarkers(
-      1,
+      req.user.id,
       markersReqDto.addressList,
       markersReqDto.categoryList,
       folderId,
@@ -141,19 +161,19 @@ export class FolderController {
 
   @CustomAuthSwaggerDecorator({
     summary: "Get User's places-list",
-    type: PlacesListReqDto,
+    type: PlacesListResDto,
   })
   @Get('/default/places-list')
   async getAllPlacesList(
     @Req() req,
     @Query() placesListReqDto: PlacesListReqDto,
   ): Promise<PlacesListResDto> {
-    return this.folderService.getPlacesList(1, placesListReqDto);
+    return this.folderService.getPlacesList(req.user.id, placesListReqDto);
   }
 
   @CustomAuthSwaggerDecorator({
     summary: "Get User's places-list by folder",
-    type: PlacesListReqDto,
+    type: PlacesListResDto,
   })
   @Get('/:folderId/places-list')
   async getPlaceListByFolder(
@@ -161,28 +181,38 @@ export class FolderController {
     @Param('folderId') folderId: number,
     @Query() placesListReqDto: PlacesListReqDto,
   ): Promise<PlacesListResDto> {
-    return this.folderService.getPlacesList(1, placesListReqDto, folderId);
+    return this.folderService.getPlacesList(
+      req.user.id,
+      placesListReqDto,
+      folderId,
+    );
   }
 
-  @ApiOperation({ summary: '디폴트 폴더에 장소 추가' })
+  @CustomAuthSwaggerDecorator({
+    summary: '디폴트 폴더에 장소 추가',
+  })
   @Post('/default/folder-places')
   async createFolderPlacesIntoDefaultFolder(
     @Body() createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+    @Req() req,
   ) {
     return await this.folderService.createFolderPlacesIntoDefaultFolder(
-      1,
+      req.user.id,
       createFolderPlacesReqDto,
     );
   }
 
-  @ApiOperation({ summary: '특정 폴더에 장소 추가' })
+  @CustomAuthSwaggerDecorator({
+    summary: '특정 폴더에 장소 추가',
+  })
   @Post('/:folderId/folder-places')
   async createFolderPlacesIntoFolder(
     @Param('folderId') folderId: number,
     @Body() createFolderPlacesReqDto: CreateFolderPlacesReqDto,
+    @Req() req,
   ) {
     return await this.folderService.createFolderPlacesIntoSpecificFolder(
-      1,
+      req.user.id,
       createFolderPlacesReqDto,
       folderId,
     );

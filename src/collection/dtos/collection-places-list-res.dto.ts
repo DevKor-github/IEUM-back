@@ -41,7 +41,9 @@ export class CollectionPlaceDto {
 }
 
 export class CollectionPlacesListResDto {
+  @ApiProperty()
   meta: NormalListMeta<RawCollectionPlace>; //GET /collections에서 정의한 listMeta 재활용
+  @ApiProperty({ type: [CollectionPlaceDto] })
   data: CollectionPlaceDto[];
 
   constructor(rawCollectionPlaces: RawCollectionPlace[], collectionId: number) {

@@ -103,13 +103,17 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     const query = this.createQueryBuilder('folderPlace')
       .leftJoin('folderPlace.folder', 'folder')
       .leftJoinAndSelect('folderPlace.place', 'place')
+      .leftJoinAndSelect('place.placeImages', 'placeImage')
       .select([
         'place.id AS id',
         'place.name AS name',
         'place.address AS address',
         'place.primary_category AS category ',
+        // 'placeImage.url',
+        'ARRAY_AGG(placeImage.url ORDER BY placeImage.id DESC) AS "imageUrls"',
       ])
-      .where('folder.user_id = :userId', { userId });
+      .where('folder.user_id = :userId', { userId })
+      .groupBy('place.id');
 
     //folder별로 보여줘야 한다면
     if (folderId !== undefined) {
@@ -153,6 +157,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     query.orderBy('place.id', 'DESC').limit(placesListReqDto.take + 1);
 
     const rawPlacesInfoList = await query.getRawMany();
+    console.log(rawPlacesInfoList);
     return rawPlacesInfoList;
   }
 }

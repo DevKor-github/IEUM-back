@@ -6,3 +6,9 @@ export class NotValidPlaceException extends CustomException {
     super(ErrorCodeEnum.NotValidPlace, message);
   }
 }
+
+export class BadRequestImageFileException extends CustomException {
+  constructor(message?: string) {
+    super(ErrorCodeEnum.BadRequestImageFile, message);
+  }
+}

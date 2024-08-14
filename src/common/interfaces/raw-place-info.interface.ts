@@ -5,4 +5,5 @@ export interface RawPlaceInfo extends RawDataForCursorPagination {
   name: string;
   address: string;
   category: string;
+  imageUrls: string[];
 }
