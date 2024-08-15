@@ -9,6 +9,7 @@ import { PreferenceRepository } from 'src/repositories/preference.repository';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import { FolderRepository } from 'src/repositories/folder.repository';
 import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
+import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 
 @Injectable()
 export class UserService {
@@ -53,5 +54,16 @@ export class UserService {
       throw new NotValidUserException('존재하지 않는 계정이에요.');
     }
     return user;
+  }
+
+  async checkDuplicateNickName(
+    nickname: string,
+  ): Promise<NickNameDuplicateCheckResDto> {
+    const user = await this.userRepository.findUserByNickname(nickname);
+    if (user) {
+      return new NickNameDuplicateCheckResDto(true);
+    } else {
+      return new NickNameDuplicateCheckResDto(false);
+    }
   }
 }

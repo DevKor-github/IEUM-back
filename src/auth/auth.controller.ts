@@ -64,8 +64,6 @@ export class AuthController {
   }
 
   // -------------------------- 소셜 로그인 --------------------------------
-
-  @Post('/login/social')
   @ApiOperation({
     summary: 'social sign in / login',
   })
@@ -74,9 +72,16 @@ export class AuthController {
     description: '소셜 로그인 성공',
     type: UserLoginResDto,
   })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.DefaultBadRequest,
+      message: '입력받은 토큰에 문제가 있어 검증이 불가하거나 검증에 실패함.',
+    },
+  ])
+  @Post('/login/social')
   async socialLogin(@Body() loginDto: LoginDto): Promise<UserLoginResDto> {
-    return this.authService.socialLogin(
-      loginDto.oAuthId,
+    return this.authService.socialLoginTokenVerification(
+      loginDto.oAuthToken,
       loginDto.oAuthPlatform,
     );
   }

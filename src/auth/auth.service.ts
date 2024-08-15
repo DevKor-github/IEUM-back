@@ -20,8 +20,9 @@ import * as jwksClient from 'jwks-rsa';
 
 import {
   AppleNotificationPayload,
-  DecodedToken,
-} from 'src/common/interfaces/apple-notification-jwt-format.interface';
+  DecodedAppleIdToken,
+  DecodedAppleNotificationToken,
+} from 'src/common/interfaces/apple-jwt-format.interface';
 import { UserService } from 'src/user/user.service';
 import {
   DefaultBadRequestException,
@@ -29,6 +30,15 @@ import {
 } from 'src/common/exceptions/default.exception';
 import { json } from 'body-parser';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
+import axios from 'axios';
+import {
+  KakaoAccessTokenData,
+  KakaoAccessTokenPayload,
+} from 'src/common/interfaces/kakao-jwt-format.interface';
+import {
+  NaverAccessTokenData,
+  NaverAccessTokenResponse,
+} from 'src/common/interfaces/naver-jwt-format.interface';
 
 @Injectable()
 export class AuthService {
@@ -89,6 +99,30 @@ export class AuthService {
   }
 
   //-------------------------소셜 ---------------------------
+
+  async socialLoginTokenVerification(
+    oAuthToken: string,
+    oAuthPlatform: OAuthPlatform,
+  ) {
+    let oAuthId: string;
+    switch (oAuthPlatform) {
+      case OAuthPlatform.Apple:
+        oAuthId = await this.verifyAppleIdToken(oAuthToken);
+        break;
+      case OAuthPlatform.Kakao:
+        oAuthId = await this.verifyKakaoAccessToken(oAuthToken);
+        break;
+      case OAuthPlatform.Naver:
+        oAuthId = await this.verifyNaverAccessToken(oAuthToken);
+        break;
+      default:
+        throw new BadRequestException(
+          '해당 플랫폼의 social login 존재하지 않음.',
+        );
+        break;
+    }
+    return await this.socialLogin(oAuthId, oAuthPlatform);
+  }
   async socialLogin(
     oAuthId: string,
     oAuthPlatform: OAuthPlatform,
@@ -115,6 +149,9 @@ export class AuthService {
     return new UserLoginResDto(newUser, accessToken, refreshToken);
   }
 
+  // ------------------------------------애플 ----------------------------------------------------------
+
+  //애플 kid가 일치하는 public key 가져오기.
   private async getAppleSigningKey(kid: string): Promise<string> {
     return new Promise((resolve, reject) => {
       this.jwksClientInstance.getSigningKey(kid, (err, key) => {
@@ -128,10 +165,53 @@ export class AuthService {
     });
   }
 
+  //IdToken 유효성 검증.
+  async verifyAppleIdToken(idToken: string) {
+    const decodedToken = jwt.decode(idToken, {
+      complete: true,
+    }) as DecodedAppleIdToken;
+
+    // console.log(decodedToken);
+    const kid = decodedToken.header.kid;
+    let signingKey: string;
+
+    //애플 공개키중 kid 일치하는 키 가져오기.
+    try {
+      signingKey = await this.getAppleSigningKey(kid);
+      console.log(signingKey);
+    } catch (error) {
+      throw new BadRequestException(
+        `kid가 일치하는 공개키 찾을 수 없음: ${error.message}`,
+      );
+      return;
+    }
+
+    //애플 idToken 검증하기
+    let oAuthId: string;
+    jwt.verify(
+      idToken,
+      signingKey,
+      {
+        algorithms: ['RS256'],
+      },
+      (err, decoded) => {
+        if (err) {
+          throw new BadRequestException(`토큰 검증 실패: ${err.message}`);
+          return;
+        }
+        //토큰 검증 됐을 시
+        oAuthId = decodedToken.payload.sub;
+      },
+    );
+
+    return oAuthId;
+  }
+
+  //server-to-server notification token 유효성 검증.
   async handleAppleNotification(payload: string) {
     const decodedToken = jwt.decode(payload, {
       complete: true,
-    }) as DecodedToken;
+    }) as DecodedAppleNotificationToken;
 
     console.log(decodedToken);
     const kid = decodedToken.header.kid;
@@ -201,5 +281,44 @@ export class AuthService {
     }
 
     return;
+  }
+
+  // ------------------------------------카카오 ----------------------------------------------------------
+
+  async verifyKakaoAccessToken(accessToken: string): Promise<string> {
+    try {
+      const response: KakaoAccessTokenData = await axios.get(
+        'https://kapi.kakao.com/v1/user/access_token_info',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response.data);
+      return String(response.data.id);
+    } catch (error) {
+      throw new BadRequestException(`토큰 검증 실패: ${error}`);
+    }
+  }
+
+  //-----------------------------------네이버------------------------------------------------------------
+
+  async verifyNaverAccessToken(accessToken: string): Promise<string> {
+    try {
+      const response: NaverAccessTokenData = await axios.get(
+        'https://openapi.naver.com/v1/nid/me',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      // console.log(response);
+      console.log(response.data.response);
+      return response.data.response.id;
+    } catch (error) {
+      throw new BadRequestException(`토큰 검증 실패: ${error}`);
+    }
   }
 }

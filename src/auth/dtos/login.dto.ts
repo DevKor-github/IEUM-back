@@ -6,7 +6,7 @@ export class LoginDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  oAuthId: string;
+  oAuthToken: string;
 
   @ApiProperty({ enum: OAuthPlatform })
   @IsEnum(OAuthPlatform)
