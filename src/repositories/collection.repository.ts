@@ -7,6 +7,7 @@ import {
 import { Collection } from 'src/entities/collection.entity';
 import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
 import { RawCollection } from 'src/common/interfaces/raw-collection.interface';
+import { CollectionType } from 'src/common/enums/collection-type.enum';
 
 @Injectable()
 export class CollectionRepository extends Repository<Collection> {
@@ -34,6 +35,7 @@ export class CollectionRepository extends Repository<Collection> {
   // }
   async createCollection(
     userId: number,
+    collectionType: CollectionType,
     link: string,
     content?: string,
   ): Promise<Collection> {
@@ -46,6 +48,7 @@ export class CollectionRepository extends Repository<Collection> {
     // }
     const newCollection = new Collection();
     newCollection.userId = userId;
+    newCollection.collectionType = collectionType;
     newCollection.link = link;
     newCollection.content = content ? content : null;
     return await this.save(newCollection);

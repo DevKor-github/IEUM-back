@@ -10,6 +10,7 @@ import { CollectionService } from 'src/collection/collection.service';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
+import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
 
 @Injectable()
 export class CrawlingService {
@@ -55,8 +56,7 @@ export class CrawlingService {
     },
     errorHandler: defaultNackErrorHandler,
   })
-  async handlingCrawlingResult(msg: any, amqpMsg: any) {
-    //msg 포매팅 필요
+  async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
     await this.collectionService.createCollection(msg);
   }
 

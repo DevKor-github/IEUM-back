@@ -23,13 +23,9 @@ export class CollectionService {
   @Transactional()
   async createCollection(createCollectionReq: CreateCollectionReqDto) {
     try {
-      const user = await this.userService.getUserByUuid(
-        createCollectionReq.userUuid,
-      );
-
       if (
         await this.collectionRepository.isDuplicatedCollection(
-          user.id,
+          createCollectionReq.userId,
           createCollectionReq.link,
         )
       ) {
@@ -37,7 +33,8 @@ export class CollectionService {
       }
 
       const collection = await this.collectionRepository.createCollection(
-        user.id,
+        createCollectionReq.userId,
+        createCollectionReq.collectionType,
         createCollectionReq.link,
         createCollectionReq.content,
       );
@@ -46,7 +43,7 @@ export class CollectionService {
         createCollectionReq.placeKeywords.map(async (placeKeyword) => {
           const place =
             await this.placeService.createPlaceByKakao(placeKeyword);
-          this.collectionPlaceRepository.createCollectionPlace(
+          await this.collectionPlaceRepository.createCollectionPlace(
             collection.id,
             place.id,
             placeKeyword,

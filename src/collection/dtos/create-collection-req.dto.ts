@@ -3,7 +3,7 @@ import { CollectionType } from 'src/common/enums/collection-type.enum';
 
 export class CreateCollectionReqDto {
   @ApiProperty({ required: true })
-  userUuid: string;
+  userId: number;
 
   @ApiProperty({ required: true })
   collectionType: CollectionType;
