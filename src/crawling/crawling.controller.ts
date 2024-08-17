@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { CrawlingService } from './crawling.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
@@ -16,7 +16,7 @@ export class CrawlingController {
   })
   @ApiOperation({ summary: '크롤링을 위해 링크 전송' })
   @Post('')
-  async requestCrawling(@Body() body: CrawlingCollectionReqDto) {
-    return await this.crawlingSerivce.requestCrawling(body);
+  async requestCrawling(@Req() req, @Body() body: CrawlingCollectionReqDto) {
+    return await this.crawlingSerivce.requestCrawling(req.user.id, body);
   }
 }

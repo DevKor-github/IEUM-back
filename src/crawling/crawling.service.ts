@@ -4,11 +4,12 @@ import {
   Nack,
   RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { SlackAlertService } from './slack-alert.service';
 import { CollectionService } from 'src/collection/collection.service';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
+import { CollectionType } from 'src/common/enums/collection-type.enum';
 
 @Injectable()
 export class CrawlingService {
@@ -21,12 +22,27 @@ export class CrawlingService {
     private readonly collectionService: CollectionService,
   ) {}
 
-  async requestCrawling(crawlingCollectionReqDto: CrawlingCollectionReqDto) {
-    await this.amqpConnection.publish(
-      'ieum_exchange',
-      'request',
-      crawlingCollectionReqDto,
-    );
+  async requestCrawling(
+    userId: number,
+    crawlingCollectionReqDto: CrawlingCollectionReqDto,
+  ) {
+    const link = crawlingCollectionReqDto.link;
+    let collectionType;
+    switch (true) {
+      case link.includes('blog.naver.com'):
+        collectionType = CollectionType.NAVER;
+        break;
+      case link.includes('instagram.com'):
+        collectionType = CollectionType.INSTAGRAM;
+        break;
+      default:
+        throw new BadRequestException('지원하지 않는 링크입니다.');
+    }
+    await this.amqpConnection.publish('ieum_exchange', 'request', {
+      userId,
+      link,
+      collectionType,
+    });
   }
 
   @RabbitSubscribe({
@@ -40,6 +56,7 @@ export class CrawlingService {
     errorHandler: defaultNackErrorHandler,
   })
   async handlingCrawlingResult(msg: any, amqpMsg: any) {
+    //msg 포매팅 필요
     await this.collectionService.createCollection(msg);
   }
 
