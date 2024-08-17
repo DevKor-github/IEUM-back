@@ -23,14 +23,19 @@ import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadPlaceImageReqDto } from './dtos/upload-place-image-req.dto';
 import { PlaceImage } from 'src/entities/place-image.entity';
+import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 
 @ApiTags('장소 API')
 @Controller('places')
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
-  @ApiOperation({ summary: '특정 장소의 상세 정보 조회' })
-  @ApiResponse({ status: 200, type: PlaceDetailResDto })
+  @CustomAuthSwaggerDecorator({
+    summary: '특정 장소의 상세 정보 조회',
+    status: 200,
+    description: '특정 장소의 상세 정보 조회 성공',
+    type: PlaceDetailResDto,
+  })
   @CustomErrorResSwaggerDecorator([
     {
       statusCode: ErrorCodeEnum.NotValidPlace,
@@ -81,8 +86,12 @@ export class PlaceController {
   //   return await this.placeService.createPlaceTag(createPlaceTagReqDto);
   // }
 
-  @ApiOperation({ summary: "Get place's preview info from marker" })
-  @ApiResponse({ status: 200, type: PlacePreviewResDto })
+  @CustomAuthSwaggerDecorator({
+    summary: '장소 검색',
+    status: 200,
+    description: '장소 검색 성공',
+    type: PlacePreviewResDto,
+  })
   @CustomErrorResSwaggerDecorator([
     {
       statusCode: ErrorCodeEnum.NotValidPlace,
@@ -104,7 +113,8 @@ export class PlaceController {
   //   return await this.placeService.createPlaceImage(createPlaceImageReqDto);
   // }
 
-  @ApiResponse({
+  @CustomAuthSwaggerDecorator({
+    summary: '장소 이미지 저장',
     status: 201,
     description: '장소 이미지 저장 성공',
     type: PlaceImage,
