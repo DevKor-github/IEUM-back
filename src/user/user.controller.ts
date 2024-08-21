@@ -15,6 +15,7 @@ import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res
 import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
+import { ProfileResDto } from './dtos/profile-res.dto';
 
 @ApiTags('유저 API')
 @Controller('users')
@@ -32,6 +33,24 @@ export class UserController {
     @Query('nickname') nickname: string,
   ): Promise<NickNameDuplicateCheckResDto> {
     return this.userService.checkDuplicateNickName(nickname);
+  }
+
+  //사용자 프로필 정보 불러오기.
+  @CustomAuthSwaggerDecorator({
+    summary: '유저 프로필 불러오기.',
+    status: 200,
+    description: '유저 프로필 불러오기 성공',
+    type: ProfileResDto,
+  })
+  @CustomErrorResSwaggerDecorator([
+    {
+      statusCode: ErrorCodeEnum.NotValidUser,
+      message: '해당 유저가 존재하지 않음.',
+    },
+  ])
+  @Get('/me/profile')
+  async getUserProfile(@Req() req): Promise<ProfileResDto> {
+    return await this.userService.getUserProfile(req.user.id);
   }
 
   //최초 로그인시 유저 정보 받아오기.
