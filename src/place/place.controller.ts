@@ -113,8 +113,8 @@ export class PlaceController {
   //   return await this.placeService.createPlaceImage(createPlaceImageReqDto);
   // }
 
-  @CustomAuthSwaggerDecorator({
-    summary: '장소 이미지 저장',
+  @ApiOperation({ summary: '장소 이미지 저장' })
+  @ApiResponse({
     status: 201,
     description: '장소 이미지 저장 성공',
     type: PlaceImage,
