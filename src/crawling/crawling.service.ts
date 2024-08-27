@@ -111,6 +111,7 @@ export class CrawlingService {
   })
   async handleFailedMessage(msg: any, amqpMsg: any) {
     const XDeath: RabbitMqXDeath = amqpMsg.properties.headers?.['x-death']?.[0];
+
     let errorMsg = 'Unexpected Error';
     if (XDeath.queue === 'request_queue') {
       errorMsg = '크롤링 및 장소 추출 중 오류가 발생했습니다!';

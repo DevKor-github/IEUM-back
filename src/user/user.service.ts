@@ -66,6 +66,10 @@ export class UserService {
     return new ProfileResDto(user);
   }
 
+  async getUserFCMToken(id: number): Promise<string> {
+    return await this.userRepository.getUserFCMToken(id);
+  }
+
   async checkDuplicateNickName(
     nickname: string,
   ): Promise<NickNameDuplicateCheckResDto> {

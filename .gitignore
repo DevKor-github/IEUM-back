@@ -1,5 +1,6 @@
 # etc
 .env
+ieum-firebase-adminsdk.json
 
 # compiled output
 /dist

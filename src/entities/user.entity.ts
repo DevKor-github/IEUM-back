@@ -45,6 +45,9 @@ export class User extends BaseEntity {
   @Column('varchar', { nullable: true })
   jti: string;
 
+  @Column({ nullable: true })
+  fcmToken: string;
+
   @Column('boolean', { default: false })
   isAdConfirmed: boolean;
 
