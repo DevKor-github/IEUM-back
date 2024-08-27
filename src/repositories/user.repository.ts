@@ -26,6 +26,12 @@ export class UserRepository extends Repository<User> {
     });
     return user.fcmToken;
   }
+
+  async updateFCMToken(id: number, fcmToken: string) {
+    const user = await this.findUserById(id);
+    user.fcmToken = fcmToken;
+    return await this.save(user);
+  }
   async findUserByUuid(uuid: string) {
     return await this.findOne({ where: { uuid: uuid } });
   }

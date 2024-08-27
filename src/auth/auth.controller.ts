@@ -83,6 +83,7 @@ export class AuthController {
     return this.authService.socialLoginTokenVerification(
       loginDto.oAuthToken,
       loginDto.oAuthPlatform,
+      loginDto.fcmToken,
     );
   }
   //애플에서 유저가 "이메일 변경, 앱 서비스 해지, 애플 계정 탈퇴"를 했을 경우,

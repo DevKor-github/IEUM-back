@@ -103,6 +103,7 @@ export class AuthService {
   async socialLoginTokenVerification(
     oAuthToken: string,
     oAuthPlatform: OAuthPlatform,
+    fcmToken?: string,
   ) {
     let oAuthId: string;
     switch (oAuthPlatform) {
@@ -121,11 +122,12 @@ export class AuthService {
         );
         break;
     }
-    return await this.socialLogin(oAuthId, oAuthPlatform);
+    return await this.socialLogin(oAuthId, oAuthPlatform, fcmToken);
   }
   async socialLogin(
     oAuthId: string,
     oAuthPlatform: OAuthPlatform,
+    fcmToken?: string,
   ): Promise<UserLoginResDto> {
     const user = await this.userRepository.findUserByOAuthIdAndPlatform(
       oAuthId,
@@ -136,6 +138,9 @@ export class AuthService {
     if (user) {
       const accessToken = this.getAccessToken(user);
       const refreshToken = await this.getRefreshToken(user);
+      if (fcmToken) {
+        await this.userRepository.updateFCMToken(user.id, fcmToken);
+      }
       return new UserLoginResDto(user, accessToken, refreshToken);
     }
 
@@ -146,6 +151,9 @@ export class AuthService {
     );
     const accessToken = this.getAccessToken(newUser);
     const refreshToken = await this.getRefreshToken(newUser);
+    if (fcmToken) {
+      await this.userRepository.updateFCMToken(user.id, fcmToken);
+    }
     return new UserLoginResDto(newUser, accessToken, refreshToken);
   }
 

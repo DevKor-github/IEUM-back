@@ -11,4 +11,7 @@ export class LoginDto {
   @ApiProperty({ enum: OAuthPlatform })
   @IsEnum(OAuthPlatform)
   oAuthPlatform: OAuthPlatform;
+
+  @ApiProperty()
+  fcmToken: string;
 }
