@@ -20,6 +20,12 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
+  async getUserFCMToken(id: number): Promise<string> {
+    const user = await this.findOne({
+      where: { id: id },
+    });
+    return user.fcmToken;
+  }
   async findUserByUuid(uuid: string) {
     return await this.findOne({ where: { uuid: uuid } });
   }

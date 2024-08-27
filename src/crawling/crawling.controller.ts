@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { CrawlingService } from './crawling.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { FirebaseService } from './firebase.service';
@@ -24,8 +24,10 @@ export class CrawlingController {
     return await this.crawlingSerivce.requestCrawling(req.user.id, body);
   }
 
-  @Get('firebase')
-  async getFirebaseApp() {
-    return await this.firebaseService.getFirebaseApp();
+  @ApiOperation({ summary: '푸시 알림 테스트' })
+  @ApiQuery({ name: 'userId', required: true, type: Number })
+  @Get('push-notification-test')
+  async getFirebaseApp(@Query('userId') userId: number) {
+    return await this.firebaseService.testPushNotification(userId);
   }
 }
