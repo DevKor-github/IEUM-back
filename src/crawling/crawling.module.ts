@@ -5,6 +5,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { CrawlingService } from './crawling.service';
 import { SlackAlertService } from './slack-alert.service';
 import { CrawlingController } from './crawling.controller';
+import { FirebaseService } from './firebase.service';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { CrawlingController } from './crawling.controller';
     }),
     CollectionModule,
   ],
-  providers: [CrawlingService, SlackAlertService],
+  providers: [CrawlingService, SlackAlertService, FirebaseService],
   controllers: [CrawlingController],
 })
 export class CrawlingModule {}
