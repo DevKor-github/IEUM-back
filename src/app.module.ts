@@ -35,9 +35,9 @@ import { CrawlingModule } from './crawling/crawling.module';
         synchronize: true,
         logging: true,
         namingStrategy: new SnakeNamingStrategy(),
-        // ssl: {
-        //   rejectUnauthorized: false,
-        // },
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
       async dataSourceFactory(options) {
         if (!options) {
