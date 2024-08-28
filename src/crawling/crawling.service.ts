@@ -87,7 +87,23 @@ export class CrawlingService {
         headers: { ...amqpMsg.properties.headers },
       });
       this.logger.log('최대 재시도 횟수 초과, 실패 큐로 이동');
+
+      const XDeath: RabbitMqXDeath =
+        amqpMsg.properties.headers?.['x-death']?.[0];
+
+      //Slack Alert Part
+      let errorMsg = 'Unexpected Error';
+      if (XDeath.queue === 'request_queue') {
+        errorMsg = '크롤링 및 장소 추출 중 오류가 발생했습니다!';
+      } else if (XDeath.queue === 'result_queue') {
+        errorMsg =
+          '장소 키워드를 통한 게시글/장소 생성 중 오류가 발생했습니다!';
+      }
+
+      await this.slackAlertService.sendSlackAlert(errorMsg, msg, XDeath);
     } else {
+      //Retry Part
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       await this.amqpConnection.publish(
         originalExchange,
         originalRoutingKey,
@@ -104,20 +120,20 @@ export class CrawlingService {
     }
   }
 
-  @RabbitSubscribe({
-    exchange: 'ieum_failure',
-    routingKey: 'failure',
-    queue: 'failed_queue',
-  })
-  async handleFailedMessage(msg: any, amqpMsg: any) {
-    const XDeath: RabbitMqXDeath = amqpMsg.properties.headers?.['x-death']?.[0];
+  // @RabbitSubscribe({
+  //   exchange: 'ieum_failure',
+  //   routingKey: 'failure',
+  //   queue: 'failed_queue',
+  // })
+  // async handleFailedMessage(msg: any, amqpMsg: any) {
+  //   const XDeath: RabbitMqXDeath = amqpMsg.properties.headers?.['x-death']?.[0];
 
-    let errorMsg = 'Unexpected Error';
-    if (XDeath.queue === 'request_queue') {
-      errorMsg = '크롤링 및 장소 추출 중 오류가 발생했습니다!';
-    } else if (XDeath.queue === 'result_queue') {
-      errorMsg = '장소 키워드를 통한 게시글/장소 생성 중 오류가 발생했습니다!';
-    }
-    await this.slackAlertService.sendSlackAlert(errorMsg, msg, XDeath);
-  }
+  //   let errorMsg = 'Unexpected Error';
+  //   if (XDeath.queue === 'request_queue') {
+  //     errorMsg = '크롤링 및 장소 추출 중 오류가 발생했습니다!';
+  //   } else if (XDeath.queue === 'result_queue') {
+  //     errorMsg = '장소 키워드를 통한 게시글/장소 생성 중 오류가 발생했습니다!';
+  //   }
+  //   await this.slackAlertService.sendSlackAlert(errorMsg, msg, XDeath);
+  // }
 }
