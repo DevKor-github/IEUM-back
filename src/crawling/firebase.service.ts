@@ -56,24 +56,35 @@ export class FirebaseService implements OnModuleInit {
     }
   }
   async sendPushNotification(
-    token: string,
-    title: string,
-    body: string,
+    userId: number,
+    status: 'SUCCESS' | 'FAILURE',
   ): Promise<void> {
-    try {
-      const message = {
-        notification: {
-          title,
-          body,
-        },
-        token,
-      };
+    const token = await this.userService.getUserFCMToken(userId);
+    if (token) {
+      try {
+        const message = {
+          notification: {
+            title:
+              status === 'SUCCESS'
+                ? '장소를 추출하는 데 성공했어요.'
+                : '장소를 추출하는 데 실패했어요.',
+            body:
+              status === 'SUCCESS'
+                ? '지금 바로 확인해보세요.'
+                : '유효한 링크인지 다시 확인해주세요.',
+          },
+          data: {
+            status,
+          },
+          token,
+        };
 
-      const response = await this.firebaseApp.messaging().send(message);
-      console.log('Successfully sent message:', response);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      throw error;
+        const response = await this.firebaseApp.messaging().send(message);
+        console.log('Successfully sent message:', response);
+      } catch (error) {
+        console.error('Error sending message:', error);
+        throw error;
+      }
     }
   }
 }

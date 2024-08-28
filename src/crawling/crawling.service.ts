@@ -11,6 +11,7 @@ import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
+import { FirebaseService } from './firebase.service';
 
 @Injectable()
 export class CrawlingService {
@@ -21,6 +22,7 @@ export class CrawlingService {
     private readonly amqpConnection: AmqpConnection,
     private readonly slackAlertService: SlackAlertService,
     private readonly collectionService: CollectionService,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   async requestCrawling(
@@ -58,6 +60,7 @@ export class CrawlingService {
   })
   async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
     await this.collectionService.createCollection(msg);
+    await this.firebaseService.sendPushNotification(msg.userId, 'SUCCESS');
   }
 
   @RabbitSubscribe({
@@ -87,6 +90,7 @@ export class CrawlingService {
         headers: { ...amqpMsg.properties.headers },
       });
       this.logger.log('최대 재시도 횟수 초과, 실패 큐로 이동');
+      await this.firebaseService.sendPushNotification(msg.userId, 'FAILURE');
     } else {
       await this.amqpConnection.publish(
         originalExchange,
