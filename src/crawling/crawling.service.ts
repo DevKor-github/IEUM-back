@@ -59,8 +59,12 @@ export class CrawlingService {
     errorHandler: defaultNackErrorHandler,
   })
   async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
-    await this.collectionService.createCollection(msg);
-    await this.firebaseService.sendPushNotification(msg.userId, 'SUCCESS');
+    const collection = await this.collectionService.createCollection(msg);
+    await this.firebaseService.sendPushNotification(
+      msg.userId,
+      'SUCCESS',
+      collection.id,
+    );
   }
 
   @RabbitSubscribe({

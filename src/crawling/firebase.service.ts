@@ -58,6 +58,7 @@ export class FirebaseService implements OnModuleInit {
   async sendPushNotification(
     userId: number,
     status: 'SUCCESS' | 'FAILURE',
+    collectionId?: number,
   ): Promise<void> {
     const token = await this.userService.getUserFCMToken(userId);
     if (token) {
@@ -75,6 +76,7 @@ export class FirebaseService implements OnModuleInit {
           },
           data: {
             status,
+            collectionId: collectionId ? collectionId.toString() : '', //FCM 메세지는 String만 허용
           },
           token,
         };
