@@ -33,7 +33,7 @@ import { CrawlingModule } from './crawling/crawling.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         // autoLoadEntities: true,
         synchronize: true,
-        logging: true,
+        logging: false,
         namingStrategy: new SnakeNamingStrategy(),
       }),
       async dataSourceFactory(options) {
