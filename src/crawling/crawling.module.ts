@@ -22,6 +22,14 @@ import { UserModule } from 'src/user/user.module';
           },
           { name: 'ieum_failure', type: 'direct', options: { durable: true } },
         ],
+        queues: [
+          {
+            name: 'failed_queue',
+            options: { durable: true },
+            exchange: 'ieum_failure',
+            routingKey: 'failure',
+          },
+        ],
         prefetchCount: 1,
         connectionInitOptions: { wait: true, timeout: 20000 },
         enableDirectReplyTo: false,
