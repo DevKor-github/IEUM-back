@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { User } from 'src/entities/user.entity';
-import { Preference } from 'src/entities/preference.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
@@ -11,6 +9,8 @@ import { JwtAccessNicknameCheckStrategy } from 'src/auth/strategies/jwt-access-n
 
 import { FolderRepository } from 'src/folder/repositories/folder.repository';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
+import { User } from './entities/user.entity';
+import { Preference } from './entities/preference.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Preference])],

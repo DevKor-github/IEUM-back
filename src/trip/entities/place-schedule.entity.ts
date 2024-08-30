@@ -1,3 +1,4 @@
+import { Place } from 'src/place/entities/place.entity';
 import {
   Column,
   Entity,
@@ -5,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { Place } from '../place/entities/place.entity';
 import { Trip } from './trip.entity';
 
 @Entity()

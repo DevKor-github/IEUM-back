@@ -8,9 +8,9 @@ import {
   RelationId,
 } from 'typeorm';
 import { PlaceSchedule } from './place-schedule.entity';
-import { AccommodationSchedule } from '../../common/entities/accomodation-schedule.entity';
 import { User } from '../../user/entities/user.entity';
 import { TripStyle } from './trip-style.entity';
+import { AccommodationSchedule } from './accomodation-schedule.entity';
 
 @Entity()
 export class Trip {

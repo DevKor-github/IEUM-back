@@ -6,7 +6,7 @@ import {
   RelationId,
 } from 'typeorm';
 import { Folder } from './folder.entity';
-import { Place } from './place.entity';
+import { Place } from 'src/place/entities/place.entity';
 
 @Entity()
 export class FolderPlace {

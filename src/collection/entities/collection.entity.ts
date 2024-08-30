@@ -6,12 +6,11 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { Place } from './place.entity';
 import { CollectionPlace } from './collection-place.entity';
-import { BaseEntity } from './base-entity.entity';
-import { User } from './user.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { Exclude } from 'class-transformer';
+import { BaseEntity } from 'src/common/entities/base-entity.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class Collection extends BaseEntity {

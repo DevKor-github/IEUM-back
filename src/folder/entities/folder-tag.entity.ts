@@ -6,7 +6,7 @@ import {
   RelationId,
 } from 'typeorm';
 import { Folder } from './folder.entity';
-import { Tag } from './tag.entity';
+import { Tag } from 'src/tag/entities/tag.entity';
 
 @Entity()
 export class FolderTag {

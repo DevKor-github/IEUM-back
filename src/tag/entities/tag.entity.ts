@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PlaceTag } from '../../place/entities/place-tag.entity';
-import { FolderTag } from './folder-tag.entity';
 import { TagType } from 'src/common/enums/tag-type.enum';
+import { FolderTag } from 'src/folder/entities/folder-tag.entity';
 
 @Entity()
 export class Tag {
