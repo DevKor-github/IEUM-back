@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../../user/entities/user.entity';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { FolderPlace } from './folder-place.entity';
 import { FolderTag } from './folder-tag.entity';

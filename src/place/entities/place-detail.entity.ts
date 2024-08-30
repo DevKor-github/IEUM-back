@@ -5,7 +5,7 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
-import { Place } from './place.entity';
+import { Place } from '../../common/entities/place.entity';
 
 @Entity()
 export class PlaceDetail {

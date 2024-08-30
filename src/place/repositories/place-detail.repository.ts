@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
-import { PlaceDetail } from 'src/entities/place-detail.entity';
+import { PlaceDetail } from 'src/place/entities/place-detail.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()

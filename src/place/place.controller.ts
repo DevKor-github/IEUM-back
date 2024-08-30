@@ -22,7 +22,7 @@ import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadPlaceImageReqDto } from './dtos/upload-place-image-req.dto';
-import { PlaceImage } from 'src/entities/place-image.entity';
+import { PlaceImage } from 'src/place/entities/place-image.entity';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 
 @ApiTags('장소 API')

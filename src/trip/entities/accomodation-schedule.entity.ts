@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { Trip } from './trip.entity';
+import { Trip } from '../trip/entities/trip.entity';
 
 @Entity()
 export class AccommodationSchedule {

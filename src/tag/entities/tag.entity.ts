@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PlaceTag } from './place-tag.entity';
+import { PlaceTag } from '../../place/entities/place-tag.entity';
 import { FolderTag } from './folder-tag.entity';
 import { TagType } from 'src/common/enums/tag-type.enum';
 

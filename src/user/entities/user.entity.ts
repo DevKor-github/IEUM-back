@@ -8,11 +8,11 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { Trip } from './trip.entity';
-import { Preference } from './preference.entity';
-import { Folder } from './folder.entity';
+import { Trip } from '../../trip/entities/trip.entity';
+import { Preference } from '../../common/entities/preference.entity';
+import { Folder } from '../../folder/entities/folder.entity';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { BaseEntity } from './base-entity.entity';
+import { BaseEntity } from '../../common/entities/base-entity.entity';
 import { Collection } from './collection.entity';
 
 @Entity()

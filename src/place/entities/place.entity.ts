@@ -6,11 +6,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PlaceSchedule } from './place-schedule.entity';
+import { PlaceSchedule } from '../../common/entities/place-schedule.entity';
 import { PlaceTag } from './place-tag.entity';
 import { PlaceImage } from './place-image.entity';
 import { FolderPlace } from './folder-place.entity';
-import { PlaceDetail } from '../../place/entities/place-detail.entity';
+import { PlaceDetail } from './place-detail.entity';
 import { CollectionPlace } from '../../collection/entities/collection-place.entity';
 
 @Entity()

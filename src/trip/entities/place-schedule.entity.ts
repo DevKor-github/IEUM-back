@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
-import { Place } from './place.entity';
+import { Place } from '../place/entities/place.entity';
 import { Trip } from './trip.entity';
 
 @Entity()

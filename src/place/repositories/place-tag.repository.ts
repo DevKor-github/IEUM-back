@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlaceTag } from 'src/entities/place-tag.entity';
+import { PlaceTag } from 'src/place/entities/place-tag.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()

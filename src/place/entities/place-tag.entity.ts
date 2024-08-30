@@ -6,7 +6,7 @@ import {
   Column,
   RelationId,
 } from 'typeorm';
-import { Tag } from './tag.entity';
+import { Tag } from '../../tag/entities/tag.entity';
 
 @Entity()
 export class PlaceTag {

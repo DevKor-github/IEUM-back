@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { tagParser } from 'src/common/utils/tag-parser.util';
-import { Place } from 'src/entities/place.entity';
+import { Place } from 'src/place/entities/place.entity';
 
 export class PlaceDetailResDto {
   @ApiProperty()
