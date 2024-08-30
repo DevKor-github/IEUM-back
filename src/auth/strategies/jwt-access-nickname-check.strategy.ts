@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Inject } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { UserService } from 'src/user/user.service';
@@ -7,7 +7,7 @@ export class JwtAccessNicknameCheckStrategy extends PassportStrategy(
   Strategy,
   'NCaccess',
 ) {
-  constructor(private readonly userService: UserService) {
+  constructor(@Inject(UserService) private readonly userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.SECRET_KEY_ACCESS,
