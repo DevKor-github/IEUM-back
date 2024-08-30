@@ -5,27 +5,8 @@ import { CollectionPlace } from '../entities/collection-place.entity';
 
 @Injectable()
 export class CollectionPlaceRepository extends Repository<CollectionPlace> {
-  private readonly CollectionPlaceRepository: Repository<CollectionPlace>;
   constructor(dataSource: DataSource) {
     super(CollectionPlace, dataSource.createEntityManager());
-  }
-
-  async createCollectionPlace(
-    collectionId: number,
-    placeId: number,
-    placeKeyword: string,
-  ) {
-    const existedCollectionPlace = await this.findOne({
-      where: { collectionId: collectionId, placeId: placeId },
-    });
-    if (existedCollectionPlace) {
-      return existedCollectionPlace;
-    }
-    await this.save({
-      collectionId: collectionId,
-      placeId: placeId,
-      placeKeyword: placeKeyword,
-    });
   }
 
   async getCollectionPlaces(
@@ -47,5 +28,23 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
       .getRawMany();
 
     return collectionPlaces;
+  }
+
+  async createCollectionPlace(
+    collectionId: number,
+    placeId: number,
+    placeKeyword: string,
+  ) {
+    const existedCollectionPlace = await this.findOne({
+      where: { collectionId: collectionId, placeId: placeId },
+    });
+    if (existedCollectionPlace) {
+      return existedCollectionPlace;
+    }
+    await this.save({
+      collectionId: collectionId,
+      placeId: placeId,
+      placeKeyword: placeKeyword,
+    });
   }
 }
