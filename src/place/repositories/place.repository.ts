@@ -5,16 +5,11 @@ import { KakaoLocalSearchRes } from 'src/common/interfaces/kakao-local-search-re
 
 @Injectable()
 export class PlaceRepository extends Repository<Place> {
-  private placeRepository: Repository<Place>;
-
   constructor(private readonly dataSource: DataSource) {
     super(Place, dataSource.createEntityManager());
   }
 
-  async getPlaceByPlaceName(placeName: string): Promise<Place> {
-    return await this.findOne({ where: { name: placeName } });
-  }
-
+  // ---------장소 검색---------
   async getPlaceDetailById(placeId: number): Promise<any> {
     return await this.createQueryBuilder('place')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
@@ -23,18 +18,6 @@ export class PlaceRepository extends Repository<Place> {
       // .leftJoinAndSelect('place.placeDetail', 'placeDetail')
       .where('place.id = :placeId', { placeId })
       .getOne();
-  }
-
-  async saveByGooglePlaceDetail(placeDetail: any): Promise<Place> {
-    return await this.save({
-      name: placeDetail.displayName.text,
-      address: placeDetail.formattedAddress,
-      latitude: placeDetail.location.latitude,
-      longitude: placeDetail.location.longitude,
-      googlePlaceId: placeDetail.id,
-      phoneNumber: placeDetail.nationalPhoneNumber,
-      primaryCategory: placeDetail.types[0],
-    });
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<Place> {
@@ -59,7 +42,33 @@ export class PlaceRepository extends Repository<Place> {
 
     return placePreviewInfo;
   }
-  async saveByKakaoPlace(
+
+  async getPlacesByPlaceName(placeName: string): Promise<Place[]> {
+    const places = await this.createQueryBuilder('place')
+      .select(['place.id', 'place.name'])
+      .where('place.name LIKE :placeName', { placeName: `%${placeName}%` })
+      .take(10)
+      .orderBy('place.id', 'DESC')
+      .getMany();
+
+    return places;
+  }
+
+  // ---------장소 생성---------
+
+  async savePlaceByGooglePlaceDetail(placeDetail: any): Promise<Place> {
+    return await this.save({
+      name: placeDetail.displayName.text,
+      address: placeDetail.formattedAddress,
+      latitude: placeDetail.location.latitude,
+      longitude: placeDetail.location.longitude,
+      googlePlaceId: placeDetail.id,
+      phoneNumber: placeDetail.nationalPhoneNumber,
+      primaryCategory: placeDetail.types[0],
+    });
+  }
+
+  async savePlaceByKakaoLocalSearchRes(
     kakaoLocalSearchRes: KakaoLocalSearchRes,
   ): Promise<Place> {
     const existedPlace = await this.findOne({

@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { PlaceController } from './place.controller';
 import { PlaceService } from './place.service';
 import { PlaceRepository } from 'src/place/repositories/place.repository';
-
 import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
-
 import { TagModule } from 'src/tag/tag.module';
 import { S3Service } from 'src/place/s3.service';
 import { PlaceTagRepository } from './repositories/place-tag.repository';

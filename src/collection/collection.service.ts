@@ -39,7 +39,7 @@ export class CollectionService {
       await Promise.all(
         createCollectionReq.placeKeywords.map(async (placeKeyword) => {
           const place =
-            await this.placeService.createPlaceByKakao(placeKeyword);
+            await this.placeService.createPlaceByKakaoLocal(placeKeyword);
           await this.collectionPlaceRepository.createCollectionPlace(
             collection.id,
             place.id,

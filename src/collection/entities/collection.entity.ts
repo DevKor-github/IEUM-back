@@ -9,8 +9,8 @@ import {
 import { CollectionPlace } from './collection-place.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { Exclude } from 'class-transformer';
-import { BaseEntity } from 'src/common/entities/base-entity.entity';
 import { User } from 'src/user/entities/user.entity';
+import { BaseEntity } from 'src/entities/base-entity.entity';
 
 @Entity()
 export class Collection extends BaseEntity {

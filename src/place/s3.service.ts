@@ -13,7 +13,6 @@ export class S3Service {
   });
 
   async uploadPlaceImage(placeImage: Express.Multer.File) {
-    console.log(placeImage);
     if (!placeImage || !placeImage.originalname) {
       throw new BadRequestImageFileException(
         '파일이 업로드 되지 않았거나, 파일명이 존재하지 않습니다.',

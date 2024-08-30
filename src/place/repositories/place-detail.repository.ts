@@ -5,7 +5,6 @@ import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class PlaceDetailRepository extends Repository<PlaceDetail> {
-  private readonly placeDetailRepository: Repository<PlaceDetail>;
   constructor(private readonly dataSource: DataSource) {
     super(PlaceDetail, dataSource.createEntityManager());
   }

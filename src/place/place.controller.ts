@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -12,23 +13,33 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { SearchByTextReqDto } from './dtos/search-by-text-req.dto';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadPlaceImageReqDto } from './dtos/upload-place-image-req.dto';
+import { CreatePlaceImageReqDto } from './dtos/create-place-image-req.dto';
 import { PlaceImage } from 'src/place/entities/place-image.entity';
 import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
+import { Place } from './entities/place.entity';
 
 @ApiTags('장소 API')
 @Controller('places')
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
+
+  @ApiOperation({ summary: '장소명으로 DB 내의 장소 검색' })
+  @ApiQuery({ name: 'placeName', type: 'string' })
+  @Get()
+  async getPlacesByPlaceName(
+    @Query('placeName') placeName: string,
+  ): Promise<Place[]> {
+    return await this.placeService.getPlacesByPlaceName(placeName);
+  }
 
   @CustomAuthSwaggerDecorator({
     summary: '특정 장소의 상세 정보 조회',
@@ -47,49 +58,10 @@ export class PlaceController {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
   }
 
-  // @ApiOperation({ summary: 'Create place by googlePlaceId' })
-  // @Post('')
-  // async createPlaceByGooglePlaceId(
-  //   @Body() createPlaceReqDto: CreatePlaceReqDto,
-  // ) {
-  //   return await this.placeService.createPlaceByGooglePlaceId(
-  //     createPlaceReqDto.googlePlaceId,
-  //   );
-  // }
-
-  // @ApiOperation({ summary: 'Search Google Place API by text' })
-  // @Post('google')
-  // async getGooglePlacesByText(@Body() searchByTextReqDto: SearchByTextReqDto) {
-  //   return await this.placeService.searchGooglePlacesByText(
-  //     searchByTextReqDto.text,
-  //   );
-  // }
-
-  // @ApiOperation({ summary: 'Get Google Place API detail by googlePlaceId' })
-  // @Get('google/:googlePlaceId')
-  // async getGooglePlaceDeatil(@Param('googlePlaceId') googlePlaceId: string) {
-  //   return await this.placeService.getPlaceDetailByGooglePlaceId(googlePlaceId);
-  // }
-
-  @ApiOperation({ summary: 'Search KaKao Place API by keyword' })
-  @ApiBody({
-    schema: { type: 'object', properties: { keyword: { type: 'string' } } },
-  })
-  @Post('kakao')
-  async getKakaoPlacesByKeyword(@Body() body: { keyword: string }) {
-    return await this.placeService.searchKakaoPlaceByKeyword(body.keyword);
-  }
-
-  // @ApiOperation({ summary: 'Create placeTag' })
-  // @Post('place-tags')
-  // async createPlaceTag(@Body() createPlaceTagReqDto: CreatePlaceTagReqDto) {
-  //   return await this.placeService.createPlaceTag(createPlaceTagReqDto);
-  // }
-
   @CustomAuthSwaggerDecorator({
-    summary: '장소 검색',
+    summary: '특정 장소의 프리뷰 검색',
     status: 200,
-    description: '장소 검색 성공',
+    description: '특정 장소의 프리뷰 검색 성공',
     type: PlacePreviewResDto,
   })
   @CustomErrorResSwaggerDecorator([
@@ -98,20 +70,19 @@ export class PlaceController {
       message: '해당 장소가 존재하지 않음.',
     },
   ])
-  @Get('/:id/preview')
+  @Get('/:placeId/preview')
   async getPlacePreviewInfoById(
-    @Param('id') id: number,
+    @Param('placeId') placeId: string,
   ): Promise<PlacePreviewResDto> {
-    return await this.placeService.getPlacePreviewInfoById(id);
+    return await this.placeService.getPlacePreviewInfoById(parseInt(placeId));
   }
 
-  // @ApiOperation({ summary: 'Create placeImage' })
-  // @Post('place-images')
-  // async createPlaceImage(
-  //   @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
-  // ) {
-  //   return await this.placeService.createPlaceImage(createPlaceImageReqDto);
-  // }
+  @ApiOperation({ summary: '키워드로 카카오 Place API 검색' })
+  @ApiQuery({ name: 'keyword', type: 'string' })
+  @Get('kakao')
+  async getKakaoPlacesByKeyword(@Query() keyword: string) {
+    return await this.placeService.searchKakaoLocalByKeyword(keyword);
+  }
 
   @ApiOperation({ summary: '장소 이미지 저장' })
   @ApiResponse({
@@ -137,12 +108,12 @@ export class PlaceController {
   @UseInterceptors(FileInterceptor('placeImage'))
   @ApiConsumes('multipart/form-data')
   @Post('/image')
-  async savePlaceImage(
-    @Body() uploadPlaceImageReqDto: UploadPlaceImageReqDto,
+  async createPlaceImage(
+    @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
     @UploadedFile() placeImage: Express.Multer.File,
   ) {
-    return await this.placeService.savePlaceImage(
-      uploadPlaceImageReqDto.placeName,
+    return await this.placeService.createPlaceImage(
+      createPlaceImageReqDto.placeId,
       placeImage,
     );
   }

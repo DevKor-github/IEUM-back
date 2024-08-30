@@ -11,9 +11,9 @@ import {
 import { Trip } from '../../trip/entities/trip.entity';
 import { Folder } from '../../folder/entities/folder.entity';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { BaseEntity } from '../../common/entities/base-entity.entity';
 import { Preference } from './preference.entity';
 import { Collection } from 'src/collection/entities/collection.entity';
+import { BaseEntity } from 'src/entities/base-entity.entity';
 
 @Entity()
 export class User extends BaseEntity {
