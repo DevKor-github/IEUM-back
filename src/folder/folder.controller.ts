@@ -75,8 +75,8 @@ export class FolderController {
       message: '해당 폴더의 소유주가 아니거나 Default 폴더는 삭제 할 수 없음.',
     },
   ])
-  @Delete('/:id')
-  async deleteFolder(@Param('id') folderId: number, @Req() req) {
+  @Delete('/:folderId')
+  async deleteFolder(@Param('folderId') folderId: number, @Req() req) {
     return await this.folderService.deleteFolder(req.user.id, folderId);
   }
 
@@ -85,9 +85,9 @@ export class FolderController {
     status: 200,
     description: '폴더 이름 변경 성공.',
   })
-  @Put('/:id')
+  @Put('/:folderId')
   async changeFolderName(
-    @Param('id') folderId: number,
+    @Param('folderId') folderId: number,
     @Body() newFolderNameDto: CreateFolderReqDto,
     @Req() req,
   ) {
