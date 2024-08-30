@@ -1,6 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from 'src/user/repositories/user.repository';
 import {
   NewAccessTokenResDto,
   UserLoginResDto,
@@ -67,7 +66,10 @@ export class AuthService {
   }
 
   //AccessToken 재발급
-  async newAccessToken(id: number, jti: string): Promise<NewAccessTokenResDto> {
+  async renewAccessToken(
+    id: number,
+    jti: string,
+  ): Promise<NewAccessTokenResDto> {
     const user = await this.userService.getUserById(id);
 
     //refreshToken이 해당 유저의 refreshtoken이 맞는지 체크
@@ -81,7 +83,6 @@ export class AuthService {
   }
 
   //-------------------------소셜 ---------------------------
-
   async socialLoginTokenVerification(
     oAuthToken: string,
     oAuthPlatform: OAuthPlatform,
@@ -102,7 +103,6 @@ export class AuthService {
         throw new BadRequestException(
           '해당 플랫폼의 social login 존재하지 않음.',
         );
-        break;
     }
     return await this.socialLogin(oAuthId, oAuthPlatform, fcmToken);
   }
@@ -127,7 +127,7 @@ export class AuthService {
     }
 
     //계정이 없다면 새로 추가
-    const newUser = await this.userService.socialSignIn(oAuthId, oAuthPlatform);
+    const newUser = await this.userService.socialLogin(oAuthId, oAuthPlatform);
     const accessToken = this.getAccessToken(newUser);
     const refreshToken = await this.getRefreshToken(newUser);
     if (fcmToken) {
@@ -137,7 +137,6 @@ export class AuthService {
   }
 
   // ------------------------------------애플 ----------------------------------------------------------
-
   //애플 kid가 일치하는 public key 가져오기.
   private async getAppleSigningKey(kid: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -170,7 +169,6 @@ export class AuthService {
       throw new BadRequestException(
         `kid가 일치하는 공개키 찾을 수 없음: ${error.message}`,
       );
-      return;
     }
 
     //애플 idToken 검증하기
@@ -212,7 +210,6 @@ export class AuthService {
       throw new BadRequestException(
         `kid가 일치하는 공개키 찾을 수 없음: ${error.message}`,
       );
-      return;
     }
 
     //애플 공개키로 받은 jwt 검증하고 type에 따라 다른 처리하기.
@@ -227,14 +224,11 @@ export class AuthService {
       (err, decoded) => {
         if (err) {
           throw new BadRequestException(`토큰 검증 실패: ${err.message}`);
-          return;
         }
         //토큰 검증 됐을 시
         const jsonEvents = JSON.parse(decodedToken.payload.events);
         type = jsonEvents.type;
         sub = jsonEvents.sub;
-        console.log(type);
-        console.log(sub);
       },
     );
 
@@ -263,7 +257,6 @@ export class AuthService {
         throw new DefaultUndefinedException(
           '알 수 없는 값이 애플 서버로부터 들어옴.',
         );
-        break;
     }
 
     return;
@@ -281,7 +274,6 @@ export class AuthService {
           },
         },
       );
-      console.log(response.data);
       return String(response.data.id);
     } catch (error) {
       throw new BadRequestException(`토큰 검증 실패: ${error}`);
@@ -300,8 +292,6 @@ export class AuthService {
           },
         },
       );
-      // console.log(response);
-      console.log(response.data.response);
       return response.data.response.id;
     } catch (error) {
       throw new BadRequestException(`토큰 검증 실패: ${error}`);

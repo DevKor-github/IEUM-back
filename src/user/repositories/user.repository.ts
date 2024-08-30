@@ -10,53 +10,39 @@ export class UserRepository extends Repository<User> {
     super(User, dataSource.createEntityManager());
   }
 
-  async findUserById(id: number): Promise<User> {
+  //유저 검색
+  async getUserById(id: number): Promise<User> {
     const user = this.findOne({ where: { id: id } });
     return user;
   }
 
-  async getUserInfoAndPreferenceById(id: number): Promise<User> {
-    const user = this.findOne({ where: { id: id }, relations: ['preference'] });
-    return user;
-  }
-  // Token
-  async renewRefreshToken(id: number, jti: string) {
-    const user = await this.findUserById(id);
-    user.jti = jti;
-    return await this.save(user);
-  }
-
-  async getUserFCMToken(id: number): Promise<string> {
-    const user = await this.findOne({
-      where: { id: id },
-    });
-    return user.fcmToken;
-  }
-
-  async updateFCMToken(id: number, fcmToken: string) {
-    const user = await this.findUserById(id);
-    user.fcmToken = fcmToken;
-    return await this.save(user);
-  }
-  //
-  async findUserByUuid(uuid: string) {
+  async getUserByUuid(uuid: string) {
     return await this.findOne({ where: { uuid: uuid } });
   }
 
-  async findUserByNickname(nickname: string): Promise<User> {
+  async getUserByNickname(nickname: string): Promise<User> {
     const user = this.findOne({ where: { nickname: nickname } });
     return user;
   }
 
-  async softDeleteUser(id: number) {
-    // const user = await this.findUserById(id);
-    // user.deletedAt = new Date();
-    // await this.save(user);
-    await this.softDelete({ id: id });
+  async getUserByOAuthIdAndPlatform(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ): Promise<User> {
+    const user = this.findOne({
+      where: { oAuthId: oAuthId, oAuthPlatform: oAuthPlatform },
+    });
+    return user;
+  }
+
+  //유저 정보
+  async getUserInfoAndPreferenceById(id: number): Promise<User> {
+    const user = this.findOne({ where: { id: id }, relations: ['preference'] });
+    return user;
   }
 
   async fillUserInfo(firstLoginReqDto: FirstLoginReqDto, id: number) {
-    const user = await this.findUserById(id);
+    const user = await this.getUserById(id);
 
     user.isAdConfirmed = firstLoginReqDto.isAdConfirmed
       ? firstLoginReqDto.isAdConfirmed
@@ -69,19 +55,35 @@ export class UserRepository extends Repository<User> {
     return await this.save(user);
   }
 
-  // ----------------------------소셜 --------------------------------
-
-  async findUserByOAuthIdAndPlatform(
-    oAuthId: string,
-    oAuthPlatform: OAuthPlatform,
-  ): Promise<User> {
-    const user = this.findOne({
-      where: { oAuthId: oAuthId, oAuthPlatform: oAuthPlatform },
+  // Token
+  async getFCMToken(id: number): Promise<string> {
+    const user = await this.findOne({
+      where: { id: id },
     });
-    return user;
+    return user.fcmToken;
   }
 
-  async socialSignIn(
+  async updateFCMToken(id: number, fcmToken: string) {
+    const user = await this.getUserById(id);
+    user.fcmToken = fcmToken;
+    return await this.save(user);
+  }
+
+  async renewRefreshToken(id: number, jti: string) {
+    const user = await this.getUserById(id);
+    user.jti = jti;
+    return await this.save(user);
+  }
+
+  //회원 탈퇴
+
+  async softDeleteUser(id: number) {
+    await this.softDelete({ id: id });
+  }
+
+  // ----------------------------소셜 --------------------------------
+
+  async socialLogin(
     oAuthId: string,
     oAuthPlatform: OAuthPlatform,
   ): Promise<User> {

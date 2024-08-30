@@ -1,8 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { UserRepository } from 'src/user/repositories/user.repository';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 
 export class JwtAccessNicknameCheckStrategy extends PassportStrategy(
