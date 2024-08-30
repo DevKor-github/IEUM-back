@@ -6,13 +6,13 @@ import {
   SEARCH_BY_KEYWORD_KAKAO_URL,
   SEARCH_BY_TEXT_URL,
 } from 'src/common/constants/google-apis.constant';
-import { PlaceRepository } from 'src/repositories/place.repository';
+import { PlaceRepository } from 'src/place/repositories/place.repository';
 import {
   CreatePlaceImageReqDto,
   CreatePlaceTagReqDto,
 } from './dtos/create-place-relation-req.dto';
 import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
-import { PlaceImageRepository } from 'src/repositories/place-image.repository';
+import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
 
 import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
@@ -22,7 +22,7 @@ import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
-import { S3Service } from 'src/s3/s3.service';
+import { S3Service } from 'src/place/s3.service';
 
 @Injectable()
 export class PlaceService {

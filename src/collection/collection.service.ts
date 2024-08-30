@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { CollectionPlaceRepository } from 'src/repositories/collection-place.repository';
-import { CollectionRepository } from 'src/repositories/collection.repository';
+import { CollectionPlaceRepository } from 'src/collection/repositories/collection-place.repository';
+import { CollectionRepository } from 'src/collection/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { PlaceService } from 'src/place/place.service';
 import { CrawlingCollectionReqDto } from '../crawling/dtos/crawling-collection-req.dto';

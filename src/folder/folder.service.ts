@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
-import { FolderRepository } from 'src/repositories/folder.repository';
+import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
+import { FolderRepository } from 'src/folder/repositories/folder.repository';
 import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';

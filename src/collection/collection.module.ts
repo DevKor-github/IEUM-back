@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CollectionController } from './collection.controller';
 import { CollectionService } from './collection.service';
-import { CollectionRepository } from 'src/repositories/collection.repository';
-import { CollectionPlaceRepository } from 'src/repositories/collection-place.repository';
+import { CollectionRepository } from 'src/collection/repositories/collection.repository';
+import { CollectionPlaceRepository } from 'src/collection/repositories/collection-place.repository';
 import { PlaceModule } from 'src/place/place.module';
 import { UserModule } from 'src/user/user.module';
 

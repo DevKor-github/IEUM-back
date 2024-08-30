@@ -4,11 +4,11 @@ import {
   FirstLoginResDto,
   UserPreferenceDto,
 } from './dtos/first-login.dto';
-import { UserRepository } from 'src/repositories/user.repository';
-import { PreferenceRepository } from 'src/repositories/preference.repository';
+import { UserRepository } from 'src/user/repositories/user.repository';
+import { PreferenceRepository } from 'src/user/repositories/preference.repository';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
-import { FolderRepository } from 'src/repositories/folder.repository';
-import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
+import { FolderRepository } from 'src/folder/repositories/folder.repository';
+import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';
 

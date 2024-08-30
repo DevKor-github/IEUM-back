@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from 'src/repositories/user.repository';
+import { UserRepository } from 'src/user/repositories/user.repository';
 import { User } from 'src/entities/user.entity';
 import {
   NewAccessTokenResDto,
