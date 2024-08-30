@@ -11,6 +11,7 @@ import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
+import { FirebaseService } from './firebase.service';
 
 @Injectable()
 export class CrawlingService {
@@ -21,6 +22,7 @@ export class CrawlingService {
     private readonly amqpConnection: AmqpConnection,
     private readonly slackAlertService: SlackAlertService,
     private readonly collectionService: CollectionService,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   async requestCrawling(
@@ -57,7 +59,12 @@ export class CrawlingService {
     errorHandler: defaultNackErrorHandler,
   })
   async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
-    await this.collectionService.createCollection(msg);
+    const collection = await this.collectionService.createCollection(msg);
+    await this.firebaseService.sendPushNotification(
+      msg.userId,
+      'SUCCESS',
+      collection.id,
+    );
   }
 
   @RabbitSubscribe({
@@ -86,12 +93,14 @@ export class CrawlingService {
       await this.amqpConnection.publish('ieum_failure', 'failure', msg, {
         headers: { ...amqpMsg.properties.headers },
       });
+      //FCM part
       this.logger.log('최대 재시도 횟수 초과, 실패 큐로 이동');
 
-      const XDeath: RabbitMqXDeath =
-        amqpMsg.properties.headers?.['x-death']?.[0];
+      await this.firebaseService.sendPushNotification(msg.userId, 'FAILURE');
 
       //Slack Alert Part
+      const XDeath: RabbitMqXDeath =
+        amqpMsg.properties.headers?.['x-death']?.[0];
       let errorMsg = 'Unexpected Error';
       if (XDeath.queue === 'request_queue') {
         errorMsg = '크롤링 및 장소 추출 중 오류가 발생했습니다!';
