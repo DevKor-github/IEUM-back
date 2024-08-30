@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { User } from 'src/entities/user.entity';
+import { User } from 'src/user/entities/user.entity';
 
 export class UserLoginResDto {
   @ApiProperty()

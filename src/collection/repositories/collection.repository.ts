@@ -4,10 +4,10 @@ import {
   COLLECTIONS_TAKE,
   INSTA_COLLECTIONS_TAKE,
 } from 'src/common/constants/pagination.constant';
-import { Collection } from 'src/entities/collection.entity';
 import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
 import { RawCollection } from 'src/common/interfaces/raw-collection.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
+import { Collection } from '../entities/collection.entity';
 
 @Injectable()
 export class CollectionRepository extends Repository<Collection> {

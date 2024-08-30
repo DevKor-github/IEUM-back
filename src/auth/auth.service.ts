@@ -7,7 +7,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'src/user/repositories/user.repository';
-import { User } from 'src/entities/user.entity';
 import {
   NewAccessTokenResDto,
   UserLoginResDto,
@@ -39,6 +38,7 @@ import {
   NaverAccessTokenData,
   NaverAccessTokenResponse,
 } from 'src/common/interfaces/naver-jwt-format.interface';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {

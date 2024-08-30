@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
-import { Folder } from 'src/entities/folder.entity';
 import { Repository, DataSource, EntityManager } from 'typeorm';
+import { Folder } from '../entities/folder.entity';
 
 @Injectable()
 export class FolderRepository extends Repository<Folder> {

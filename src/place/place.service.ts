@@ -11,18 +11,17 @@ import {
   CreatePlaceImageReqDto,
   CreatePlaceTagReqDto,
 } from './dtos/create-place-relation-req.dto';
-import { PlaceTagRepository } from 'src/repositories/place-tag.repository';
 import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
-
 import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
-import { PlaceDetailRepository } from 'src/repositories/place-detail.repository';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
 import { S3Service } from 'src/place/s3.service';
+import { PlaceTagRepository } from './repositories/place-tag.repository';
+import { PlaceDetailRepository } from './repositories/place-detail.repository';
 
 @Injectable()
 export class PlaceService {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RawCollectionPlace } from 'src/common/interfaces/raw-collection-place.interface';
-import { CollectionPlace } from 'src/entities/collection-place.entity';
 import { DataSource, Repository } from 'typeorm';
+import { CollectionPlace } from '../entities/collection-place.entity';
 
 @Injectable()
 export class CollectionPlaceRepository extends Repository<CollectionPlace> {

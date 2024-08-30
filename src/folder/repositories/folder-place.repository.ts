@@ -3,10 +3,10 @@ import { plainToInstance } from 'class-transformer';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { RawMarker } from 'src/common/interfaces/raw-marker.interface';
 import { RawPlaceInfo } from 'src/common/interfaces/raw-place-info.interface';
-import { FolderPlace } from 'src/entities/folder-place.entity';
 import { MarkerResDto } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
+import { FolderPlace } from '../entities/folder-place.entity';
 
 @Injectable()
 export class FolderPlaceRepository extends Repository<FolderPlace> {
