@@ -1,11 +1,5 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import {
   NewAccessTokenResDto,
@@ -18,26 +12,15 @@ import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';
 
 import {
-  AppleNotificationPayload,
   DecodedAppleIdToken,
   DecodedAppleNotificationToken,
 } from 'src/common/interfaces/apple-jwt-format.interface';
 import { UserService } from 'src/user/user.service';
-import {
-  DefaultBadRequestException,
-  DefaultUndefinedException,
-} from 'src/common/exceptions/default.exception';
-import { json } from 'body-parser';
+import { DefaultUndefinedException } from 'src/common/exceptions/default.exception';
 import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import axios from 'axios';
-import {
-  KakaoAccessTokenData,
-  KakaoAccessTokenPayload,
-} from 'src/common/interfaces/kakao-jwt-format.interface';
-import {
-  NaverAccessTokenData,
-  NaverAccessTokenResponse,
-} from 'src/common/interfaces/naver-jwt-format.interface';
+import { KakaoAccessTokenData } from 'src/common/interfaces/kakao-jwt-format.interface';
+import { NaverAccessTokenData } from 'src/common/interfaces/naver-jwt-format.interface';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -51,7 +34,6 @@ export class AuthService {
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userRepository: UserRepository,
     private readonly userService: UserService,
   ) {}
 
@@ -79,14 +61,14 @@ export class AuthService {
       { secret: process.env.SECRET_KEY_REFRESH, expiresIn: '180d' },
     );
 
-    await this.userRepository.renewRefreshToken(user.id, jti);
+    await this.userService.renewRefreshToken(user.id, jti);
 
     return refreshToken;
   }
 
   //AccessToken 재발급
   async newAccessToken(id: number, jti: string): Promise<NewAccessTokenResDto> {
-    const user = await this.userRepository.findUserById(id);
+    const user = await this.userService.getUserById(id);
 
     //refreshToken이 해당 유저의 refreshtoken이 맞는지 체크
     const isRefreshTokenMatch = jti == user.jti;
@@ -129,7 +111,7 @@ export class AuthService {
     oAuthPlatform: OAuthPlatform,
     fcmToken?: string,
   ): Promise<UserLoginResDto> {
-    const user = await this.userRepository.findUserByOAuthIdAndPlatform(
+    const user = await this.userService.getUserByOAuthIdAndPlatform(
       oAuthId,
       oAuthPlatform,
     );
@@ -139,20 +121,17 @@ export class AuthService {
       const accessToken = this.getAccessToken(user);
       const refreshToken = await this.getRefreshToken(user);
       if (fcmToken) {
-        await this.userRepository.updateFCMToken(user.id, fcmToken);
+        await this.userService.updateFCMToken(user.id, fcmToken);
       }
       return new UserLoginResDto(user, accessToken, refreshToken);
     }
 
     //계정이 없다면 새로 추가
-    const newUser = await this.userRepository.socialSignIn(
-      oAuthId,
-      oAuthPlatform,
-    );
+    const newUser = await this.userService.socialSignIn(oAuthId, oAuthPlatform);
     const accessToken = this.getAccessToken(newUser);
     const refreshToken = await this.getRefreshToken(newUser);
     if (fcmToken) {
-      await this.userRepository.updateFCMToken(user.id, fcmToken);
+      await this.userService.updateFCMToken(user.id, fcmToken);
     }
     return new UserLoginResDto(newUser, accessToken, refreshToken);
   }
@@ -270,11 +249,10 @@ export class AuthService {
         console.log('유저가 애플 ID 연동을 해제');
       case 'account-delete':
         console.log('유저가 apple ID를 삭제했을 때');
-        const userToDelete =
-          await this.userRepository.findUserByOAuthIdAndPlatform(
-            sub,
-            OAuthPlatform.Apple,
-          );
+        const userToDelete = await this.userService.getUserByOAuthIdAndPlatform(
+          sub,
+          OAuthPlatform.Apple,
+        );
         if (!userToDelete) {
           throw new NotValidUserException('해당 유저가 존재하지 않습니다.');
         }

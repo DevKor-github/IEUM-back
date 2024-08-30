@@ -16,22 +16,13 @@ import { User } from 'src/user/entities/user.entity';
 
 @Global()
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    JwtModule.register({}),
-    UserModule,
-  ],
+  imports: [JwtModule.register({}), UserModule],
   controllers: [AuthController],
   providers: [
     AuthService,
     JwtAccessStrategy,
     JwtRefreshStrategy,
-    UserRepository,
     JwtAccessNicknameCheckStrategy,
-    UserService,
-    PreferenceRepository,
-    FolderRepository,
-    FolderPlaceRepository,
   ],
   exports: [JwtAccessStrategy, JwtAccessNicknameCheckStrategy],
 })

@@ -11,6 +11,7 @@ import { FolderRepository } from 'src/folder/repositories/folder.repository';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';
+import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 
 @Injectable()
 export class UserService {
@@ -57,6 +58,14 @@ export class UserService {
     return user;
   }
 
+  async getUserById(id: number) {
+    const user = await this.userRepository.findUserById(id);
+    if (!user) {
+      throw new NotValidUserException('존재하지 않는 계정이에요.');
+    }
+    return user;
+  }
+
   async getUserProfile(id: number): Promise<ProfileResDto> {
     const user = await this.userRepository.findUserById(id);
 
@@ -66,8 +75,26 @@ export class UserService {
     return new ProfileResDto(user);
   }
 
+  async getUserByOAuthIdAndPlatform(
+    oAuthId: string,
+    oAuthPlatform: OAuthPlatform,
+  ) {
+    return await this.userRepository.findUserByOAuthIdAndPlatform(
+      oAuthId,
+      oAuthPlatform,
+    );
+  }
+
   async getUserFCMToken(id: number): Promise<string> {
     return await this.userRepository.getUserFCMToken(id);
+  }
+
+  async updateFCMToken(id: number, fcmToken: string) {
+    return await this.userRepository.updateFCMToken(id, fcmToken);
+  }
+
+  async socialSignIn(oAuthId: string, oAuthPlatform: OAuthPlatform) {
+    return await this.userRepository.socialSignIn(oAuthId, oAuthPlatform);
   }
 
   async checkDuplicateNickName(
@@ -79,5 +106,9 @@ export class UserService {
     } else {
       return new NickNameDuplicateCheckResDto(false);
     }
+  }
+
+  async renewRefreshToken(id: number, jti: string) {
+    return await this.userRepository.renewRefreshToken(id, jti);
   }
 }

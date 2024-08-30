@@ -19,6 +19,12 @@ export class UserRepository extends Repository<User> {
     const user = this.findOne({ where: { id: id }, relations: ['preference'] });
     return user;
   }
+  // Token
+  async renewRefreshToken(id: number, jti: string) {
+    const user = await this.findUserById(id);
+    user.jti = jti;
+    return await this.save(user);
+  }
 
   async getUserFCMToken(id: number): Promise<string> {
     const user = await this.findOne({
@@ -32,6 +38,7 @@ export class UserRepository extends Repository<User> {
     user.fcmToken = fcmToken;
     return await this.save(user);
   }
+  //
   async findUserByUuid(uuid: string) {
     return await this.findOne({ where: { uuid: uuid } });
   }
@@ -46,12 +53,6 @@ export class UserRepository extends Repository<User> {
     // user.deletedAt = new Date();
     // await this.save(user);
     await this.softDelete({ id: id });
-  }
-
-  async renewRefreshToken(id: number, jti: string) {
-    const user = await this.findUserById(id);
-    user.jti = jti;
-    return await this.save(user);
   }
 
   async fillUserInfo(firstLoginReqDto: FirstLoginReqDto, id: number) {
