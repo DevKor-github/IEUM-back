@@ -1,45 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { RawMarker } from 'src/common/interfaces/raw-marker.interface';
 import { RawPlaceInfo } from 'src/common/interfaces/raw-place-info.interface';
-import { MarkerResDto } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { FolderPlace } from '../entities/folder-place.entity';
 
 @Injectable()
 export class FolderPlaceRepository extends Repository<FolderPlace> {
-  private readonly folderPlaceRepository: Repository<FolderPlace>;
-  constructor(private readonly dataSource: DataSource) {
+  constructor(dataSource: DataSource) {
     super(FolderPlace, dataSource.createEntityManager());
-  }
-
-  async createFolderPlace(folderId: number, placeId: number) {
-    const folderPlace = await this.findOne({
-      where: { folderId: folderId, placeId: placeId },
-    });
-    if (folderPlace) {
-      return folderPlace;
-    }
-    const newFolderPlace = new FolderPlace();
-    newFolderPlace.folderId = folderId;
-    newFolderPlace.placeId = placeId;
-    const saveNewFolderPlace = await this.save(newFolderPlace);
-    return saveNewFolderPlace;
-  }
-
-  async deleteFolderPlaces(folderId: number, placeIds: number[]) {
-    placeIds.map(
-      async (placeId) =>
-        await this.delete({ folderId: folderId, placeId: placeId }),
-    );
-  }
-
-  async deleteAllFolderPlaces(placeIds: number[]) {
-    await Promise.all(
-      placeIds.map((placeId) => this.delete({ placeId: placeId })),
-    );
   }
 
   async getMarkers(
@@ -157,7 +127,35 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     query.orderBy('place.id', 'DESC').limit(placesListReqDto.take + 1);
 
     const rawPlacesInfoList = await query.getRawMany();
-    console.log(rawPlacesInfoList);
     return rawPlacesInfoList;
+  }
+
+  async createFolderPlace(folderId: number, placeId: number) {
+    const folderPlace = await this.findOne({
+      where: { folderId: folderId, placeId: placeId },
+    });
+    if (folderPlace) {
+      return folderPlace;
+    }
+    const newFolderPlace = new FolderPlace();
+    newFolderPlace.folderId = folderId;
+    newFolderPlace.placeId = placeId;
+    const saveNewFolderPlace = await this.save(newFolderPlace);
+    return saveNewFolderPlace;
+  }
+
+  async deleteFolderPlaces(folderId: number, placeIds: number[]) {
+    // 특정 폴더에 대한 폴더-장소 관계 삭제
+    placeIds.map(
+      async (placeId) =>
+        await this.delete({ folderId: folderId, placeId: placeId }),
+    );
+  }
+
+  async deleteAllFolderPlaces(placeIds: number[]) {
+    // 특정 장소들에 대한 폴더-장소 관계 삭제
+    await Promise.all(
+      placeIds.map((placeId) => this.delete({ placeId: placeId })),
+    );
   }
 }

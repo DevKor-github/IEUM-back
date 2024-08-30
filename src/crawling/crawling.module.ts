@@ -1,5 +1,5 @@
 import { CollectionModule } from '../collection/collection.module';
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { CrawlingService } from './crawling.service';

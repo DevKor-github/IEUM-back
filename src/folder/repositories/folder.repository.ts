@@ -6,15 +6,44 @@ import { Folder } from '../entities/folder.entity';
 
 @Injectable()
 export class FolderRepository extends Repository<Folder> {
-  private readonly folderRepository: Repository<Folder>;
-
   constructor(private readonly dataSource: DataSource) {
     super(Folder, dataSource.createEntityManager());
   }
 
-  async findFolderByFolderId(folderId: number) {
+  async getFoldersList(userId: number): Promise<RawFolderInfo[]> {
+    const foldersList = await this.find({
+      where: { userId: userId },
+      relations: ['folderPlaces'],
+    });
+
+    const foldersListWithPlaceCnt = foldersList.map((folder) => ({
+      id: folder.id,
+      name: folder.name,
+      type: folder.type,
+      placeCnt: folder.folderPlaces.length,
+    }));
+    return foldersListWithPlaceCnt;
+  }
+
+  async getFolderByFolderId(folderId: number) {
     return await this.findOne({ where: { id: folderId } });
   }
+
+  async getDefaultFolder(userId: number) {
+    let defaultFolder = await this.findOne({
+      where: { userId: userId, type: FolderType.Default },
+    });
+
+    if (!defaultFolder) {
+      defaultFolder = await this.createFolder(
+        userId,
+        '저장한 장소',
+        FolderType.Default,
+      );
+    }
+    return defaultFolder;
+  }
+
   async createFolder(
     userId: number,
     folderName: string,
@@ -38,60 +67,11 @@ export class FolderRepository extends Repository<Folder> {
     return saveNewFolder;
   }
 
-  async getDefaultFolder(userId: number) {
-    console.log(userId);
-    let defaultFolder = await this.findOne({
-      where: { userId: userId, type: FolderType.Default },
-    });
-    console.log('defaultFolder', defaultFolder);
-    if (!defaultFolder) {
-      defaultFolder = await this.createFolder(
-        userId,
-        '저장한 장소',
-        FolderType.Default,
-      );
-    }
-    return defaultFolder;
-  }
-
-  async getFolderByFolderId(folderId: number) {
-    return await this.findOne({ where: { id: folderId } });
-  }
-
-  async getInstaFolder(userId: number) {
-    let instaFolder = await this.findOne({
-      where: { userId: userId, type: FolderType.Insta },
-    });
-    if (!instaFolder) {
-      instaFolder = await this.createFolder(
-        userId,
-        '인스타그램에서 저장한 장소',
-        FolderType.Insta,
-      );
-    }
-    return instaFolder;
-  }
-
-  async getFoldersList(userId: number): Promise<RawFolderInfo[]> {
-    const foldersList = await this.find({
-      where: { userId: userId },
-      relations: ['folderPlaces'],
-    });
-
-    const foldersListWithPlaceCnt = foldersList.map((folder) => ({
-      id: folder.id,
-      name: folder.name,
-      type: folder.type,
-      placeCnt: folder.folderPlaces.length,
-    }));
-    return foldersListWithPlaceCnt;
+  async changeFolderName(userId: number, folderId: number, folderName: string) {
+    await this.update({ id: folderId, userId: userId }, { name: folderName });
   }
 
   async deleteFolder(folderId: number) {
     await this.delete({ id: folderId });
-  }
-
-  async changeFolderName(userId: number, folderId: number, folderName: string) {
-    await this.update({ id: folderId, userId: userId }, { name: folderName });
   }
 }
