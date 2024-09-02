@@ -108,7 +108,7 @@ export const ieumExceptions = {
     errorCode: 9999,
     statusCode: 500,
   },
-} as const;
+};
 
 export type ieumExceptionName = keyof typeof ieumExceptions;
 

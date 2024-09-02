@@ -10,10 +10,7 @@ import {
 } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
-import {
-  ForbiddenFolderException,
-  NotValidFolderException,
-} from 'src/common/exceptions/folder.exception';
+
 import { Transactional } from 'typeorm-transactional';
 import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';

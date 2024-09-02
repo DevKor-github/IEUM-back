@@ -6,7 +6,6 @@ import {
 } from './dtos/first-login.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
-import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';

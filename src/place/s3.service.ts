@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
-import { AWSS3ErrorException } from 'src/common/exceptions/aws.exception';
-import { BadRequestImageFileException } from 'src/common/exceptions/place.exception';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { v4 as uuid } from 'uuid';
 

@@ -11,7 +11,6 @@ import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
-import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
 import { S3Service } from 'src/place/s3.service';

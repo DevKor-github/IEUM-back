@@ -6,7 +6,6 @@ import { PlaceService } from 'src/place/place.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
-import { ConflictedCollectionException } from 'src/common/exceptions/collection.exception';
 import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
