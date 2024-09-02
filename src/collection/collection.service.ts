@@ -7,6 +7,7 @@ import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dt
 import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { ConflictedCollectionException } from 'src/common/exceptions/collection.exception';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class CollectionService {
@@ -26,7 +27,7 @@ export class CollectionService {
           createCollectionReq.link,
         )
       ) {
-        throw new ConflictedCollectionException('이미 저장한 게시글이에요!');
+        throwIeumException('CONFLICTED_COLLECTION');
       }
 
       const collection = await this.collectionRepository.createCollection(

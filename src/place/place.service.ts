@@ -19,6 +19,7 @@ import { PlaceTagRepository } from './repositories/place-tag.repository';
 import { PlaceDetailRepository } from './repositories/place-detail.repository';
 import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
 import { Place } from './entities/place.entity';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class PlaceService {
@@ -77,15 +78,17 @@ export class PlaceService {
   // ---------내부 DB 검색---------
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
-    if (!place)
-      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
+    if (!place) {
+      throwIeumException('NOT_VALID_PLACE');
+    }
     return new PlaceDetailResDto(place);
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
     const place = await this.placeRepository.getPlacePreviewInfoById(placeId);
-    if (!place)
-      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
+    if (!place) {
+      throwIeumException('NOT_VALID_PLACE');
+    }
     return new PlacePreviewResDto(place);
   }
 
@@ -156,7 +159,7 @@ export class PlaceService {
       where: { id: placeId },
     });
     if (!place) {
-      throw new NotValidPlaceException('해당 명의 장소가 존재하지 않습니다.');
+      throwIeumException('NOT_VALID_PLACE');
     }
     const imageUrl = await this.s3Service.uploadPlaceImage(placeImage);
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { AWSS3ErrorException } from 'src/common/exceptions/aws.exception';
 import { BadRequestImageFileException } from 'src/common/exceptions/place.exception';
+import { throwIeumException } from 'src/common/utils/exception.util';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
@@ -14,9 +15,7 @@ export class S3Service {
 
   async uploadPlaceImage(placeImage: Express.Multer.File) {
     if (!placeImage || !placeImage.originalname) {
-      throw new BadRequestImageFileException(
-        '파일이 업로드 되지 않았거나, 파일명이 존재하지 않습니다.',
-      );
+      throwIeumException('BAD_REQUEST_IMAGE_FILE');
     }
 
     const lastDotIndex = placeImage.originalname.lastIndexOf('.');
@@ -33,7 +32,7 @@ export class S3Service {
         },
         (err) => {
           if (err) {
-            throw new AWSS3ErrorException(`${err}`);
+            throwIeumException('AWS_S3_ERROR');
           }
         },
       )

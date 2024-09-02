@@ -54,6 +54,12 @@ export const ieumExceptions = {
     errorCode: 5002,
     statusCode: 400,
   },
+  UNSUPPORTED_LINK: {
+    name: 'UnsupportedLink',
+    message: '지원하지 않는 링크',
+    errorCode: 6000,
+    statusCode: 400,
+  },
   AWS_S3_ERROR: {
     name: 'AWSS3Error',
     message: 'AWS S3 Error',

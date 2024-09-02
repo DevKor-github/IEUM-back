@@ -17,6 +17,7 @@ import {
 import { Transactional } from 'typeorm-transactional';
 import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class FolderService {
@@ -61,15 +62,11 @@ export class FolderService {
   async deleteFolder(userId: number, folderId: number) {
     const targetFolder =
       await this.folderRepository.getFolderByFolderId(folderId);
-    if (targetFolder.userId != userId) {
-      throw new ForbiddenFolderException(
-        '해당 폴더의 소유주가 아니라 권한이 없음.',
-      );
-    }
-    if (targetFolder.type == FolderType.Default) {
-      throw new ForbiddenFolderException(
-        'Default 폴더에 대한 권한이 없어 삭제할 수 없음.',
-      );
+    if (
+      targetFolder.userId != userId ||
+      targetFolder.type == FolderType.Default
+    ) {
+      throwIeumException('FORBIDDEN_FOLDER');
     }
 
     return await this.folderRepository.deleteFolder(folderId);
@@ -117,10 +114,10 @@ export class FolderService {
 
     const folder = await this.getFolderByFolderId(folderId);
     if (!folder) {
-      throw new NotValidFolderException('폴더가 존재하지 않아요.');
+      throwIeumException('NOT_VALID_FOLDER');
     }
     if (folder.userId !== userId) {
-      throw new ForbiddenFolderException('폴더에 대한 권한이 없어요.');
+      throwIeumException('FORBIDDEN_FOLDER');
     }
 
     placeIds.forEach(async (placeId) => {
@@ -176,9 +173,7 @@ export class FolderService {
       await this.folderRepository.getFolderByFolderId(folderId);
 
     if (targetFolder.userId != userId) {
-      throw new ForbiddenFolderException(
-        '해당 폴더의 소유주가 아니라 권한이 없음.',
-      );
+      throwIeumException('FORBIDDEN_FOLDER');
     }
 
     if (targetFolder.type == FolderType.Default) {
