@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { NextFunction, Request, Response } from 'express';
 
@@ -22,6 +22,7 @@ export class AuthMiddleware implements NestMiddleware {
         } catch (error) {}
       }
     }
+    console.log('middleware');
     return next();
   }
 }

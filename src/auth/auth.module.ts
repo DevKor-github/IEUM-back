@@ -9,7 +9,7 @@ import { UserModule } from 'src/user/user.module';
 
 @Global()
 @Module({
-  imports: [JwtModule.register({}), UserModule],
+  imports: [UserModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [
     AuthService,
