@@ -29,13 +29,14 @@ import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
+import { NicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 
 @ApiTags('폴더 API')
 @Controller('folders')
 export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
-  @UseGuards(AuthGuard('NCaccess'))
+  @UseGuards(NicknameCheckingAccessGuard)
   @ApiBearerAuth('Access Token')
   @ApiOperation({
     summary:

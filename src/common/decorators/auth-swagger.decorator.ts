@@ -1,6 +1,7 @@
 import { UseGuards, applyDecorators } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 
 interface CustomAuthSwaggerDecoratorOptions {
   summary: string;
@@ -13,7 +14,7 @@ export function CustomAuthSwaggerDecorator(
   options: CustomAuthSwaggerDecoratorOptions,
 ) {
   return applyDecorators(
-    UseGuards(AuthGuard('access')),
+    UseGuards(AccessGuard),
     ApiBearerAuth('Access Token'),
     ApiOperation({ summary: options.summary }),
     ApiResponse({
