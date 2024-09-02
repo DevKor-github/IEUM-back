@@ -20,11 +20,7 @@ export class CustomResponseInterceptor implements NestInterceptor {
           return data;
         }
         return {
-          statusCode:
-            data !== undefined
-              ? CustomResponse.SuccessWithData
-              : CustomResponse.SuccessWithoutData,
-          response: data !== undefined ? data : null,
+          statusCode: context.switchToHttp().getResponse().statusCode,
         };
       }),
     );

@@ -17,22 +17,9 @@ export class NicknameCheckingAccessGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if (type !== 'Bearer') {
-      throw new UnauthorizedException('customguard test');
-    }
-    // const token = this.extractTokenFromHeader(request);
-    if (!token) {
-      throw new UnauthorizedException('customguard test');
-    }
+    const user = request.user;
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.SECRET_KEY_ACCESS,
-      });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload;
-      const requestUser = await this.userService.getUserById(payload.id);
+      const requestUser = await this.userService.getUserById(user.id);
       console.log(requestUser);
       if (requestUser.nickname == null) {
         throw new ForbiddenException(
