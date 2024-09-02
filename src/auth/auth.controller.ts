@@ -15,13 +15,15 @@ import {
 import { AppleNotificationDto } from './dtos/apple-notification.dto';
 import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
+import { AccessGuard } from './guards/access.guard';
 
 @Controller('auth')
 @ApiTags('인증/인가 API')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(AuthGuard('refresh'))
+  @UseGuards(AccessGuard)
+  // @UseGuards(AuthGuard('refresh'))
   @Get('/refresh')
   @ApiBearerAuth('Refresh Token')
   @ApiResponse({

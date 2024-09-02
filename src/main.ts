@@ -4,6 +4,8 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { json, urlencoded } from 'express';
+import { InternalServerErrorFilter } from './common/filters/internal-server-error.filter';
+import { IeumExceptionFilter } from './common/filters/ieum-exception.filter';
 
 declare const module: any;
 
@@ -21,6 +23,10 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalFilters(
+    new InternalServerErrorFilter(),
+    new IeumExceptionFilter(),
+  );
   const config = new DocumentBuilder()
     .setTitle('IEUM API')
     .setDescription('IEUM APP TEST API')

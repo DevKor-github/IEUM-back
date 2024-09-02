@@ -63,7 +63,7 @@ import { JwtModule } from '@nestjs/jwt';
       provide: APP_INTERCEPTOR,
       useClass: CustomResponseInterceptor,
     },
-    { provide: APP_FILTER, useClass: CustomExceptionFilter },
+    // { provide: APP_FILTER, useClass: CustomExceptionFilter },
     S3Service,
   ],
 })

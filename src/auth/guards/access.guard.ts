@@ -5,6 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import {
+  IeumException,
+  throwIeumException,
+} from 'src/common/utils/exception.util';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
@@ -17,7 +21,7 @@ export class AccessGuard implements CanActivate {
     if (user) {
       return true;
     } else {
-      throw new UnauthorizedException('인증 실패로 인한 권한 없음.');
+      throwIeumException('NOT_VALID_USER');
     }
   }
 }

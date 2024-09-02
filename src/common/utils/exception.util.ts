@@ -5,7 +5,7 @@ interface ieumExceptionRes {
   statusCode: number;
 }
 
-export const ieumExceptions: Record<string, ieumExceptionRes> = {
+export const ieumExceptions = {
   NOT_VALID_REFRESH: {
     name: 'NotValidRefresh',
     message: 'Not Valid Refresh',
@@ -90,7 +90,7 @@ export const ieumExceptions: Record<string, ieumExceptionRes> = {
     errorCode: 9999,
     statusCode: 500,
   },
-};
+} as const;
 
 export type ieumExceptionName = keyof typeof ieumExceptions;
 
@@ -106,8 +106,7 @@ export class IeumException extends Error {
   }
 }
 
-export function throwIeumException(name: ieumExceptionName): never {
+export function throwIeumException(name: keyof typeof ieumExceptions): never {
   throw new IeumException(name);
 }
-
 //필터에서는 이러한 것들을 Catch
