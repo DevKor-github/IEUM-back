@@ -6,28 +6,22 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { throwIeumException } from 'src/common/utils/exception.util';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class NicknameCheckingAccessGuard implements CanActivate {
-  constructor(
-    private jwtService: JwtService,
-    private userService: UserService,
-  ) {}
+  constructor(private userService: UserService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    try {
-      const requestUser = await this.userService.getUserById(user.id);
-      console.log(requestUser);
-      if (requestUser.nickname == null) {
-        throw new ForbiddenException(
-          '회원 가입 절차 끝나지 않음. 사용자 추가 정보 기입 필요.',
-        );
-      }
-    } catch {
-      throw new UnauthorizedException();
+    if (!user) {
+      throwIeumException('LOGIN_REQUIRED');
+    }
+    const requestUser = await this.userService.getUserById(user.id);
+    if (requestUser.nickname == null) {
+      throwIeumException('USERINFO_FILL_REQUIRED');
     }
     return true;
   }

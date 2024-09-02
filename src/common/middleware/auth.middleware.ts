@@ -17,12 +17,10 @@ export class AuthMiddleware implements NestMiddleware {
           req.user = {
             id: payload.id,
             oAuthId: payload.oAuthId,
-            jti: payload.jti,
           };
         } catch (error) {}
       }
     }
-    console.log('middleware');
     return next();
   }
 }

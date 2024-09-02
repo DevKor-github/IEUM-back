@@ -12,16 +12,14 @@ import {
 
 @Injectable()
 export class AccessGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor() {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    console.log(user);
-    if (user) {
-      return true;
-    } else {
-      throwIeumException('NOT_VALID_USER');
+    if (!user) {
+      throwIeumException('LOGIN_REQUIRED');
     }
+    return true;
   }
 }

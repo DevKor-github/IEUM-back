@@ -12,6 +12,18 @@ export const ieumExceptions = {
     errorCode: 1000,
     statusCode: 400,
   },
+  LOGIN_REQUIRED: {
+    name: 'LoginRequired',
+    message: 'Login Required',
+    errorCode: 1001,
+    statusCode: 401,
+  },
+  USERINFO_FILL_REQUIRED: {
+    name: 'UserInfoFillRequired',
+    message: 'UserInfo Fill Required',
+    errorCode: 1002,
+    statusCode: 401,
+  },
   NOT_VALID_USER: {
     name: 'NotValidUser',
     message: 'Not Valid User',

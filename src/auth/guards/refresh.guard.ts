@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class RefreshGuard implements CanActivate {
@@ -14,11 +15,10 @@ export class RefreshGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     if (type !== 'Bearer') {
-      throw new UnauthorizedException();
+      throwIeumException('LOGIN_REQUIRED');
     }
-    // const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throwIeumException('LOGIN_REQUIRED');
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -28,7 +28,7 @@ export class RefreshGuard implements CanActivate {
       // so that we can access it in our route handlers
       request.user = payload;
     } catch {
-      throw new UnauthorizedException();
+      throwIeumException('LOGIN_REQUIRED');
     }
     return true;
   }
