@@ -21,6 +21,7 @@ export class CustomResponseInterceptor implements NestInterceptor {
         }
         return {
           statusCode: context.switchToHttp().getResponse().statusCode,
+          data: data,
         };
       }),
     );
