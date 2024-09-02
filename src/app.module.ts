@@ -16,7 +16,7 @@ import { CustomResponseInterceptor } from './common/interceptors/custom-response
 import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
-import { S3Service } from './s3/s3.service';
+import { S3Service } from './place/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
 
 @Module({
@@ -30,8 +30,8 @@ import { CrawlingModule } from './crawling/crawling.module';
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE,
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        // autoLoadEntities: true,
+        // entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        autoLoadEntities: true,
         synchronize: true,
         logging: false,
         namingStrategy: new SnakeNamingStrategy(),

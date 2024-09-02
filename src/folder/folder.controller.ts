@@ -13,15 +13,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
-import { ApiBearerAuth, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
+import { FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
-import {
-  MarkerResDto,
-  MarkersListResDto,
-} from 'src/place/dtos/markers-list-res.dto';
+import { MarkersListResDto } from 'src/place/dtos/markers-list-res.dto';
 import {
   MarkersReqDto,
   PlacesListReqDto,
@@ -42,7 +39,7 @@ export class FolderController {
   @ApiBearerAuth('Access Token')
   @ApiOperation({
     summary:
-      "Get User's folders list: type 0= Default, type 1=Insta, type 2= Custom",
+      '유저의 폴더 리스트 가져오기. type 0 = Default, type 1= Insta, type 2 = Custom',
   })
   @ApiResponse({ type: FoldersListResDto })
   @Get('/')
@@ -52,7 +49,7 @@ export class FolderController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @CustomAuthSwaggerDecorator({
-    summary: 'Create a new folder.',
+    summary: '새 폴더 생성하기',
     status: 201,
     description: '폴더 생성 성공',
   })
@@ -68,7 +65,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: 'Delete an existing folder.',
+    summary: '존재하는 폴더 삭제하기',
     status: 200,
     description: '폴더 삭제 성공.',
   })
@@ -78,19 +75,19 @@ export class FolderController {
       message: '해당 폴더의 소유주가 아니거나 Default 폴더는 삭제 할 수 없음.',
     },
   ])
-  @Delete('/:id')
-  async deleteFolder(@Param('id') folderId: number, @Req() req) {
+  @Delete('/:folderId')
+  async deleteFolder(@Param('folderId') folderId: number, @Req() req) {
     return await this.folderService.deleteFolder(req.user.id, folderId);
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: 'Change the name of the folder.',
+    summary: '폴더 이름 변경하기',
     status: 200,
     description: '폴더 이름 변경 성공.',
   })
-  @Put('/:id')
+  @Put('/:folderId')
   async changeFolderName(
-    @Param('id') folderId: number,
+    @Param('folderId') folderId: number,
     @Body() newFolderNameDto: CreateFolderReqDto,
     @Req() req,
   ) {
@@ -102,7 +99,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: 'Delete places from folder.',
+    summary: '폴더에서 장소 삭제하기',
     status: 200,
     description: '폴더에서 장소 삭제 성공.',
   })
@@ -126,7 +123,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: "Get User's place-markers list",
+    summary: '유저의 디폴트 폴더에 있는 장소 마커 가져오기',
     type: MarkersListResDto,
   })
   @Get('/default/markers')
@@ -142,7 +139,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: "Get User's place-markers list by folder",
+    summary: '유저의 특정 폴더에 있는 장소 마커 가져오기',
     type: MarkersListResDto,
   })
   @Get('/:folderId/markers')
@@ -160,7 +157,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: "Get User's places-list",
+    summary: '유저의 디폴트 폴더에 있는 장소 리스트 가져오기',
     type: PlacesListResDto,
   })
   @Get('/default/places-list')
@@ -172,7 +169,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: "Get User's places-list by folder",
+    summary: '유저의 특정 폴더에 있는 장소 리스트 가져오기',
     type: PlacesListResDto,
   })
   @Get('/:folderId/places-list')
@@ -189,7 +186,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: '디폴트 폴더에 장소 추가',
+    summary: '디폴트 폴더에 장소 추가하기',
   })
   @Post('/default/folder-places')
   async createFolderPlacesIntoDefaultFolder(
@@ -203,7 +200,7 @@ export class FolderController {
   }
 
   @CustomAuthSwaggerDecorator({
-    summary: '특정 폴더에 장소 추가',
+    summary: '특정 폴더에 장소 추가하기',
   })
   @Post('/:folderId/folder-places')
   async createFolderPlacesIntoFolder(

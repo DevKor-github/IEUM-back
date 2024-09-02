@@ -1,7 +1,6 @@
 import {
   AmqpConnection,
   defaultNackErrorHandler,
-  Nack,
   RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
@@ -128,6 +127,7 @@ export class CrawlingService {
       );
     }
   }
+  //deprecated
 
   // @RabbitSubscribe({
   //   exchange: 'ieum_failure',

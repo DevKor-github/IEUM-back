@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Delete,
-  UseGuards,
-  Req,
-  Put,
-  Body,
-  Post,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Body, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -22,7 +13,6 @@ import {
   UserLoginResDto,
 } from './dtos/user-login-res.dto';
 import { AppleNotificationDto } from './dtos/apple-notification.dto';
-import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 
@@ -56,7 +46,7 @@ export class AuthController {
   //header에 authorization 필드가 인증 정보를 가지고 있음.
   // req.headers.authorization.substring(7),
   renewAccessToken(@Req() req): Promise<NewAccessTokenResDto> {
-    return this.authService.newAccessToken(
+    return this.authService.renewAccessToken(
       //passport 인증은 jwt에서 추출한 정보를 user 속성에 담는다!!!
       req.user.id,
       req.user.jti,
@@ -65,7 +55,7 @@ export class AuthController {
 
   // -------------------------- 소셜 로그인 --------------------------------
   @ApiOperation({
-    summary: 'social sign in / login',
+    summary: '소셜 로그인',
   })
   @ApiResponse({
     status: 201,

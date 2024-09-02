@@ -1,6 +1,6 @@
 import { CreateTagReqDto } from './dtos/create-tag-req.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TagRepository } from 'src/repositories/tag.repository';
+import { TagRepository } from 'src/tag/tag.repository';
 import { TagResDto } from './dtos/tag-res.dto';
 import { TagType } from 'src/common/enums/tag-type.enum';
 

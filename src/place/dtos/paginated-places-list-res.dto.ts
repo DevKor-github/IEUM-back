@@ -2,7 +2,6 @@ import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsInt, IsString } from 'class-validator';
-import { PLACES_TAKE } from 'src/common/constants/pagination.constant';
 import { RawPlaceInfo } from 'src/common/interfaces/raw-place-info.interface';
 import {
   cursorPaginateData,

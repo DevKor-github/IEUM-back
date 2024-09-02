@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TagType } from 'src/common/enums/tag-type.enum';
-import { Tag } from 'src/entities/tag.entity';
+import { Tag } from '../entities/tag.entity';
 
 export class TagResDto {
   @ApiProperty()

@@ -1,4 +1,4 @@
-import { PlaceTag } from 'src/entities/place-tag.entity';
+import { PlaceTag } from 'src/place/entities/place-tag.entity';
 import { TagType } from '../enums/tag-type.enum';
 
 export function tagParser(placeTags: PlaceTag[]): {

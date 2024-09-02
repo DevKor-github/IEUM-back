@@ -1,10 +1,8 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { CollectionPlaceRepository } from 'src/repositories/collection-place.repository';
-import { CollectionRepository } from 'src/repositories/collection.repository';
+import { Injectable, Logger } from '@nestjs/common';
+import { CollectionPlaceRepository } from 'src/collection/repositories/collection-place.repository';
+import { CollectionRepository } from 'src/collection/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
 import { PlaceService } from 'src/place/place.service';
-import { CrawlingCollectionReqDto } from '../crawling/dtos/crawling-collection-req.dto';
-import { UserService } from 'src/user/user.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
@@ -17,10 +15,9 @@ export class CollectionService {
     private readonly collectionRepository: CollectionRepository,
     private readonly collectionPlaceRepository: CollectionPlaceRepository,
     private readonly placeService: PlaceService,
-    private readonly userService: UserService,
   ) {}
 
-  @Transactional()
+  @Transactional() //Transactional의 정상적인 작동 의심.
   async createCollection(createCollectionReq: CreateCollectionReqDto) {
     try {
       if (
@@ -42,7 +39,7 @@ export class CollectionService {
       await Promise.all(
         createCollectionReq.placeKeywords.map(async (placeKeyword) => {
           const place =
-            await this.placeService.createPlaceByKakao(placeKeyword);
+            await this.placeService.createPlaceByKakaoLocal(placeKeyword);
           await this.collectionPlaceRepository.createCollectionPlace(
             collection.id,
             place.id,
@@ -55,10 +52,6 @@ export class CollectionService {
     } catch (e) {
       this.logger.error(e.message, e.stack);
     }
-  }
-
-  async sendForCrawling(body: CrawlingCollectionReqDto) {
-    return;
   }
 
   async getUnviewedCollections(

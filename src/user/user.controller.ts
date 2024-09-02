@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Req,
-  Put,
-  Delete,
-  Get,
-  Query,
-} from '@nestjs/common';
+import { Controller, Body, Req, Put, Delete, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FirstLoginReqDto, FirstLoginResDto } from './dtos/first-login.dto';
 import { UserService } from './user.service';

@@ -1,7 +1,7 @@
 import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { ApiProperty } from '@nestjs/swagger';
 import { tagParser } from 'src/common/utils/tag-parser.util';
-import { Place } from 'src/entities/place.entity';
+import { Place } from 'src/place/entities/place.entity';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 
 export class PlacePreviewResDto {

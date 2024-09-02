@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { FolderPlaceRepository } from 'src/repositories/folder-place.repository';
-import { FolderRepository } from 'src/repositories/folder.repository';
+import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
+import { FolderRepository } from 'src/folder/repositories/folder.repository';
 import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
@@ -25,10 +25,19 @@ export class FolderService {
     private readonly folderPlaceRepository: FolderPlaceRepository,
   ) {}
 
+  // ------폴더 관련 메서드------
   async getFoldersList(userId: number): Promise<FoldersListResDto> {
     const rawFoldersList = await this.folderRepository.getFoldersList(userId);
     const foldersList = new FoldersListResDto(rawFoldersList);
     return foldersList;
+  }
+
+  async getFolderByFolderId(folderId: number) {
+    return await this.folderRepository.getFolderByFolderId(folderId);
+  }
+
+  async getDefaultFolder(userId: number) {
+    return await this.folderRepository.getDefaultFolder(userId);
   }
 
   async createNewFolder(
@@ -41,9 +50,17 @@ export class FolderService {
     );
   }
 
+  async changeFolderName(userId: number, folderId: number, folderName: string) {
+    return await this.folderRepository.changeFolderName(
+      userId,
+      folderId,
+      folderName,
+    );
+  }
+
   async deleteFolder(userId: number, folderId: number) {
     const targetFolder =
-      await this.folderRepository.findFolderByFolderId(folderId);
+      await this.folderRepository.getFolderByFolderId(folderId);
     if (targetFolder.userId != userId) {
       throw new ForbiddenFolderException(
         '해당 폴더의 소유주가 아니라 권한이 없음.',
@@ -58,48 +75,36 @@ export class FolderService {
     return await this.folderRepository.deleteFolder(folderId);
   }
 
-  async changeFolderName(userId: number, folderId: number, folderName: string) {
-    return await this.folderRepository.changeFolderName(
-      userId,
-      folderId,
-      folderName,
-    );
-  }
+  // ------폴더-장소 관련 메서드------
 
-  async deleteFolderPlaces(
+  async getMarkers(
     userId: number,
-    folderId: number,
-    placeIds: number[],
-  ) {
-    const targetFolder =
-      await this.folderRepository.findFolderByFolderId(folderId);
-
-    if (targetFolder.userId != userId) {
-      throw new ForbiddenFolderException(
-        '해당 폴더의 소유주가 아니라 권한이 없음.',
-      );
-    }
-
-    if (targetFolder.type == FolderType.Default) {
-      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
-    }
-
-    return await this.folderPlaceRepository.deleteFolderPlaces(
+    addressList: string[],
+    categoryList: string[],
+    folderId?: number,
+  ): Promise<MarkersListResDto> {
+    const rawMarkersList = await this.folderPlaceRepository.getMarkers(
+      userId,
+      addressList,
+      categoryList,
       folderId,
-      placeIds,
     );
+
+    return new MarkersListResDto(rawMarkersList);
   }
 
-  async getFolderByFolderId(folderId: number) {
-    return await this.folderRepository.getFolderByFolderId(folderId);
-  }
-
-  async getInstaFolder(userId: number) {
-    return await this.folderRepository.getInstaFolder(userId);
-  }
-
-  async getDefaultFolder(userId: number) {
-    return await this.folderRepository.getDefaultFolder(userId);
+  async getPlacesList(
+    userId: number,
+    placesListReqDto: PlacesListReqDto,
+    folderId?: number,
+  ): Promise<PlacesListResDto> {
+    const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
+      userId,
+      placesListReqDto,
+      folderId,
+    );
+    console.log(rawPlacesInfoList);
+    return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
 
   async createFolderPlacesIntoFolder(
@@ -162,33 +167,27 @@ export class FolderService {
     );
   }
 
-  async getMarkers(
+  async deleteFolderPlaces(
     userId: number,
-    addressList: string[],
-    categoryList: string[],
-    folderId?: number,
-  ): Promise<MarkersListResDto> {
-    const rawMarkersList = await this.folderPlaceRepository.getMarkers(
-      userId,
-      addressList,
-      categoryList,
-      folderId,
-    );
+    folderId: number,
+    placeIds: number[],
+  ) {
+    const targetFolder =
+      await this.folderRepository.getFolderByFolderId(folderId);
 
-    return new MarkersListResDto(rawMarkersList);
-  }
+    if (targetFolder.userId != userId) {
+      throw new ForbiddenFolderException(
+        '해당 폴더의 소유주가 아니라 권한이 없음.',
+      );
+    }
 
-  async getPlacesList(
-    userId: number,
-    placesListReqDto: PlacesListReqDto,
-    folderId?: number,
-  ): Promise<PlacesListResDto> {
-    const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
-      userId,
-      placesListReqDto,
+    if (targetFolder.type == FolderType.Default) {
+      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
+    }
+
+    return await this.folderPlaceRepository.deleteFolderPlaces(
       folderId,
+      placeIds,
     );
-    console.log(rawPlacesInfoList);
-    return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
 }
