@@ -5,13 +5,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class NicknameCheckingAccessGuard implements CanActivate {
-  constructor(private userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
