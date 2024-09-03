@@ -122,6 +122,13 @@ export class FolderController {
     );
   }
 
+  @UseGuards(AuthGuard('access'))
+  @ApiBearerAuth('Access Token')
+  @Get('/default')
+  async getDefaultFolder(@Req() req) {
+    return await this.folderService.getDefaultFolder(req.user.id);
+  }
+
   @CustomAuthSwaggerDecorator({
     summary: '유저의 디폴트 폴더에 있는 장소 마커 가져오기',
     type: MarkersListResDto,
