@@ -6,30 +6,109 @@ interface ieumExceptionRes {
 }
 
 export const ieumExceptions = {
-  NOT_VALID_REFRESH: {
-    name: 'NotValidRefresh',
-    message: 'Not Valid Refresh',
+  //1xxx : Auth
+  INVALID_REFRESH_TOKEN: {
+    name: 'INVALID_REFRESH_TOKEN',
+    message: '유효하지 않은 REFRESH TOKEN',
     errorCode: 1000,
     statusCode: 400,
   },
   LOGIN_REQUIRED: {
-    name: 'LoginRequired',
-    message: 'Login Required',
+    name: 'LOGIN_REQUIRED',
+    message: '로그인 필요',
     errorCode: 1001,
     statusCode: 401,
   },
   USERINFO_FILL_REQUIRED: {
-    name: 'UserInfoFillRequired',
-    message: 'UserInfo Fill Required',
+    name: 'USERINFO_FILL_REQUIRED',
+    message: '나머지 회원 정보 기입 필요',
     errorCode: 1002,
     statusCode: 401,
   },
+  INVALID_TOKEN_TYPE: {
+    name: 'INVALID_TOKEN_TYPE',
+    message: '유효하지 않은 토큰 유형',
+    errorCode: 1003,
+    statusCode: 400,
+  },
+  MISSING_TOKEN: {
+    name: 'MISSING_TOKEN',
+    message: '토큰이 존재하지 않음',
+    errorCode: 1004,
+    statusCode: 400,
+  },
+  REFRESH_TOKEN_EXPIRED: {
+    name: 'REFRESH_TOKEN_EXPIRED',
+    message: '리프레시 토큰 만료',
+    errorCode: 1005,
+    statusCode: 401,
+  },
+  REFRESH_VERIFICATION_FAILED: {
+    name: 'REFRESH_VERIFICATION_FAILED',
+    message: '리프레시 토큰 검증 실패',
+    errorCode: 1006,
+    statusCode: 500,
+  },
+  MISSING_AUTHORIZATION_HEADER: {
+    name: 'MISSING_AUTHORIZATION_HEADER',
+    message: 'Authorization Header가 존재하지 않음',
+    errorCode: 1007,
+    statusCode: 400,
+  },
+  REFRESH_TOKEN_NOT_MATCHED: {
+    name: 'REFRESH_TOKEN_NOT_MATCHED',
+    message: '리프레시 토큰이 데이터베이스 정보와 일치하지 않음',
+    errorCode: 1008,
+    statusCode: 400,
+  },
+  UNSUPPORTED_OAUTH_PLATFORM: {
+    name: 'UNSUPPORTED_OAUTH_PLATFORM',
+    message: '지원하지 않는 OAuth 플랫폼',
+    errorCode: 1009,
+    statusCode: 400,
+  },
+  //101x : Apple
+  APPLE_PUBLIC_KEY_NOT_FOUND: {
+    name: 'APPLE_GET_PUBLIC_KEY_ERROR',
+    message: 'kid와 일치하는 애플 공개키를 찾을 수 없음',
+    errorCode: 1010,
+    statusCode: 500,
+  },
+  APPLE_ID_TOKEN_VERIFICATION_FAILED: {
+    name: 'APPLE_ID_TOKEN_VERIFICATION_FAILED',
+    message: '애플 ID 토큰 검증 실패',
+    errorCode: 1011,
+    statusCode: 500,
+  },
+  INVALID_APPLE_NOTIFICATION_TYPE: {
+    name: 'INVALID_APPLE_NOTIFICATION_TYPE',
+    message: '정의되지 않은 Apple Notification Type',
+    errorCode: 1012,
+    statusCode: 400,
+  },
+  //102x : Kakao
+  KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED: {
+    name: 'KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED',
+    message: '카카오 액세스 토큰 검증 실패',
+    errorCode: 1020,
+    statusCode: 400,
+  },
+  //103x : Naver
+  NAVER_ACCESS_TOKEN_VERIFICATION_FAILED: {
+    name: 'NAVER_ACCESS_TOKEN_VERIFICATION_FAILED',
+    message: '네이버 액세스 토큰 검증 실패',
+    errorCode: 1030,
+    statusCode: 400,
+  },
+
+  //2xxx : User
   NOT_VALID_USER: {
     name: 'NotValidUser',
     message: 'Not Valid User',
     errorCode: 2001,
     statusCode: 400,
   },
+  //3xxx : Collection
   NOT_VALID_COLLECTION: {
     name: 'NotValidCollection',
     message: 'Not Valid Collection',
@@ -42,6 +121,7 @@ export const ieumExceptions = {
     errorCode: 3002,
     statusCode: 409,
   },
+  //4xxx : Folder
   NOT_VALID_FOLDER: {
     name: 'NotValidFolder',
     message: 'Not Valid Folder',
@@ -54,6 +134,7 @@ export const ieumExceptions = {
     errorCode: 4002,
     statusCode: 403,
   },
+  //5xxx : Place
   NOT_VALID_PLACE: {
     name: 'NotValidPlace',
     message: 'Not Valid Place',
@@ -66,12 +147,14 @@ export const ieumExceptions = {
     errorCode: 5002,
     statusCode: 400,
   },
+  //6xxx : Crawling
   UNSUPPORTED_LINK: {
     name: 'UnsupportedLink',
     message: '지원하지 않는 링크',
     errorCode: 6000,
     statusCode: 400,
   },
+  //7xxx : AWS
   AWS_S3_ERROR: {
     name: 'AWSS3Error',
     message: 'AWS S3 Error',

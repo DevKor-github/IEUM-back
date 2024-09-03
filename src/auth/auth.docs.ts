@@ -1,6 +1,6 @@
 import { MethodNames } from 'src/common/types/method-names.type';
 import { AuthController } from './auth.controller';
-import { RefreshGuard } from './guards/refresh.guard';
+import { RefreshGuard, UseRefreshGuard } from './guards/refresh.guard';
 import { UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,13 +18,12 @@ type AuthMethodName = MethodNames<AuthController>;
 
 export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
   renewAccessToken: [
-    UseGuards(RefreshGuard),
-    ApiBearerAuth('Refresh Token'),
+    UseRefreshGuard(),
+    ApiIeumExceptionRes(['REFRESH_TOKEN_NOT_MATCHED']),
     ApiOkResponse({
       type: NewAccessTokenResDto,
       description: '새 토큰 발급 성공',
     }),
-    ApiIeumExceptionRes(['NOT_VALID_REFRESH', 'LOGIN_REQUIRED']),
     ApiOperation({ description: 'AccessToken 재발급' }),
   ],
   socialLogin: [
@@ -35,7 +34,13 @@ export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
       description: '소셜 로그인 성공',
       type: UserLoginResDto,
     }),
-    ApiIeumExceptionRes(['DEFAULT_BAD_REQUEST']),
+    ApiIeumExceptionRes([
+      'UNSUPPORTED_OAUTH_PLATFORM',
+      'APPLE_PUBLIC_KEY_NOT_FOUND',
+      'APPLE_ID_TOKEN_VERIFICATION_FAILED',
+      'KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED',
+      'NAVER_ACCESS_TOKEN_VERIFICATION_FAILED',
+    ]),
   ],
   handleAppleNotification: [
     ApiOperation({
@@ -43,5 +48,10 @@ export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
       description:
         '애플에서 유저가 "이메일 수신 중단/활성화, 앱 서비스 해지, 애플 계정 탈퇴"를 했을 경우',
     }),
+    ApiIeumExceptionRes([
+      'APPLE_PUBLIC_KEY_NOT_FOUND',
+      'APPLE_ID_TOKEN_VERIFICATION_FAILED',
+      'INVALID_APPLE_NOTIFICATION_TYPE',
+    ]),
   ],
 };
