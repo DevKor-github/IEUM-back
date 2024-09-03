@@ -13,7 +13,6 @@ import { UserModule } from './user/user.module';
 import { TripModule } from './trip/trip.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomResponseInterceptor } from './common/interceptors/custom-response.interceptor';
-import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
 import { S3Service } from './place/s3.service';

@@ -13,7 +13,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiNotFoundResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
@@ -31,6 +36,8 @@ import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-
 import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
 import { NicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { AccessGuard } from 'src/auth/guards/access.guard';
+import { IeumException } from 'src/common/utils/exception.util';
+import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 
 @ApiTags('폴더 API')
 @Controller('folders')
@@ -49,6 +56,7 @@ export class FolderController {
     return await this.folderService.getFoldersList(req.user.id);
   }
 
+  @ApiIeumExceptionRes(['USERINFO_FILL_REQUIRED'])
   @UseInterceptors(ClassSerializerInterceptor)
   @CustomAuthSwaggerDecorator({
     summary: '새 폴더 생성하기',
