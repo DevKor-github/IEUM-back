@@ -1,14 +1,13 @@
 import {
+  applyDecorators,
   CanActivate,
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import {
-  IeumException,
-  throwIeumException,
-} from 'src/common/utils/exception.util';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
@@ -22,4 +21,12 @@ export class AccessGuard implements CanActivate {
     }
     return true;
   }
+}
+
+export function UseAccessGuard() {
+  return applyDecorators(
+    UseGuards(AccessGuard),
+    ApiBearerAuth('access-token'),
+    ApiIeumExceptionRes(['LOGIN_REQUIRED']),
+  );
 }

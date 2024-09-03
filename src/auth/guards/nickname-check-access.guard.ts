@@ -1,10 +1,14 @@
 import {
+  applyDecorators,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
   Injectable,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { UserService } from 'src/user/user.service';
 
@@ -24,4 +28,12 @@ export class NicknameCheckingAccessGuard implements CanActivate {
     }
     return true;
   }
+}
+
+export function UseNicknameCheckingAccessGuard() {
+  return applyDecorators(
+    UseGuards(NicknameCheckingAccessGuard),
+    ApiBearerAuth('access-token'),
+    ApiIeumExceptionRes(['LOGIN_REQUIRED', 'USERINFO_FILL_REQUIRED']),
+  );
 }
