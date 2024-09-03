@@ -101,11 +101,11 @@ export const ieumExceptions = {
     statusCode: 400,
   },
   //2xxx : User
-  INVALID_USER: {
-    name: 'INVALID_USER',
+  USER_NOT_FOUND: {
+    name: 'USER_NOT_FOUND',
     message: '존재하지 않는 유저',
     errorCode: 2000,
-    statusCode: 400,
+    statusCode: 404,
   },
   //3xxx : Collection
   COLLECTION_NOT_FOUND: {

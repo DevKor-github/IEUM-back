@@ -31,7 +31,7 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
       description: '유저 프로필 불러오기 성공',
       type: ProfileResDto,
     }),
-    ApiIeumExceptionRes(['INVALID_USER']),
+    ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
   fillUserInfoAndPreference: [
     UseGuards(AccessGuard),
@@ -41,7 +41,7 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
       description: '유저 정보 및 선호도 입력 성공',
       type: FirstLoginResDto,
     }),
-    ApiIeumExceptionRes(['INVALID_USER']),
+    ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
   deleteUser: [
     UseGuards(AccessGuard),
@@ -50,6 +50,6 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     ApiOkResponse({
       description: '회원 탈퇴 성공',
     }),
-    ApiIeumExceptionRes(['INVALID_USER']),
+    ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
 };

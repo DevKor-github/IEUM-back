@@ -47,7 +47,7 @@ export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
         '애플에서 유저가 "이메일 수신 중단/활성화, 앱 서비스 해지, 애플 계정 탈퇴"를 했을 경우',
     }),
     ApiIeumExceptionRes([
-      'INVALID_USER',
+      'USER_NOT_FOUND',
       'APPLE_PUBLIC_KEY_NOT_FOUND',
       'APPLE_ID_TOKEN_VERIFICATION_FAILED',
       'INVALID_APPLE_NOTIFICATION_TYPE',

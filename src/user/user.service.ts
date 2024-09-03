@@ -21,7 +21,7 @@ export class UserService {
   async getUserById(id: number) {
     const user = await this.userRepository.getUserById(id);
     if (!user) {
-      throwIeumException('INVALID_USER');
+      throwIeumException('USER_NOT_FOUND');
     }
     return user;
   }
@@ -29,7 +29,7 @@ export class UserService {
   async getUserByUuid(uuid: string) {
     const user = await this.userRepository.getUserByUuid(uuid);
     if (!user) {
-      throwIeumException('INVALID_USER');
+      throwIeumException('USER_NOT_FOUND');
     }
     return user;
   }
@@ -56,7 +56,7 @@ export class UserService {
     const user = await this.userRepository.getUserById(id);
 
     if (!user) {
-      throwIeumException('INVALID_USER');
+      throwIeumException('USER_NOT_FOUND');
     }
     return new ProfileResDto(user);
   }
@@ -67,7 +67,7 @@ export class UserService {
   ): Promise<FirstLoginResDto> {
     const user = await this.userRepository.getUserById(id);
     if (!user) {
-      throwIeumException('INVALID_USER');
+      throwIeumException('USER_NOT_FOUND');
     }
     await this.userRepository.fillUserInfo(firstLoginReqDto, id);
     await this.preferenceRepository.fillUserPreference(
@@ -83,7 +83,7 @@ export class UserService {
   async deleteUser(id: number) {
     const user = await this.userRepository.getUserById(id);
     if (!user) {
-      throwIeumException('INVALID_USER');
+      throwIeumException('USER_NOT_FOUND');
     }
     await this.userRepository.softDeleteUser(id);
   }
