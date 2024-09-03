@@ -1,5 +1,10 @@
+import { MethodNames } from 'src/common/types/method-names.type';
 import { AuthController } from './auth.controller';
 
-type MethodName = Object.getOwnPropertyNames(AuthController.prototype)
+type AuthMethodName = MethodNames<AuthController>;
 
-export const AuthDocs: Record<MethodName, MethodDecorator[]> = {};
+export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
+  renewAccessToken: [],
+  socialLogin: [],
+  handleAppleNotification: [],
+};
