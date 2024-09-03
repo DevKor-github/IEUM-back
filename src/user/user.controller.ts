@@ -1,11 +1,8 @@
 import { Controller, Body, Req, Put, Delete, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { FirstLoginReqDto, FirstLoginResDto } from './dtos/first-login.dto';
 import { UserService } from './user.service';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
-import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
-import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
-import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { UserDocs } from './user.docs';

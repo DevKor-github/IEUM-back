@@ -100,12 +100,11 @@ export const ieumExceptions = {
     errorCode: 1030,
     statusCode: 400,
   },
-
   //2xxx : User
-  NOT_VALID_USER: {
-    name: 'NotValidUser',
-    message: 'Not Valid User',
-    errorCode: 2001,
+  INVALID_USER: {
+    name: 'INVALID_USER',
+    message: '존재하지 않는 유저',
+    errorCode: 2000,
     statusCode: 400,
   },
   //3xxx : Collection
