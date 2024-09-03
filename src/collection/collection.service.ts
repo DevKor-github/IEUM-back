@@ -21,6 +21,7 @@ export class CollectionService {
   async createCollection(createCollectionReq: CreateCollectionReqDto) {
     try {
       if (
+        //중복이면 그대로 리턴해주는게 맞지 않은가? 고민해보기
         await this.collectionRepository.isDuplicatedCollection(
           createCollectionReq.userId,
           createCollectionReq.link,
@@ -47,10 +48,10 @@ export class CollectionService {
           );
         }),
       );
-
       return collection;
     } catch (e) {
       this.logger.error(e.message, e.stack);
+      throwIeumException('CREATE_COLLECTION_FAILED');
     }
   }
 
@@ -74,6 +75,13 @@ export class CollectionService {
 
   @Transactional()
   async getCollectionPlaces(userId: number, collectionId: number) {
+    const collection = await this.collectionRepository.findOne({
+      where: { id: collectionId },
+    });
+    if (!collection) {
+      throwIeumException('COLLECTION_NOT_FOUND');
+    }
+
     const collectionPlaces =
       await this.collectionPlaceRepository.getCollectionPlaces(collectionId);
     await this.collectionRepository.updateIsViewed(userId, collectionId);

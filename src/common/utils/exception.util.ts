@@ -108,18 +108,25 @@ export const ieumExceptions = {
     statusCode: 400,
   },
   //3xxx : Collection
-  NOT_VALID_COLLECTION: {
-    name: 'NotValidCollection',
-    message: 'Not Valid Collection',
-    errorCode: 3001,
-    statusCode: 400,
+  COLLECTION_NOT_FOUND: {
+    name: 'COLLECTION_NOT_FOUND',
+    message: '존재하지 않는 게시글',
+    errorCode: 3000,
+    statusCode: 404,
   },
   CONFLICTED_COLLECTION: {
-    name: 'ConflictedCollection',
-    message: 'Conflicted Collection',
-    errorCode: 3002,
+    name: 'CONFLICTED_COLLECTION',
+    message: '유저가 이미 저장한 게시글',
+    errorCode: 3001,
     statusCode: 409,
   },
+  CREATE_COLLECTION_FAILED: {
+    name: 'CREATE_COLLECTION_FAILED',
+    message: '게시글 생성 실패',
+    errorCode: 3002,
+    statusCode: 500,
+  },
+
   //4xxx : Folder
   NOT_VALID_FOLDER: {
     name: 'NotValidFolder',
