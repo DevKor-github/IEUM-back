@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { IeumException } from '../utils/exception.util';
 
-@Catch()
+@Catch(IeumException)
 export class IeumExceptionFilter implements ExceptionFilter {
   catch(exception: IeumException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
