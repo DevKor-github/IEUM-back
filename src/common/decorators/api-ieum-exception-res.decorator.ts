@@ -6,7 +6,7 @@ import {
   ApiResponseOptions,
 } from '@nestjs/swagger';
 
-export function ApiIeumExceptionRes(names: [keyof typeof ieumExceptions]) {
+export function ApiIeumExceptionRes(names: (keyof typeof ieumExceptions)[]) {
   const ieumExceptionResOptions: Record<string, ApiResponseOptions> =
     Object.fromEntries(
       names.map((name) => {
