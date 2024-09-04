@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import { throwIeumException } from 'src/common/utils/exception.util';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -52,7 +53,7 @@ export class FirebaseService implements OnModuleInit {
       return response;
     } catch (error) {
       console.error('Error sending message:', error);
-      throw error;
+      throwIeumException('FCM_NOTIFICATION_FAILED');
     }
   }
   async sendPushNotification(

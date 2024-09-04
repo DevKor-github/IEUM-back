@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { CrawlingService } from './crawling.service';
-import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
-import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { FirebaseService } from './firebase.service';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { CrawlingDocs } from './crawling.docs';
+import { Request } from 'express';
 
 @ApplyDocs(CrawlingDocs)
 @ApiTags('크롤링 API')

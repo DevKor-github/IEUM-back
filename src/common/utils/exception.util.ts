@@ -160,6 +160,18 @@ export const ieumExceptions = {
     errorCode: 6000,
     statusCode: 400,
   },
+  FCM_NOTIFICATION_FAILED: {
+    name: 'FCM_NOTIFICATION_FAILED',
+    message: 'FCM 알림 전송 실패',
+    errorCode: 6001,
+    statusCode: 500,
+  },
+  SLACK_NOTIFICATION_FAILED: {
+    name: 'SLACK_NOTIFICATION_FAILED',
+    message: 'Slack 알림 전송 실패',
+    errorCode: 6002,
+    statusCode: 500,
+  },
   //7xxx : AWS
   AWS_S3_INTERNAL_ERROR: {
     name: 'AWS_S3_INTERNAL_ERROR',
@@ -167,6 +179,7 @@ export const ieumExceptions = {
     errorCode: 7000,
     statusCode: 500,
   },
+  //else
   DEFAULT_INTERNAL_SERVER_ERROR: {
     name: 'DefaultInternalServerError',
     message: 'Default Internal Server Error',
