@@ -2,6 +2,7 @@ import { MethodNames } from 'src/common/types/method-names.type';
 import { PlaceController } from './place.controller';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
@@ -31,7 +32,7 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
       description: '상세 정보 조회 성공',
       type: PlaceDetailResDto,
     }),
-    ApiIeumExceptionRes(['NOT_VALID_PLACE']),
+    ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],
   getPlacePreviewInfoById: [
     UseGuards(NicknameCheckingAccessGuard),
@@ -41,7 +42,7 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
       description: '프리뷰 검색 성공',
       type: PlacePreviewResDto,
     }),
-    ApiIeumExceptionRes(['NOT_VALID_PLACE']),
+    ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],
   getKakaoPlacesByKeyword: [
     ApiOperation({ summary: '키워드로 카카오 Place API 검색' }),
@@ -54,11 +55,22 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
       type: PlaceImage,
     }),
     ApiIeumExceptionRes([
-      'NOT_VALID_PLACE',
+      'PLACE_NOT_FOUND',
       'BAD_REQUEST_IMAGE_FILE',
       'AWS_S3_ERROR',
     ]),
     UseInterceptors(FileInterceptor('placeImage')),
     ApiConsumes('multipart/form-data'),
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          placeImage: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    }),
   ],
 };

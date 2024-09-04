@@ -1,30 +1,14 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
   Post,
   Query,
   UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
-import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
-import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { CreatePlaceImageReqDto } from './dtos/create-place-image-req.dto';
-import { PlaceImage } from 'src/place/entities/place-image.entity';
-import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
 import { Place } from './entities/place.entity';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { PlaceDocs } from './place.docs';
@@ -42,7 +26,7 @@ export class PlaceController {
     return await this.placeService.getPlacesByPlaceName(placeName);
   }
 
-  @Get(':placeId')
+  @Get('/:placeId')
   async getPlaceDetailById(@Param('placeId') placeId: string) {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
   }
@@ -59,13 +43,13 @@ export class PlaceController {
     return await this.placeService.searchKakaoLocalByKeyword(keyword);
   }
 
-  @Post('/image')
+  @Post('/:placeId/image')
   async createPlaceImage(
-    @Body() createPlaceImageReqDto: CreatePlaceImageReqDto,
+    @Param('placeId') placeId: string,
     @UploadedFile() placeImage: Express.Multer.File,
   ) {
     return await this.placeService.createPlaceImage(
-      createPlaceImageReqDto.placeId,
+      parseInt(placeId),
       placeImage,
     );
   }
