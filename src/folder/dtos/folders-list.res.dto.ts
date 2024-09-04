@@ -34,14 +34,14 @@ export class FoldersListResDto {
 
   @ApiProperty({ type: [FolderResDto] })
   @IsArray()
-  data: FolderResDto[];
+  items: FolderResDto[];
 
   constructor(rawFoldersInfoList: RawFolderInfo[]) {
-    const { meta, data } = createNormalList(
+    const { meta, items } = createNormalList(
       rawFoldersInfoList,
       (rawFolderInfo) => new FolderResDto(rawFolderInfo),
     );
     this.meta = meta;
-    this.data = data;
+    this.items = items;
   }
 }

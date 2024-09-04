@@ -44,16 +44,16 @@ export class PlacesListResDto {
 
   @ApiProperty({ type: [PlaceInfoDto] })
   @IsArray()
-  data: PlaceInfoDto[];
+  items: PlaceInfoDto[];
 
   constructor(rawData: RawPlaceInfo[], take: number) {
-    const { meta, data } = cursorPaginateData(
+    const { meta, items } = cursorPaginateData(
       rawData,
       take,
       (item) => new PlaceInfoDto(item),
     );
 
     this.meta = meta;
-    this.data = data;
+    this.items = items;
   }
 }
