@@ -154,6 +154,10 @@ export class AuthService {
       complete: true,
     }) as DecodedAppleIdToken;
 
+    if (!decodedToken) {
+      throwIeumException('INVALID_APPLE_ID_TOKEN');
+    }
+
     const kid = decodedToken.header.kid;
     let signingKey: string;
 

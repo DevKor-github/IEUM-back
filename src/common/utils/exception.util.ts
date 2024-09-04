@@ -86,6 +86,12 @@ export const ieumExceptions = {
     errorCode: 1012,
     statusCode: 400,
   },
+  INVALID_APPLE_ID_TOKEN: {
+    name: 'INVALID_APPLE_ID_TOKEN',
+    message: '유효하지 않은 Apple ID 토큰',
+    errorCode: 1013,
+    statusCode: 400,
+  },
   //102x : Kakao
   KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED: {
     name: 'KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED',
