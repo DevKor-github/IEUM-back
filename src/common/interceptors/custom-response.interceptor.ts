@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CustomResponse } from '../enums/custom-response.enum';
 
 type ExtendedContextType = ContextType | 'rmq';
 
@@ -20,11 +19,8 @@ export class CustomResponseInterceptor implements NestInterceptor {
           return data;
         }
         return {
-          statusCode:
-            data !== undefined
-              ? CustomResponse.SuccessWithData
-              : CustomResponse.SuccessWithoutData,
-          response: data !== undefined ? data : null,
+          statusCode: context.switchToHttp().getResponse().statusCode,
+          data: data,
         };
       }),
     );

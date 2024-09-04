@@ -4,8 +4,6 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
 import { UserRepository } from 'src/user/repositories/user.repository';
-import { JwtAccessStrategy } from 'src/auth/strategies/jwt-access.strategy';
-import { JwtAccessNicknameCheckStrategy } from 'src/auth/strategies/jwt-access-nickname-check.strategy';
 
 import { FolderRepository } from 'src/folder/repositories/folder.repository';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
@@ -21,8 +19,6 @@ import { Preference } from './entities/preference.entity';
     UserRepository,
     FolderRepository,
     FolderPlaceRepository,
-    JwtAccessStrategy,
-    JwtAccessNicknameCheckStrategy,
   ],
   exports: [UserService],
 })

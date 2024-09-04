@@ -4,7 +4,7 @@ import {
   NewAccessTokenResDto,
   UserLoginResDto,
 } from './dtos/user-login-res.dto';
-import { NotValidRefreshException } from 'src/common/exceptions/auth.exception';
+
 import { v4 as uuidv4 } from 'uuid';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import * as jwt from 'jsonwebtoken';
@@ -15,12 +15,11 @@ import {
   DecodedAppleNotificationToken,
 } from 'src/common/interfaces/apple-jwt-format.interface';
 import { UserService } from 'src/user/user.service';
-import { DefaultUndefinedException } from 'src/common/exceptions/default.exception';
-import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import axios from 'axios';
 import { KakaoAccessTokenData } from 'src/common/interfaces/kakao-jwt-format.interface';
 import { NaverAccessTokenData } from 'src/common/interfaces/naver-jwt-format.interface';
 import { User } from 'src/user/entities/user.entity';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class AuthService {
@@ -75,7 +74,7 @@ export class AuthService {
     //refreshToken이 해당 유저의 refreshtoken이 맞는지 체크
     const isRefreshTokenMatch = jti == user.jti;
     if (!isRefreshTokenMatch) {
-      throw new NotValidRefreshException('refresh 토큰이 유효하지 않습니다.');
+      throwIeumException('REFRESH_TOKEN_NOT_MATCHED');
     }
     const newAccessToken = this.getAccessToken(user);
 
@@ -100,9 +99,7 @@ export class AuthService {
         oAuthId = await this.verifyNaverAccessToken(oAuthToken);
         break;
       default:
-        throw new BadRequestException(
-          '해당 플랫폼의 social login 존재하지 않음.',
-        );
+        throwIeumException('UNSUPPORTED_OAUTH_PLATFORM');
     }
     return await this.socialLogin(oAuthId, oAuthPlatform, fcmToken);
   }
@@ -157,18 +154,18 @@ export class AuthService {
       complete: true,
     }) as DecodedAppleIdToken;
 
-    // console.log(decodedToken);
+    if (!decodedToken) {
+      throwIeumException('INVALID_APPLE_ID_TOKEN');
+    }
+
     const kid = decodedToken.header.kid;
     let signingKey: string;
 
     //애플 공개키중 kid 일치하는 키 가져오기.
     try {
       signingKey = await this.getAppleSigningKey(kid);
-      console.log(signingKey);
     } catch (error) {
-      throw new BadRequestException(
-        `kid가 일치하는 공개키 찾을 수 없음: ${error.message}`,
-      );
+      throwIeumException('APPLE_PUBLIC_KEY_NOT_FOUND');
     }
 
     //애플 idToken 검증하기
@@ -181,7 +178,7 @@ export class AuthService {
       },
       (err, decoded) => {
         if (err) {
-          throw new BadRequestException(`토큰 검증 실패: ${err.message}`);
+          throwIeumException('APPLE_ID_TOKEN_VERIFICATION_FAILED');
           return;
         }
         //토큰 검증 됐을 시
@@ -207,9 +204,7 @@ export class AuthService {
       signingKey = await this.getAppleSigningKey(kid);
       console.log(signingKey);
     } catch (error) {
-      throw new BadRequestException(
-        `kid가 일치하는 공개키 찾을 수 없음: ${error.message}`,
-      );
+      throwIeumException('APPLE_PUBLIC_KEY_NOT_FOUND');
     }
 
     //애플 공개키로 받은 jwt 검증하고 type에 따라 다른 처리하기.
@@ -223,7 +218,7 @@ export class AuthService {
       },
       (err, decoded) => {
         if (err) {
-          throw new BadRequestException(`토큰 검증 실패: ${err.message}`);
+          throwIeumException('APPLE_ID_TOKEN_VERIFICATION_FAILED');
         }
         //토큰 검증 됐을 시
         const jsonEvents = JSON.parse(decodedToken.payload.events);
@@ -248,15 +243,13 @@ export class AuthService {
           OAuthPlatform.Apple,
         );
         if (!userToDelete) {
-          throw new NotValidUserException('해당 유저가 존재하지 않습니다.');
+          throwIeumException('USER_NOT_FOUND');
         }
         await this.userService.deleteUser(userToDelete.id);
         console.log(`id: ${userToDelete.id} 유저가 회원탈퇴 하였습니다.`);
         break;
       default:
-        throw new DefaultUndefinedException(
-          '알 수 없는 값이 애플 서버로부터 들어옴.',
-        );
+        throwIeumException('INVALID_APPLE_NOTIFICATION_TYPE');
     }
 
     return;
@@ -276,7 +269,7 @@ export class AuthService {
       );
       return String(response.data.id);
     } catch (error) {
-      throw new BadRequestException(`토큰 검증 실패: ${error}`);
+      throwIeumException('KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED');
     }
   }
 
@@ -294,7 +287,7 @@ export class AuthService {
       );
       return response.data.response.id;
     } catch (error) {
-      throw new BadRequestException(`토큰 검증 실패: ${error}`);
+      throwIeumException('NAVER_ACCESS_TOKEN_VERIFICATION_FAILED');
     }
   }
 }

@@ -11,6 +11,7 @@ import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface'
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
 import { FirebaseService } from './firebase.service';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class CrawlingService {
@@ -38,7 +39,7 @@ export class CrawlingService {
         collectionType = CollectionType.INSTAGRAM;
         break;
       default:
-        throw new BadRequestException('지원하지 않는 링크입니다.');
+        throwIeumException('UNSUPPORTED_LINK');
     }
     await this.amqpConnection.publish('ieum_exchange', 'request', {
       userId,

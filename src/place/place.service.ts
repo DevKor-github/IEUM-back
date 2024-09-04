@@ -11,7 +11,6 @@ import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
-import { NotValidPlaceException } from 'src/common/exceptions/place.exception';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
 import { S3Service } from 'src/place/s3.service';
@@ -19,6 +18,7 @@ import { PlaceTagRepository } from './repositories/place-tag.repository';
 import { PlaceDetailRepository } from './repositories/place-detail.repository';
 import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
 import { Place } from './entities/place.entity';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class PlaceService {
@@ -77,15 +77,17 @@ export class PlaceService {
   // ---------내부 DB 검색---------
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
-    if (!place)
-      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
+    if (!place) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
     return new PlaceDetailResDto(place);
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
     const place = await this.placeRepository.getPlacePreviewInfoById(placeId);
-    if (!place)
-      throw new NotValidPlaceException('해당 장소가 존재하지 않아요.');
+    if (!place) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
     return new PlacePreviewResDto(place);
   }
 
@@ -151,12 +153,12 @@ export class PlaceService {
   }
 
   async createPlaceImage(placeId: number, placeImage: Express.Multer.File) {
-    //transaction적용.
+    //transaction 적용 필요
     const place = await this.placeRepository.findOne({
       where: { id: placeId },
     });
     if (!place) {
-      throw new NotValidPlaceException('해당 명의 장소가 존재하지 않습니다.');
+      throwIeumException('PLACE_NOT_FOUND');
     }
     const imageUrl = await this.s3Service.uploadPlaceImage(placeImage);
 

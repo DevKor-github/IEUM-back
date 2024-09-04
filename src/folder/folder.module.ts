@@ -7,11 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Folder } from './entities/folder.entity';
 import { FolderPlace } from './entities/folder-place.entity';
 import { FolderTag } from './entities/folder-tag.entity';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   controllers: [FolderController],
   providers: [FolderService, FolderRepository, FolderPlaceRepository],
-  imports: [TypeOrmModule.forFeature([Folder, FolderPlace, FolderTag])],
+  imports: [
+    TypeOrmModule.forFeature([Folder, FolderPlace, FolderTag]),
+    UserModule,
+  ],
   exports: [FolderService],
 })
 export class FolderModule {}

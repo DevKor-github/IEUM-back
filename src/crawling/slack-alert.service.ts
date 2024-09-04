@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class SlackAlertService {
@@ -34,6 +35,7 @@ export class SlackAlertService {
         error.response.statusText,
         error.response.data,
       );
+      throwIeumException('SLACK_NOTIFICATION_FAILED');
     }
   }
 }

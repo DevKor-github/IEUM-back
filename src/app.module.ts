@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -13,11 +13,12 @@ import { UserModule } from './user/user.module';
 import { TripModule } from './trip/trip.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomResponseInterceptor } from './common/interceptors/custom-response.interceptor';
-import { CustomExceptionFilter } from './common/filters/custom-exception.filter';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
 import { S3Service } from './place/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
+import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { CrawlingModule } from './crawling/crawling.module';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    JwtModule.register({}),
     PlaceModule,
     TagModule,
     AuthModule,
@@ -60,8 +62,12 @@ import { CrawlingModule } from './crawling/crawling.module';
       provide: APP_INTERCEPTOR,
       useClass: CustomResponseInterceptor,
     },
-    { provide: APP_FILTER, useClass: CustomExceptionFilter },
+    // { provide: APP_FILTER, useClass: CustomExceptionFilter },
     S3Service,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}

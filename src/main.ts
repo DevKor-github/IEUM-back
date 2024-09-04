@@ -4,6 +4,8 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { json, urlencoded } from 'express';
+import { IeumExceptionFilter } from './common/filters/ieum-exception.filter';
+import { UndefinedExceptionFilter } from './common/filters/undefined-exception.filter';
 
 declare const module: any;
 
@@ -21,6 +23,10 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalFilters(
+    new UndefinedExceptionFilter(),
+    new IeumExceptionFilter(),
+  );
   const config = new DocumentBuilder()
     .setTitle('IEUM API')
     .setDescription('IEUM APP TEST API')
@@ -29,21 +35,21 @@ async function bootstrap() {
       {
         type: 'http',
         scheme: 'bearer',
-        name: 'Access Token',
-        description: 'Enter JWT Access Token',
+        name: 'access-token',
+        description: 'AccessToken',
         in: 'header',
       },
-      'Access Token',
+      'access-token',
     )
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
-        name: 'Refresh Token',
-        description: 'Enter JWT Refresh Token',
+        name: 'refresh-token',
+        description: 'RefresToken',
         in: 'header',
       },
-      'Refresh Token',
+      'refresh-token',
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);

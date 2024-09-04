@@ -6,10 +6,10 @@ import {
 } from './dtos/first-login.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
-import { NotValidUserException } from 'src/common/exceptions/user.exception';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
+import { throwIeumException } from 'src/common/utils/exception.util';
 
 @Injectable()
 export class UserService {
@@ -21,7 +21,7 @@ export class UserService {
   async getUserById(id: number) {
     const user = await this.userRepository.getUserById(id);
     if (!user) {
-      throw new NotValidUserException('존재하지 않는 계정이에요.');
+      throwIeumException('USER_NOT_FOUND');
     }
     return user;
   }
@@ -29,7 +29,7 @@ export class UserService {
   async getUserByUuid(uuid: string) {
     const user = await this.userRepository.getUserByUuid(uuid);
     if (!user) {
-      throw new NotValidUserException('존재하지 않는 계정이에요.');
+      throwIeumException('USER_NOT_FOUND');
     }
     return user;
   }
@@ -56,7 +56,7 @@ export class UserService {
     const user = await this.userRepository.getUserById(id);
 
     if (!user) {
-      throw new NotValidUserException('해당 유저가 존재하지 않아요.');
+      throwIeumException('USER_NOT_FOUND');
     }
     return new ProfileResDto(user);
   }
@@ -67,7 +67,7 @@ export class UserService {
   ): Promise<FirstLoginResDto> {
     const user = await this.userRepository.getUserById(id);
     if (!user) {
-      throw new NotValidUserException('해당 유저가 존재하지 않아요.');
+      throwIeumException('USER_NOT_FOUND');
     }
     await this.userRepository.fillUserInfo(firstLoginReqDto, id);
     await this.preferenceRepository.fillUserPreference(
@@ -83,7 +83,7 @@ export class UserService {
   async deleteUser(id: number) {
     const user = await this.userRepository.getUserById(id);
     if (!user) {
-      throw new NotValidUserException('해당 유저가 존재하지 않아요.');
+      throwIeumException('USER_NOT_FOUND');
     }
     await this.userRepository.softDeleteUser(id);
   }
