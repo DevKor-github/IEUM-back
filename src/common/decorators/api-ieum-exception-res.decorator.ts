@@ -7,25 +7,35 @@ import {
 } from '@nestjs/swagger';
 
 export function ApiIeumExceptionRes(names: (keyof typeof ieumExceptions)[]) {
-  const ieumExceptionResOptions: Record<string, ApiResponseOptions> =
-    Object.fromEntries(
-      names.map((name) => {
-        const ieumException = ieumExceptions[name];
-        const apiResponseOptions: ApiResponseOptions = {
-          status: ieumException.statusCode,
-          content: {
-            'application/json': {
-              example: ieumException,
+  const ieumExceptionResOptions: Record<number, ApiResponseOptions> = {};
+
+  names.map((name) => {
+    const ieumException = ieumExceptions[name];
+    const statusCode = ieumException.statusCode;
+    if (ieumExceptionResOptions[statusCode]) {
+      ieumExceptionResOptions[statusCode].content['application/json'].examples =
+        {
+          ...ieumExceptionResOptions[statusCode].content['application/json']
+            .examples,
+          [name]: { value: ieumException },
+        };
+    } else {
+      ieumExceptionResOptions[statusCode] = {
+        status: statusCode,
+        content: {
+          'application/json': {
+            examples: {
+              [name]: { value: ieumException },
             },
           },
-        };
-        return [name, apiResponseOptions];
-      }),
-    );
+        },
+      };
+    }
+  });
 
   const apiResponseDecorators = Object.keys(ieumExceptionResOptions).map(
-    (name) => {
-      return ApiResponse(ieumExceptionResOptions[name]);
+    (statusCode) => {
+      return ApiResponse(ieumExceptionResOptions[statusCode]);
     },
   );
 
