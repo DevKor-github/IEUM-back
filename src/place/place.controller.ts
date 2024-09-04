@@ -5,7 +5,6 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PlaceService } from './place.service';
@@ -14,7 +13,7 @@ import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
 import { Place } from './entities/place.entity';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { PlaceDocs } from './place.docs';
-import { NicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
+import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 
 @ApplyDocs(PlaceDocs)
@@ -30,13 +29,13 @@ export class PlaceController {
     return await this.placeService.getPlacesByPlaceName(placeName);
   }
 
-  @UseGuards(NicknameCheckingAccessGuard)
+  @UseNicknameCheckingAccessGuard()
   @Get('/:placeId')
   async getPlaceDetailById(@Param('placeId') placeId: string) {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
   }
 
-  @UseGuards(NicknameCheckingAccessGuard)
+  @UseNicknameCheckingAccessGuard()
   @Get('/:placeId/preview')
   async getPlacePreviewInfoById(
     @Param('placeId') placeId: string,
