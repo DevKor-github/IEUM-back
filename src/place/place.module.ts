@@ -12,6 +12,7 @@ import { Place } from './entities/place.entity';
 import { PlaceDetail } from './entities/place-detail.entity';
 import { PlaceImage } from './entities/place-image.entity';
 import { PlaceTag } from './entities/place-tag.entity';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   controllers: [PlaceController],
@@ -24,6 +25,7 @@ import { PlaceTag } from './entities/place-tag.entity';
     S3Service,
   ],
   imports: [
+    UserModule,
     TagModule,
     TypeOrmModule.forFeature([Place, PlaceDetail, PlaceImage, PlaceTag]),
   ],

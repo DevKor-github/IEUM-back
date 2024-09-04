@@ -24,8 +24,6 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     }),
   ],
   getUserProfile: [
-    UseGuards(AccessGuard),
-    ApiBearerAuth('Access Token'),
     ApiOperation({ summary: '유저 프로필 불러오기.' }),
     ApiOkResponse({
       description: '유저 프로필 불러오기 성공',
@@ -34,8 +32,6 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
   fillUserInfoAndPreference: [
-    UseGuards(AccessGuard),
-    ApiBearerAuth('Access Token'),
     ApiOperation({ summary: '유저 정보 및 선호도 입력' }),
     ApiCreatedResponse({
       description: '유저 정보 및 선호도 입력 성공',
@@ -44,8 +40,6 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
   deleteUser: [
-    UseGuards(AccessGuard),
-    ApiBearerAuth('Access Token'),
     ApiOperation({ summary: '회원탈퇴' }),
     ApiOkResponse({
       description: '회원 탈퇴 성공',

@@ -9,6 +9,7 @@ import {
 import { AppleNotificationDto } from './dtos/apple-notification.dto';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { AuthDocs } from './auth.docs';
+import { UseRefreshGuard } from './guards/refresh.guard';
 
 @ApplyDocs(AuthDocs)
 @Controller('auth')
@@ -16,6 +17,7 @@ import { AuthDocs } from './auth.docs';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseRefreshGuard()
   @Get('/refresh')
   renewAccessToken(@Req() req): Promise<NewAccessTokenResDto> {
     return this.authService.renewAccessToken(

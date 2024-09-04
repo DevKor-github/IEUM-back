@@ -16,7 +16,6 @@ type AuthMethodName = MethodNames<AuthController>;
 
 export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
   renewAccessToken: [
-    UseRefreshGuard(),
     ApiIeumExceptionRes(['REFRESH_TOKEN_NOT_MATCHED']),
     ApiOkResponse({
       type: NewAccessTokenResDto,

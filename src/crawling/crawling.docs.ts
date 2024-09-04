@@ -16,7 +16,6 @@ type CrawlingMethodName = MethodNames<CrawlingController>;
 
 export const CrawlingDocs: Record<CrawlingMethodName, MethodDecorator[]> = {
   requestCrawling: [
-    UseNicknameCheckingAccessGuard(),
     ApiOperation({ summary: '크롤링을 위해 링크 전송' }),
     ApiCreatedResponse({ description: '크롤링 요청 성공' }),
     ApiIeumExceptionRes(['UNSUPPORTED_LINK']),

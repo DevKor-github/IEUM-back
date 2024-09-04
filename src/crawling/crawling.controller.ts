@@ -6,6 +6,7 @@ import { FirebaseService } from './firebase.service';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { CrawlingDocs } from './crawling.docs';
 import { Request } from 'express';
+import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 
 @ApplyDocs(CrawlingDocs)
 @ApiTags('크롤링 API')
@@ -16,6 +17,7 @@ export class CrawlingController {
     private readonly firebaseService: FirebaseService,
   ) {}
 
+  @UseNicknameCheckingAccessGuard()
   @Post('')
   async requestCrawling(@Req() req, @Body() body: CrawlingCollectionReqDto) {
     return await this.crawlingSerivce.requestCrawling(req.user.id, body);

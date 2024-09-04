@@ -23,7 +23,10 @@ import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { FolderDocs } from './folder.docs';
+import { UseAccessGuard } from 'src/auth/guards/access.guard';
+import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 
+@UseNicknameCheckingAccessGuard()
 @ApplyDocs(FolderDocs)
 @ApiTags('폴더 API')
 @Controller('folders')
@@ -93,12 +96,14 @@ export class FolderController {
       markersReqDto.categoryList,
     );
   }
+
   @Get('/:folderId/markers')
   async getMarkersByFolder(
     @Param('folderId') folderId: number,
     @Query() markersReqDto: MarkersReqDto,
     @Req() req,
   ): Promise<MarkersListResDto> {
+    console.log('controller before method', req.user);
     return await this.folderService.getMarkers(
       req.user.id,
       markersReqDto.addressList,

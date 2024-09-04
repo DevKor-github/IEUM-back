@@ -25,8 +25,6 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiQuery({ name: 'placeName', type: 'string' }),
   ],
   getPlaceDetailById: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
     ApiOperation({ summary: '특정 장소의 상세 정보 조회' }),
     ApiOkResponse({
       description: '상세 정보 조회 성공',
@@ -35,8 +33,6 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],
   getPlacePreviewInfoById: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
     ApiOperation({ summary: '특정 장소의 프리뷰 검색' }),
     ApiOkResponse({
       description: '프리뷰 검색 성공',
@@ -59,7 +55,6 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
       'INVALID_IMAGE_FILE',
       'AWS_S3_INTERNAL_ERROR',
     ]),
-    UseInterceptors(FileInterceptor('placeImage')),
     ApiConsumes('multipart/form-data'),
     ApiBody({
       schema: {

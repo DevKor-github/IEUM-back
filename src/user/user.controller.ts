@@ -1,4 +1,13 @@
-import { Controller, Body, Req, Put, Delete, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Req,
+  Put,
+  Delete,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FirstLoginReqDto, FirstLoginResDto } from './dtos/first-login.dto';
 import { UserService } from './user.service';
@@ -6,6 +15,7 @@ import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { UserDocs } from './user.docs';
+import { AccessGuard } from 'src/auth/guards/access.guard';
 
 @ApplyDocs(UserDocs)
 @ApiTags('유저 API')
@@ -21,13 +31,14 @@ export class UserController {
   }
 
   //사용자 프로필 정보 불러오기.
+  @UseGuards(AccessGuard)
   @Get('/me/profile')
   async getUserProfile(@Req() req): Promise<ProfileResDto> {
     return await this.userService.getUserProfile(req.user.id);
   }
 
   //최초 로그인시 유저 정보 받아오기.
-
+  @UseGuards(AccessGuard)
   @Put('/me/info')
   async fillUserInfoAndPreference(
     @Body() firstLoginReqDto: FirstLoginReqDto,
@@ -38,7 +49,7 @@ export class UserController {
       req.user.id,
     );
   }
-
+  @UseGuards(AccessGuard)
   @Delete('/me')
   async deleteUser(@Req() req) {
     return await this.userService.deleteUser(req.user.id);

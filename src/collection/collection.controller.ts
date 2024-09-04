@@ -3,7 +3,9 @@ import { CollectionService } from './collection.service';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { CollectionDocs } from './collection.docs';
+import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 
+@UseNicknameCheckingAccessGuard()
 @ApplyDocs(CollectionDocs)
 @ApiTags('게시글 API')
 @Controller('collections')
