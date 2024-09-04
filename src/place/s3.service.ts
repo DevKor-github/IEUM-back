@@ -13,7 +13,7 @@ export class S3Service {
 
   async uploadPlaceImage(placeImage: Express.Multer.File) {
     if (!placeImage || !placeImage.originalname) {
-      throwIeumException('BAD_REQUEST_IMAGE_FILE');
+      throwIeumException('INVALID_IMAGE_FILE');
     }
 
     const lastDotIndex = placeImage.originalname.lastIndexOf('.');
@@ -30,7 +30,7 @@ export class S3Service {
         },
         (err) => {
           if (err) {
-            throwIeumException('AWS_S3_ERROR');
+            throwIeumException('AWS_S3_INTERNAL_ERROR');
           }
         },
       )

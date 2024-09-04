@@ -141,15 +141,15 @@ export const ieumExceptions = {
     statusCode: 403,
   },
   //5xxx : Place
-  NOT_VALID_PLACE: {
-    name: 'NotValidPlace',
-    message: 'Not Valid Place',
+  PLACE_NOT_FOUND: {
+    name: 'PLACE_NOT_FOUND',
+    message: '존재하지 않는 장소',
     errorCode: 5001,
-    statusCode: 400,
+    statusCode: 404,
   },
-  BAD_REQUEST_IMAGE_FILE: {
-    name: 'BadRequestImageFile',
-    message: 'Bad Request Image File',
+  INVALID_IMAGE_FILE: {
+    name: 'INVALID_IMAGE_FILE',
+    message: '유효하지 않은 이미지 파일',
     errorCode: 5002,
     statusCode: 400,
   },
@@ -161,9 +161,9 @@ export const ieumExceptions = {
     statusCode: 400,
   },
   //7xxx : AWS
-  AWS_S3_ERROR: {
-    name: 'AWSS3Error',
-    message: 'AWS S3 Error',
+  AWS_S3_INTERNAL_ERROR: {
+    name: 'AWS_S3_INTERNAL_ERROR',
+    message: 'AWS S3에 저장하는 과정에서 에러 발생',
     errorCode: 7000,
     statusCode: 500,
   },

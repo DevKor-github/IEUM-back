@@ -78,7 +78,7 @@ export class PlaceService {
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
     if (!place) {
-      throwIeumException('NOT_VALID_PLACE');
+      throwIeumException('PLACE_NOT_FOUND');
     }
     return new PlaceDetailResDto(place);
   }
@@ -86,7 +86,7 @@ export class PlaceService {
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
     const place = await this.placeRepository.getPlacePreviewInfoById(placeId);
     if (!place) {
-      throwIeumException('NOT_VALID_PLACE');
+      throwIeumException('PLACE_NOT_FOUND');
     }
     return new PlacePreviewResDto(place);
   }
@@ -153,12 +153,12 @@ export class PlaceService {
   }
 
   async createPlaceImage(placeId: number, placeImage: Express.Multer.File) {
-    //transaction적용.
+    //transaction 적용 필요
     const place = await this.placeRepository.findOne({
       where: { id: placeId },
     });
     if (!place) {
-      throwIeumException('NOT_VALID_PLACE');
+      throwIeumException('PLACE_NOT_FOUND');
     }
     const imageUrl = await this.s3Service.uploadPlaceImage(placeImage);
 

@@ -239,7 +239,7 @@ export class AuthService {
           OAuthPlatform.Apple,
         );
         if (!userToDelete) {
-          throwIeumException('INVALID_USER');
+          throwIeumException('USER_NOT_FOUND');
         }
         await this.userService.deleteUser(userToDelete.id);
         console.log(`id: ${userToDelete.id} 유저가 회원탈퇴 하였습니다.`);

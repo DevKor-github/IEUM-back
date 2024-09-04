@@ -56,13 +56,14 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     }),
     ApiIeumExceptionRes([
       'PLACE_NOT_FOUND',
-      'BAD_REQUEST_IMAGE_FILE',
-      'AWS_S3_ERROR',
+      'INVALID_IMAGE_FILE',
+      'AWS_S3_INTERNAL_ERROR',
     ]),
     UseInterceptors(FileInterceptor('placeImage')),
     ApiConsumes('multipart/form-data'),
     ApiBody({
       schema: {
+        required: ['placeImage'],
         type: 'object',
         properties: {
           placeImage: {
