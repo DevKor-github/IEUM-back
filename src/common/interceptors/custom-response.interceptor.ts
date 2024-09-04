@@ -10,6 +10,11 @@ import { map } from 'rxjs/operators';
 
 type ExtendedContextType = ContextType | 'rmq';
 
+enum CustomResponse {
+  SuccessWithoutData = 0,
+  SuccessWithData = 1,
+}
+
 @Injectable()
 export class CustomResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -19,8 +24,11 @@ export class CustomResponseInterceptor implements NestInterceptor {
           return data;
         }
         return {
-          statusCode: context.switchToHttp().getResponse().statusCode,
-          data: data,
+          statusCode:
+            data !== undefined
+              ? CustomResponse.SuccessWithData
+              : CustomResponse.SuccessWithoutData,
+          response: data !== undefined ? data : null,
         };
       }),
     );
