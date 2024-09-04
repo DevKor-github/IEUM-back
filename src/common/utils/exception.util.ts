@@ -161,7 +161,7 @@ export const ieumExceptions = {
   },
   //6xxx : Crawling
   UNSUPPORTED_LINK: {
-    name: 'UnsupportedLink',
+    name: 'UNSUPPORTED_LINK',
     message: '지원하지 않는 링크',
     errorCode: 6000,
     statusCode: 400,
@@ -211,7 +211,7 @@ export const ieumExceptions = {
     statusCode: 403,
   },
   DEFAULT_UNDEFINED: {
-    name: 'DefaultUndefined',
+    name: 'DEFAULT_UNDEFINED',
     message: 'Default Undefined',
     errorCode: 9999,
     statusCode: 500,
