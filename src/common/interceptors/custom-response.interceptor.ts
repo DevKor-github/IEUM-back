@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CustomResponse } from '../enums/custom-response.enum';
 
 type ExtendedContextType = ContextType | 'rmq';
 

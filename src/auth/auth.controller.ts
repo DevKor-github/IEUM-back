@@ -1,22 +1,12 @@
-import { Controller, Get, UseGuards, Req, Body, Post } from '@nestjs/common';
+import { Controller, Get, Req, Body, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dtos/login.dto';
 import {
   NewAccessTokenResDto,
   UserLoginResDto,
 } from './dtos/user-login-res.dto';
 import { AppleNotificationDto } from './dtos/apple-notification.dto';
-import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
-import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
-import { AccessGuard } from './guards/access.guard';
-import { RefreshGuard } from './guards/refresh.guard';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { AuthDocs } from './auth.docs';
 

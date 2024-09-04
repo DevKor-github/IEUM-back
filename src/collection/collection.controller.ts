@@ -1,9 +1,6 @@
 import { Controller, Get, Param, Query, Req } from '@nestjs/common';
 import { CollectionService } from './collection.service';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
-import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
-import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
+import { ApiTags } from '@nestjs/swagger';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { CollectionDocs } from './collection.docs';
 
