@@ -1,7 +1,10 @@
 import { MethodNames } from 'src/common/types/method-names.type';
 import { FolderService } from './folder.service';
 import { UseGuards } from '@nestjs/common';
-import { NicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
+import {
+  NicknameCheckingAccessGuard,
+  UseNicknameCheckingAccessGuard,
+} from 'src/auth/guards/nickname-check-access.guard';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -18,8 +21,7 @@ type FolderMethodName = MethodNames<FolderController>;
 
 export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
   getFoldersList: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
+    UseNicknameCheckingAccessGuard(),
     ApiOperation({
       summary:
         '유저의 폴더 리스트 가져오기. type 0 = Default, type 1= Insta, type 2 = Custom',
@@ -27,76 +29,80 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
     ApiOkResponse({ type: FoldersListResDto }),
   ],
   createNewFolder: [
-    ApiIeumExceptionRes(['USERINFO_FILL_REQUIRED']),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '새로운 폴더 생성하기' }),
     ApiCreatedResponse({
       description: '폴더 생성 성공',
     }),
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
-  ],
-  deleteFolder: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiIeumExceptionRes(['FORBIDDEN_FOLDER']),
-    ApiBearerAuth('Access Token'),
-    ApiCreatedResponse({
-      description: '폴더 삭제 성공',
-    }),
-    ApiOperation({ summary: '존재하는 폴더 삭제하기' }),
+    ApiIeumExceptionRes(['USERINFO_FILL_REQUIRED']),
   ],
   changeFolderName: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '폴더 이름 변경하기' }),
     ApiOkResponse({
       description: '폴더 이름 변경 성공',
     }),
-    ApiOperation({ summary: '폴더 이름 변경하기' }),
-    ApiIeumExceptionRes(['FORBIDDEN_FOLDER']),
+    ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],
-  deleteFolderPlaces: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
-    ApiOkResponse({
-      description: '폴더에서 장소 삭제 성공.',
+  deleteFolder: [
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '특정 폴더 삭제하기' }),
+    ApiCreatedResponse({
+      description: '폴더 삭제 성공',
     }),
-    ApiOperation({ summary: '폴더에서 장소 삭제하기' }),
-    ApiIeumExceptionRes(['FORBIDDEN_FOLDER']),
+    ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
+  ],
+
+  deleteFolderPlaces: [
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({
+      summary: '디폴트 폴더에서 장소 삭제하기(모든 폴더에서 삭제하기)',
+    }),
+    ApiOkResponse({
+      description: '디폴트 폴더에서 장소 삭제 성공.',
+    }),
+    ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],
   getDefaultFolder: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '로그인한 유저의 디폴트 폴더 가져오기' }),
+    ApiOkResponse({ description: '성공' }),
   ],
   getAllMarkers: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
-    ApiOkResponse({ type: MarkersListResDto }),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '저장한 모든 장소의 마커 리스트 가져오기' }),
+    ApiOkResponse({ description: '성공', type: MarkersListResDto }),
   ],
   getMarkersByFolder: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
-    ApiOkResponse({ type: MarkersListResDto }),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '특정 폴더의 장소 마커 리스트 가져오기' }),
+    ApiOkResponse({ description: '성공', type: MarkersListResDto }),
+    ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],
   getAllPlacesList: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
-    ApiOkResponse({ type: PlacesListResDto }),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '저장한 모든 장소 리스트 가져오기' }),
+    ApiOkResponse({ description: '성공', type: PlacesListResDto }),
   ],
   getPlaceListByFolder: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
-    ApiOkResponse({ type: PlacesListResDto }),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '특정 폴더의 장소 리스트 가져오기' }),
+    ApiOkResponse({ description: '성공', type: PlacesListResDto }),
+    ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],
   createFolderPlacesIntoDefaultFolder: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '디폴트 폴더에 장소 추가하기' }),
     ApiCreatedResponse({
       description: '디폴트 폴더에 장소 추가 성공',
     }),
   ],
   createFolderPlacesIntoFolder: [
-    UseGuards(NicknameCheckingAccessGuard),
-    ApiBearerAuth('Access Token'),
+    UseNicknameCheckingAccessGuard(),
+    ApiOperation({ summary: '특정 폴더에 장소 추가하기' }),
     ApiCreatedResponse({
       description: '특정 폴더에 장소 추가 성공',
     }),
+    ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],
 };

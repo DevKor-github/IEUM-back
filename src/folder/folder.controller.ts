@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,17 +8,8 @@ import {
   Put,
   Query,
   Req,
-  UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { FolderService } from './folder.service';
-import {
-  ApiBearerAuth,
-  ApiExtraModels,
-  ApiNotFoundResponse,
-  ApiResponse,
-} from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { FoldersListResDto } from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { DeletePlacesReqDto } from './dtos/delete-places-req.dto';
@@ -28,16 +18,9 @@ import {
   MarkersReqDto,
   PlacesListReqDto,
 } from 'src/place/dtos/places-list-req.dto';
-import { CustomAuthSwaggerDecorator } from 'src/common/decorators/auth-swagger.decorator';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
-import { CustomErrorResSwaggerDecorator } from 'src/common/decorators/error-res-swagger-decorator';
-import { ErrorCodeEnum } from 'src/common/enums/error-code.enum';
-import { NicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
-import { AccessGuard } from 'src/auth/guards/access.guard';
-import { IeumException } from 'src/common/utils/exception.util';
-import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { FolderDocs } from './folder.docs';
 
@@ -59,7 +42,7 @@ export class FolderController {
   ) {
     return await this.folderService.createNewFolder(
       req.user.id,
-      createFolderReqDto,
+      createFolderReqDto.name,
     );
   }
 

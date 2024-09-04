@@ -128,15 +128,15 @@ export const ieumExceptions = {
   },
 
   //4xxx : Folder
-  NOT_VALID_FOLDER: {
-    name: 'NotValidFolder',
-    message: 'Not Valid Folder',
+  FOLDER_NOT_FOUND: {
+    name: 'FOLDER_NOT_FOUND',
+    message: '존재하지 않는 폴더',
     errorCode: 4001,
-    statusCode: 400,
+    statusCode: 404,
   },
   FORBIDDEN_FOLDER: {
-    name: 'ForbiddenFolder',
-    message: 'Forbidden Folder',
+    name: 'FORBIDDEN_FOLDER',
+    message: '접근이 금지된 폴더',
     errorCode: 4002,
     statusCode: 403,
   },

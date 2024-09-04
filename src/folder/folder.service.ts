@@ -38,20 +38,21 @@ export class FolderService {
     return await this.folderRepository.getDefaultFolder(userId);
   }
 
-  async createNewFolder(
-    userId: number,
-    createFolderReqDto: CreateFolderReqDto,
-  ) {
-    return await this.folderRepository.createFolder(
-      userId,
-      createFolderReqDto.name,
-    );
+  async createNewFolder(userId: number, folderName: string) {
+    return await this.folderRepository.createFolder(userId, folderName);
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {
+    const targetFolder = await this.getFolderByFolderId(folderId);
+    if (!targetFolder) {
+      throwIeumException('FOLDER_NOT_FOUND');
+    }
+    if (targetFolder.userId !== userId) {
+      throwIeumException('FORBIDDEN_FOLDER');
+    }
     return await this.folderRepository.changeFolderName(
       userId,
-      folderId,
+      targetFolder.id,
       folderName,
     );
   }
@@ -59,6 +60,9 @@ export class FolderService {
   async deleteFolder(userId: number, folderId: number) {
     const targetFolder =
       await this.folderRepository.getFolderByFolderId(folderId);
+    if (!targetFolder) {
+      throwIeumException('FOLDER_NOT_FOUND');
+    }
     if (
       targetFolder.userId != userId ||
       targetFolder.type == FolderType.Default
@@ -77,6 +81,15 @@ export class FolderService {
     categoryList: string[],
     folderId?: number,
   ): Promise<MarkersListResDto> {
+    if (folderId) {
+      const folder = await this.folderRepository.getFolderByFolderId(folderId);
+      if (!folder) {
+        throwIeumException('FOLDER_NOT_FOUND');
+      }
+      if (folder.userId !== userId) {
+        throwIeumException('FORBIDDEN_FOLDER');
+      }
+    }
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
@@ -92,12 +105,20 @@ export class FolderService {
     placesListReqDto: PlacesListReqDto,
     folderId?: number,
   ): Promise<PlacesListResDto> {
+    if (folderId) {
+      const folder = await this.folderRepository.getFolderByFolderId(folderId);
+      if (!folder) {
+        throwIeumException('FOLDER_NOT_FOUND');
+      }
+      if (folder.userId !== userId) {
+        throwIeumException('FORBIDDEN_FOLDER');
+      }
+    }
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
       placesListReqDto,
       folderId,
     );
-    console.log(rawPlacesInfoList);
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
 
@@ -111,12 +132,12 @@ export class FolderService {
 
     const folder = await this.getFolderByFolderId(folderId);
     if (!folder) {
-      throwIeumException('NOT_VALID_FOLDER');
+      throwIeumException('FOLDER_NOT_FOUND');
     }
     if (folder.userId !== userId) {
       throwIeumException('FORBIDDEN_FOLDER');
     }
-
+    //placeId에 대한 유효성 체크가 가능한가?
     placeIds.forEach(async (placeId) => {
       await this.folderPlaceRepository.createFolderPlace(folderId, placeId);
     });
@@ -169,11 +190,15 @@ export class FolderService {
     const targetFolder =
       await this.folderRepository.getFolderByFolderId(folderId);
 
+    if (!targetFolder) {
+      throwIeumException('FOLDER_NOT_FOUND');
+    }
     if (targetFolder.userId != userId) {
       throwIeumException('FORBIDDEN_FOLDER');
     }
 
     if (targetFolder.type == FolderType.Default) {
+      //해당 유저의 소유가 아닌 폴더-장소들도 다 삭제되는 거 아닌가?
       return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
     }
 
