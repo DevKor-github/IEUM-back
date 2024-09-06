@@ -16,7 +16,7 @@ import { CustomResponseInterceptor } from './common/interceptors/custom-response
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
 import { S3Service } from './place/s3.service';
-// import { CrawlingModule } from './crawling/crawling.module';
+import { CrawlingModule } from './crawling/crawling.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { ExporterService } from './exporter/exporter.service';
@@ -62,7 +62,7 @@ import { ExporterMiddleware } from './common/middleware/exporter.middleware';
     TripModule,
     FolderModule,
     CollectionModule,
-    // CrawlingModule,
+    CrawlingModule,
   ],
   controllers: [AppController],
   providers: [
