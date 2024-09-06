@@ -65,4 +65,15 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
       },
     }),
   ],
+  getGooglePlacesByText: [
+    ApiOperation({ summary: '텍스트로 구글 Place API 검색' }),
+    ApiQuery({ name: 'text', type: 'string' }),
+  ],
+  getGooglePlaceDetailById: [
+    ApiOperation({ summary: '특정 장소의 구글 Place API 상세 정보 조회' }),
+  ],
+  getGooglePlacePhotoByName: [
+    ApiOperation({ summary: '이름으로 구글 Place API 사진 검색' }),
+    ApiQuery({ name: 'name', type: 'string' }),
+  ],
 };

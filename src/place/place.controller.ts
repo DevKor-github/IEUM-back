@@ -29,6 +29,26 @@ export class PlaceController {
     return await this.placeService.getPlacesByPlaceName(placeName);
   }
 
+  @Get('/kakao')
+  async getKakaoPlacesByKeyword(@Query() keyword: string) {
+    return await this.placeService.searchKakaoLocalByKeyword(keyword);
+  }
+
+  @Get('/google')
+  async getGooglePlacesByText(@Query() text: string) {
+    return await this.placeService.searchGooglePlacesByText(text);
+  }
+
+  @Get('/google/:placeId')
+  async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
+    return await this.placeService.getGooglePlaceDetailById(placeId);
+  }
+
+  @Get('/google/photo')
+  async getGooglePlacePhotoByName(@Query('name') name: string) {
+    return await this.placeService.getGooglePlacePhotoByName(name);
+  }
+
   @UseNicknameCheckingAccessGuard()
   @Get('/:placeId')
   async getPlaceDetailById(@Param('placeId') placeId: string) {
@@ -41,11 +61,6 @@ export class PlaceController {
     @Param('placeId') placeId: string,
   ): Promise<PlacePreviewResDto> {
     return await this.placeService.getPlacePreviewInfoById(parseInt(placeId));
-  }
-
-  @Get('kakao')
-  async getKakaoPlacesByKeyword(@Query() keyword: string) {
-    return await this.placeService.searchKakaoLocalByKeyword(keyword);
   }
 
   @UseInterceptors(FileInterceptor('placeImage'))
