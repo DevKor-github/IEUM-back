@@ -19,7 +19,7 @@ export class UndefinedExceptionFilter implements ExceptionFilter {
       name = `UNDEFINED : ${exception.name}`;
     } else if (exception instanceof Error) {
       name = `UNDEFINED : ${exception.name}`;
-      console.error(exception);
+      // console.error(exception);
     }
 
     response.status(statusCode).json({

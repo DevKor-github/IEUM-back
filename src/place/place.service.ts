@@ -51,7 +51,22 @@ export class PlaceService {
         headers: {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
-          'X-Goog-FieldMask': 'places.id,places.name,places.formattedAddress',
+          'X-Goog-FieldMask': 'places.id,places.name,places.displayName',
+        },
+      },
+    );
+    return place.data;
+  }
+
+  async searchGooglePlacesByAutoComplete(text: string) {
+    const place = await axios.post(
+      'https://places.googleapis.com/v1/places:autocomplete',
+      { input: text, languageCode: 'ko', includedRegionCodes: ['kr'] },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
+          // 'X-Goog-FieldMask': 'places.id,places.name,places.displayName',
         },
       },
     );
@@ -59,17 +74,18 @@ export class PlaceService {
   }
 
   async getGooglePlacePhotoByName(name: string) {
-    const placePhoto = await axios.get(PLACES_API_BASE_URL + name + '/media', {
-      params: { languageCode: 'ko', key: process.env.GOOGLE_API_KEY },
-      headers: {
-        // 'Content-Type': 'application/json',
-        // 'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
-        // 'X-Goog-FieldMask':
-        //   'id,name,displayName,types,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
+    const placePhoto: any = await axios.get(
+      `https://places.googleapis.com/v1/${name}/media`,
+      {
+        params: {
+          key: process.env.GOOGLE_API_KEY,
+          maxHeightPx: 1000,
+          skipHttpRedirect: true,
+        },
       },
-    });
+    );
 
-    return placePhoto;
+    return placePhoto.data;
   }
 
   async getGooglePlaceDetailById(googlePlaceId: string) {
@@ -79,10 +95,10 @@ export class PlaceService {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
         'X-Goog-FieldMask':
-          'id,name,displayName,types,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
+          'id,name,displayName,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
       },
     });
-    return placeDetail;
+    return placeDetail.data;
   }
 
   // ---------내부 DB 검색---------
@@ -106,7 +122,7 @@ export class PlaceService {
     return await this.placeRepository.getPlacesByPlaceName(placeName);
   }
 
-  // ---------외부 API 검색---------
+  // ---------크롤링 장소 처리---------
 
   @Transactional()
   async createPlaceByKakaoLocal(keyword: string) {

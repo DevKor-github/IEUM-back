@@ -35,18 +35,23 @@ export class PlaceController {
   }
 
   @Get('/google')
-  async getGooglePlacesByText(@Query() text: string) {
+  async getGooglePlacesByText(@Query('text') text: string) {
     return await this.placeService.searchGooglePlacesByText(text);
   }
 
-  @Get('/google/:placeId')
-  async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
-    return await this.placeService.getGooglePlaceDetailById(placeId);
+  @Get('/google/auto-complete')
+  async getGooglePlacesByAutoComplete(@Query('text') text: string) {
+    return await this.placeService.searchGooglePlacesByAutoComplete(text);
   }
 
   @Get('/google/photo')
   async getGooglePlacePhotoByName(@Query('name') name: string) {
     return await this.placeService.getGooglePlacePhotoByName(name);
+  }
+
+  @Get('/google/:placeId')
+  async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
+    return await this.placeService.getGooglePlaceDetailById(placeId);
   }
 
   @UseNicknameCheckingAccessGuard()

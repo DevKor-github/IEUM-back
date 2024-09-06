@@ -76,4 +76,8 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '이름으로 구글 Place API 사진 검색' }),
     ApiQuery({ name: 'name', type: 'string' }),
   ],
+  getGooglePlacesByAutoComplete: [
+    ApiOperation({ summary: '자동완성 텍스트로 구글 Place API 검색' }),
+    ApiQuery({ name: 'text', type: 'string' }),
+  ],
 };
