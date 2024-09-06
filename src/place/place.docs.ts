@@ -76,8 +76,26 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '이름으로 구글 Place API 사진 검색' }),
     ApiQuery({ name: 'name', type: 'string' }),
   ],
-  getGooglePlacesByAutoComplete: [
-    ApiOperation({ summary: '자동완성 텍스트로 구글 Place API 검색' }),
-    ApiQuery({ name: 'text', type: 'string' }),
+  uploadImageByUri: [
+    ApiOperation({ summary: 'URI로 이미지 업로드' }),
+    ApiCreatedResponse({
+      description: '이미지 업로드 성공',
+      type: PlaceImage,
+    }),
+    ApiIeumExceptionRes(['IMAGE_DOWNLOAD_FAILED', 'AWS_S3_INTERNAL_ERROR']),
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          uri: {
+            type: 'string',
+          },
+        },
+      },
+    }),
   ],
+  // getGooglePlacesByAutoComplete: [
+  //   ApiOperation({ summary: '자동완성 텍스트로 구글 Place API 검색' }),
+  //   ApiQuery({ name: 'text', type: 'string' }),
+  // ],
 };

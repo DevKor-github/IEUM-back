@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -39,14 +40,20 @@ export class PlaceController {
     return await this.placeService.searchGooglePlacesByText(text);
   }
 
-  @Get('/google/auto-complete')
-  async getGooglePlacesByAutoComplete(@Query('text') text: string) {
-    return await this.placeService.searchGooglePlacesByAutoComplete(text);
-  }
+  // deprecated
+  // @Get('/google/auto-complete')
+  // async getGooglePlacesByAutoComplete(@Query('text') text: string) {
+  //   return await this.placeService.searchGooglePlacesByAutoComplete(text);
+  // }
 
   @Get('/google/photo')
   async getGooglePlacePhotoByName(@Query('name') name: string) {
     return await this.placeService.getGooglePlacePhotoByName(name);
+  }
+
+  @Post('/google/photo')
+  async uploadImageByUri(@Body() body: { uri: string }) {
+    return await this.placeService.uploadImageByUri(body.uri);
   }
 
   @Get('/google/:placeId')

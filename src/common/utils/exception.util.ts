@@ -185,6 +185,12 @@ export const ieumExceptions = {
     errorCode: 7000,
     statusCode: 500,
   },
+  IMAGE_DOWNLOAD_FAILED: {
+    name: 'IMAGE_DOWNLOAD_FAILED',
+    message: '이미지 다운로드 실패',
+    errorCode: 7001,
+    statusCode: 502,
+  },
   //else
   DEFAULT_INTERNAL_SERVER_ERROR: {
     name: 'DefaultInternalServerError',

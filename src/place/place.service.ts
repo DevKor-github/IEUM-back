@@ -57,21 +57,21 @@ export class PlaceService {
     );
     return place.data;
   }
-
-  async searchGooglePlacesByAutoComplete(text: string) {
-    const place = await axios.post(
-      'https://places.googleapis.com/v1/places:autocomplete',
-      { input: text, languageCode: 'ko', includedRegionCodes: ['kr'] },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
-          // 'X-Goog-FieldMask': 'places.id,places.name,places.displayName',
-        },
-      },
-    );
-    return place.data;
-  }
+  // deprecated
+  // async searchGooglePlacesByAutoComplete(text: string) {
+  //   const place = await axios.post(
+  //     'https://places.googleapis.com/v1/places:autocomplete',
+  //     { input: text, languageCode: 'ko', includedRegionCodes: ['kr'] },
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
+  //         // 'X-Goog-FieldMask': 'places.id,places.name,places.displayName',
+  //       },
+  //     },
+  //   );
+  //   return place.data;
+  // }
 
   async getGooglePlacePhotoByName(name: string) {
     const placePhoto: any = await axios.get(
@@ -88,6 +88,10 @@ export class PlaceService {
     return placePhoto.data;
   }
 
+  async uploadImageByUri(photoUri: string) {
+    return await this.s3Service.getAndUploadFromUri(photoUri);
+  }
+
   async getGooglePlaceDetailById(googlePlaceId: string) {
     const placeDetail = await axios.get(SEARCH_BY_ID_URL + googlePlaceId, {
       params: { languageCode: 'ko' },
@@ -95,7 +99,7 @@ export class PlaceService {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
         'X-Goog-FieldMask':
-          'id,name,displayName,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
+          'id,name,displayName,googleMapsUri,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
       },
     });
     return placeDetail.data;
