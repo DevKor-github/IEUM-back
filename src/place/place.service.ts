@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import {
+  PLACES_API_BASE_URL,
   SEARCH_BY_ID_URL,
   SEARCH_BY_KEYWORD_KAKAO_URL,
   SEARCH_BY_TEXT_URL,
@@ -50,28 +51,38 @@ export class PlaceService {
         headers: {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
-          'X-Goog-FieldMask':
-            'places.id,places.displayName,places.formattedAddress,places.priceLevel',
+          'X-Goog-FieldMask': 'places.id,places.name,places.formattedAddress',
         },
       },
     );
     return place.data;
   }
 
-  async getPlaceDetailByGooglePlaceId(
-    googlePlaceId: string,
-  ): Promise<PlaceDetailByGoogle> {
+  async getGooglePlacePhotoByName(name: string) {
+    const placePhoto = await axios.get(PLACES_API_BASE_URL + name + '/media', {
+      params: { languageCode: 'ko', key: process.env.GOOGLE_API_KEY },
+      headers: {
+        // 'Content-Type': 'application/json',
+        // 'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
+        // 'X-Goog-FieldMask':
+        //   'id,name,displayName,types,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
+      },
+    });
+
+    return placePhoto;
+  }
+
+  async getGooglePlaceDetailById(googlePlaceId: string) {
     const placeDetail = await axios.get(SEARCH_BY_ID_URL + googlePlaceId, {
       params: { languageCode: 'ko' },
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
         'X-Goog-FieldMask':
-          'id,name,types,displayName,nationalPhoneNumber,formattedAddress,location,regularOpeningHours.weekdayDescriptions,primaryTypeDisplayName,addressComponents,websiteUri,allowsDogs,goodForGroups,reservable,delivery,takeout',
+          'id,name,displayName,types,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
       },
     });
-
-    return placeDetail.data;
+    return placeDetail;
   }
 
   // ---------내부 DB 검색---------
