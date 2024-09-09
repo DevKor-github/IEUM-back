@@ -18,4 +18,11 @@ export class PlaceImageRepository extends Repository<PlaceImage> {
 
     return await this.save(placeImage);
   }
+
+  async createPlaceImageByGoogle(
+    placeId,
+    uploadedImageUrl,
+    authorName,
+    authorUri,
+  ) {}
 }

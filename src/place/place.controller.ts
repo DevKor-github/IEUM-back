@@ -67,6 +67,13 @@ export class PlaceController {
     return await this.placeService.getPlaceDetailById(parseInt(placeId));
   }
 
+  @Get('/:placeId/detail')
+  async getPlaceDetailByGoogle(@Param('placeId') placeId: string) {
+    return await this.placeService.createPlaceDetailByGooglePlacesApi(
+      parseInt(placeId),
+    );
+  }
+
   @UseNicknameCheckingAccessGuard()
   @Get('/:placeId/preview')
   async getPlacePreviewInfoById(

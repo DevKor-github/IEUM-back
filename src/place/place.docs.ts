@@ -98,4 +98,11 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
   //   ApiOperation({ summary: '자동완성 텍스트로 구글 Place API 검색' }),
   //   ApiQuery({ name: 'text', type: 'string' }),
   // ],
+  getPlaceDetailByGoogle: [
+    ApiOperation({ summary: '특정 장소의 상세 정보 조회' }),
+    ApiOkResponse({
+      description: '상세 정보 조회 성공',
+    }),
+    ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
+  ],
 };

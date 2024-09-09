@@ -20,6 +20,7 @@ import { PlaceDetailRepository } from './repositories/place-detail.repository';
 import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
 import { Place } from './entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 
 @Injectable()
 export class PlaceService {
@@ -43,6 +44,42 @@ export class PlaceService {
     return kakaoPlace;
   }
 
+  async createPlaceDetailByGooglePlacesApi(placeId: number) {
+    const place = await this.placeRepository.findOne({
+      where: { id: placeId },
+    });
+    if (!place) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
+    const simplifiedAddress = addressSimplifier(place.address);
+    const placeName = place.name;
+    const googlePlacesApiTextSearchResult = await this.searchGooglePlacesByText(
+      `${simplifiedAddress} ${placeName}`,
+    );
+    console.log(`${simplifiedAddress} ${placeName}`);
+    const googlePlaceDetail = await this.getGooglePlaceDetailById(
+      googlePlacesApiTextSearchResult.places[0].id,
+    );
+
+    const photoResourceName = googlePlaceDetail.photos[0].name;
+    const photoAuthorAttributions =
+      googlePlaceDetail.photos[0].authorAttributions;
+
+    const photoByGooglePlacesApi =
+      await this.getGooglePlacePhotoByName(photoResourceName);
+    const photoUriByGooglePlacesApi = photoByGooglePlacesApi.photoUri;
+    const uploadedImageUrl = await this.uploadImageByUri(
+      photoUriByGooglePlacesApi,
+    );
+    const placeImage = await this.placeImageRepository.createPlaceImageByGoogle(
+      placeId,
+      uploadedImageUrl,
+      photoAuthorAttributions.displayName,
+      photoAuthorAttributions.uri,
+    );
+    return await googlePlaceDetail;
+  }
+
   async searchGooglePlacesByText(text: string): Promise<any> {
     const place = await axios.post(
       SEARCH_BY_TEXT_URL,
@@ -57,21 +94,6 @@ export class PlaceService {
     );
     return place.data;
   }
-  // deprecated
-  // async searchGooglePlacesByAutoComplete(text: string) {
-  //   const place = await axios.post(
-  //     'https://places.googleapis.com/v1/places:autocomplete',
-  //     { input: text, languageCode: 'ko', includedRegionCodes: ['kr'] },
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
-  //         // 'X-Goog-FieldMask': 'places.id,places.name,places.displayName',
-  //       },
-  //     },
-  //   );
-  //   return place.data;
-  // }
 
   async getGooglePlacePhotoByName(name: string) {
     const placePhoto: any = await axios.get(
