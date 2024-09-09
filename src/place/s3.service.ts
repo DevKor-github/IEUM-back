@@ -22,7 +22,7 @@ export class S3Service {
       const uploadResult = await this.s3
         .upload({
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: uuid(),
+          Key: `places/${uuid()}.jpg}`,
           Body: response.data,
           ContentType: response.headers['content-type'],
         })

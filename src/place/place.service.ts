@@ -104,6 +104,7 @@ export class PlaceService {
     });
     return placeDetail.data;
   }
+  //regularOpeningHours.weekdayDescriptions
 
   // ---------내부 DB 검색---------
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
