@@ -21,6 +21,7 @@ import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
 import { Place } from './entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
+import { GooglePlacesApiDetail } from 'src/common/interfaces/google-places-api-detail.interface';
 
 @Injectable()
 export class PlaceService {
@@ -60,10 +61,24 @@ export class PlaceService {
     const googlePlaceDetail = await this.getGooglePlaceDetailById(
       googlePlacesApiTextSearchResult.places[0].id,
     );
-    console.log(googlePlaceDetail);
+
+    const googlePlacesApiDetail: GooglePlacesApiDetail = {
+      weekDaysOpeningHours:
+        googlePlaceDetail.regularOpeningHours.weekdayDescriptions,
+      freeParkingLot: googlePlaceDetail.parkingOptions.freeParkingLot,
+      paidParkingLot: googlePlaceDetail.parkingOptions.paidParkingLot,
+      freeStreetParking: googlePlaceDetail.parkingOptions.freeStreetParking,
+      allowsDogs: googlePlaceDetail.allowsDogs,
+      goodForGroups: googlePlaceDetail.goodForGroups,
+      takeout: googlePlaceDetail.takeout,
+      delivery: googlePlaceDetail.delivery,
+      reservable: googlePlaceDetail.reservable,
+      googleMapsUri: googlePlaceDetail.googleMapsUri,
+    };
+    console.log(googlePlacesApiDetail);
     const photoResourceName = googlePlaceDetail.photos[0].name;
     const photoAuthorAttributions =
-      googlePlaceDetail.photos[0].authorAttributions[0];
+      googlePlaceDetail.photos[0].authorAttributions[0]; // 존재하지 않을 수도 있다!
 
     const photoByGooglePlacesApi =
       await this.getGooglePlacePhotoByName(photoResourceName);
@@ -78,7 +93,11 @@ export class PlaceService {
       photoAuthorAttributions.displayName,
       photoAuthorAttributions.uri,
     );
-    return await googlePlaceDetail;
+
+    return await this.placeDetailRepository.createPlaceDetailByGoogle(
+      placeId,
+      googlePlacesApiDetail,
+    );
   }
 
   async searchGooglePlacesByText(text: string): Promise<any> {
@@ -124,6 +143,7 @@ export class PlaceService {
         'X-Goog-FieldMask':
           'id,name,displayName,googleMapsUri,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
       },
+      // 'id,name,displayName,googleMapsUri,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
     });
     return placeDetail.data;
   }
