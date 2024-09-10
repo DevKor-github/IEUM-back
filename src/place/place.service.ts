@@ -21,6 +21,7 @@ import { Place } from './entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
+import { CollectionService } from 'src/collection/collection.service';
 
 @Injectable()
 export class PlaceService {
@@ -165,13 +166,22 @@ export class PlaceService {
   }
 
   // ---------내부 DB 검색---------
-  async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
+  async getPlaceDetailById(
+    userId: number,
+    placeId: number,
+  ): Promise<PlaceDetailResDto> {
     const place = await this.placeRepository.getPlaceDetailById(placeId);
     if (!place) {
       throwIeumException('PLACE_NOT_FOUND');
     }
 
     const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
+    const placeImages =
+      await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
+    // const linkedCollections = await this.collectionService.getLinkedCollections(
+    //   userId,
+    //   placeId,
+    // );
     /*
     const placeDetail = place와 placeDetail JOIN
     - Place, PlaceDetail JOIN

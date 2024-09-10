@@ -33,4 +33,10 @@ export class PlaceImageRepository extends Repository<PlaceImage> {
 
     return await this.save(placeImage);
   }
+
+  async getPlaceImagesByPlaceId(placeId: number): Promise<PlaceImage[]> {
+    return await this.createQueryBuilder('placeImage')
+      .where('placeImage.placeId = :placeId', { placeId })
+      .getMany();
+  }
 }
