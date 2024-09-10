@@ -3,6 +3,8 @@ import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/place/entities/place.entity';
+import { PlaceImage } from '../entities/place-image.entity';
+import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 
 export class PlaceDetailResDto {
   @ApiProperty()
@@ -12,13 +14,13 @@ export class PlaceDetailResDto {
   name: string;
 
   @ApiProperty()
+  customTags: string[];
+
+  @ApiProperty()
   simplifiedAddress: string; //간략 주소
 
   @ApiProperty()
   primaryCategory: string;
-
-  //CustomTagParser
-  // customTags : string[];
 
   @ApiProperty()
   openingHours: string[];
@@ -26,16 +28,32 @@ export class PlaceDetailResDto {
   @ApiProperty()
   phone: string;
 
-  /*
-  placeDetail을 JOIN
-  offeredServices
-  parkingOptions
-  allowsDogs
-  goodForGroups
-  takeout
-  delivery
-  reservable
-   */
+  @ApiProperty()
+  googleMapsUri: string;
+
+  @ApiProperty()
+  freeParkingLot: boolean;
+
+  @ApiProperty()
+  paidParkingLot: boolean;
+
+  @ApiProperty()
+  freeStreetParking: boolean;
+
+  @ApiProperty()
+  allowsDogs: boolean;
+
+  @ApiProperty()
+  goodForGroups: boolean;
+
+  @ApiProperty()
+  takeout: boolean;
+
+  @ApiProperty()
+  delivery: boolean;
+
+  @ApiProperty()
+  reservable: boolean;
 
   @ApiProperty()
   latitude: number; //위도
@@ -49,34 +67,46 @@ export class PlaceDetailResDto {
   @ApiProperty()
   roadAddress: string;
 
-  /*
-  내가 연결한 게시글
-  Collection - CollectionPlace - Place를 JOIN
-  userId, placeId로 SELECT
-  */
-
-  /*
   @ApiProperty()
-  이미지 정보
-  placeImage를 JOIN
-  {
-    url
-    author
-    source
-  }
-  */
+  linkedCollections: RawLinkedColletion[];
 
-  constructor(placeDetail: Place) {
-    const { locationTags, categoryTags } = tagParser(placeDetail.placeTags);
+  @ApiProperty()
+  placeImages: PlaceImage[];
 
-    this.id = placeDetail.id;
-    this.name = placeDetail.name;
-    this.simplifiedAddress = addressSimplifier(placeDetail.address);
-    this.address = placeDetail.address;
-    this.roadAddress = placeDetail.roadAddress;
-    this.phone = placeDetail.phone;
-    this.latitude = placeDetail.latitude;
-    this.longitude = placeDetail.longitude;
+  constructor(
+    place: Place,
+    placeImages: PlaceImage[],
+    linkedCollections: RawLinkedColletion[],
+  ) {
+    const { locationTags, categoryTags, customTags } = tagParser(
+      place.placeTags,
+    );
+
+    this.id = place.id;
+    this.name = place.name;
+    this.customTags = customTags;
+    this.simplifiedAddress = addressSimplifier(place.address);
+    this.primaryCategory = place.primaryCategory;
+
+    this.openingHours = place.placeDetail.weekDaysOpeningHours;
+    this.freeParkingLot = place.placeDetail.freeParkingLot;
+    this.paidParkingLot = place.placeDetail.paidParkingLot;
+    this.freeStreetParking = place.placeDetail.freeStreetParking;
+    this.allowsDogs = place.placeDetail.allowsDogs;
+    this.takeout = place.placeDetail.takeout;
+    this.delivery = place.placeDetail.delivery;
+    this.reservable = place.placeDetail.reservable;
+    this.goodForGroups = place.placeDetail.goodForGroups;
+    this.googleMapsUri = place.placeDetail.googleMapsUri;
+
+    this.phone = place.phone;
+    this.latitude = place.latitude;
+    this.longitude = place.longitude;
+    this.address = place.address;
+    this.roadAddress = place.roadAddress;
+
+    this.linkedCollections = linkedCollections;
+    this.placeImages = placeImages;
   }
   //이하는 placeDetail에 포함된 부분. 확정 X
 }

@@ -16,7 +16,7 @@ export class PlaceRepository extends Repository<Place> {
       .leftJoinAndSelect('place.placeTags', 'placeTags')
       .leftJoinAndSelect('placeTags.tag', 'tag')
       .where('place.id = :placeId', { placeId })
-      .getOne();
+      .getRawOne();
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<Place> {

@@ -22,6 +22,7 @@ import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
 import { CollectionService } from 'src/collection/collection.service';
+import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 
 @Injectable()
 export class PlaceService {
@@ -30,6 +31,7 @@ export class PlaceService {
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
     private readonly placeDetailRepository: PlaceDetailRepository,
+    private readonly collectionService: CollectionService,
     private readonly tagService: TagService,
     private readonly s3Service: S3Service,
   ) {}
@@ -178,10 +180,9 @@ export class PlaceService {
     const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
     const placeImages =
       await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
-    // const linkedCollections = await this.collectionService.getLinkedCollections(
-    //   userId,
-    //   placeId,
-    // );
+    const linkedCollections: RawLinkedColletion[] =
+      await this.collectionService.getLinkedCollections(userId, placeId);
+    return new PlaceDetailResDto(placeDetail, placeImages, linkedCollections);
     /*
     const placeDetail = place와 placeDetail JOIN
     - Place, PlaceDetail JOIN
@@ -192,8 +193,6 @@ export class PlaceService {
     - Collection과 CollectionPlace JOIN, placeId로 WHERE
     - id, link, content, collectionType, updatedAt SELECT
     */
-    return placeDetail;
-    return new PlaceDetailResDto(place);
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {

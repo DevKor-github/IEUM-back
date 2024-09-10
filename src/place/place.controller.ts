@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -63,8 +64,11 @@ export class PlaceController {
 
   @UseNicknameCheckingAccessGuard()
   @Get('/:placeId')
-  async getPlaceDetailById(@Param('placeId') placeId: string) {
-    return await this.placeService.getPlaceDetailById(parseInt(placeId));
+  async getPlaceDetailById(@Req() req, @Param('placeId') placeId: string) {
+    return await this.placeService.getPlaceDetailById(
+      req.user.id,
+      parseInt(placeId),
+    );
   }
 
   @Get('/:placeId/detail')

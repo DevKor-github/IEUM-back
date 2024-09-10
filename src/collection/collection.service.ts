@@ -8,6 +8,7 @@ import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { Collection } from './entities/collection.entity';
+import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 
 @Injectable()
 export class CollectionService {
@@ -33,6 +34,16 @@ export class CollectionService {
     const viewedCollections =
       await this.collectionRepository.getViewedCollections(userId, cursorId);
     return new CollectionsListResDto(viewedCollections);
+  }
+
+  async getLinkedCollections(
+    userId: number,
+    placeId: number,
+  ): Promise<RawLinkedColletion[]> {
+    return await this.collectionRepository.getLinkedCollections(
+      userId,
+      placeId,
+    );
   }
 
   @Transactional()
