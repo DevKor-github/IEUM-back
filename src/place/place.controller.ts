@@ -37,7 +37,7 @@ export class PlaceController {
 
   @Get('/google')
   async getGooglePlacesByText(@Query('text') text: string) {
-    return await this.placeService.searchGooglePlacesByText(text);
+    return await this.placeService.getGooglePlacesApiByText(text);
   }
 
   // deprecated
@@ -48,17 +48,17 @@ export class PlaceController {
 
   @Get('/google/photo')
   async getGooglePlacePhotoByName(@Query('name') name: string) {
-    return await this.placeService.getGooglePlacePhotoByName(name);
+    return await this.placeService.getGooglePlacesApiPhotoByResourceName(name);
   }
 
   @Post('/google/photo')
   async uploadImageByUri(@Body() body: { uri: string }) {
-    return await this.placeService.uploadImageByUri(body.uri);
+    return await this.placeService.uploadImageToS3ByUri(body.uri);
   }
 
   @Get('/google/:placeId')
   async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
-    return await this.placeService.getGooglePlaceDetailById(placeId);
+    return await this.placeService.getGooglePlacesApiPlaceDetailsById(placeId);
   }
 
   @UseNicknameCheckingAccessGuard()

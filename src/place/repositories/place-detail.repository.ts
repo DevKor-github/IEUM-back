@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GooglePlacesApiDetail } from 'src/common/interfaces/google-places-api-detail.interface';
-import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
+import { placeDetailsForTransferring } from 'src/common/interfaces/google-places-api.interface';
 import { PlaceDetail } from 'src/place/entities/place-detail.entity';
 import { DataSource, Repository } from 'typeorm';
 
@@ -10,26 +9,9 @@ export class PlaceDetailRepository extends Repository<PlaceDetail> {
     super(PlaceDetail, dataSource.createEntityManager());
   }
 
-  async saveByPlaceDetailByGoogle(
-    placeId: number,
-    placeDetail: PlaceDetailByGoogle,
-  ) {
-    return await this.save({
-      placeId: placeId,
-      phoneNumber: placeDetail.nationalPhoneNumber,
-      websiteUrl: placeDetail.websiteUrl,
-      parkingOptions: placeDetail.parkingOptions,
-      allowsDogs: placeDetail.allowsDogs,
-      goodForGroups: placeDetail.goodForGroups,
-      reservable: placeDetail.reservable,
-      delivery: placeDetail.delivery,
-      takeout: placeDetail.takeout,
-    });
-  }
-
   async createPlaceDetailByGoogle(
     placeId: number,
-    placeDetailByGoogle: GooglePlacesApiDetail,
+    placeDetailByGoogle: placeDetailsForTransferring,
   ) {
     const placeDetail = new PlaceDetail();
     placeDetail.placeId = placeId;

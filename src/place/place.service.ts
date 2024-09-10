@@ -1,7 +1,7 @@
+import { placeDetailsForTransferring } from './../common/interfaces/google-places-api.interface';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import {
-  PLACES_API_BASE_URL,
   SEARCH_BY_ID_URL,
   SEARCH_BY_KEYWORD_KAKAO_URL,
   SEARCH_BY_TEXT_URL,
@@ -10,7 +10,6 @@ import { PlaceRepository } from 'src/place/repositories/place.repository';
 import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
 import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceDetailByGoogle } from 'src/common/interfaces/place-detail-google.interface';
 import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
@@ -21,7 +20,7 @@ import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
 import { Place } from './entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
-import { GooglePlacesApiDetail } from 'src/common/interfaces/google-places-api-detail.interface';
+import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
 
 @Injectable()
 export class PlaceService {
@@ -34,7 +33,7 @@ export class PlaceService {
     private readonly s3Service: S3Service,
   ) {}
 
-  // ---------외부 API 검색---------
+  // ---------외부 API 검색 - 카카오 ---------
 
   async searchKakaoLocalByKeyword(keyword: string): Promise<any> {
     const response = await axios.get(SEARCH_BY_KEYWORD_KAKAO_URL, {
@@ -45,62 +44,8 @@ export class PlaceService {
     return kakaoPlace;
   }
 
-  async createPlaceDetailByGooglePlacesApi(placeId: number) {
-    const place = await this.placeRepository.findOne({
-      where: { id: placeId },
-    });
-    if (!place) {
-      throwIeumException('PLACE_NOT_FOUND');
-    }
-    const simplifiedAddress = addressSimplifier(place.address);
-    const placeName = place.name;
-    const googlePlacesApiTextSearchResult = await this.searchGooglePlacesByText(
-      `${simplifiedAddress} ${placeName}`,
-    );
-    console.log(`${simplifiedAddress} ${placeName}`);
-    const googlePlaceDetail = await this.getGooglePlaceDetailById(
-      googlePlacesApiTextSearchResult.places[0].id,
-    );
-
-    const googlePlacesApiDetail: GooglePlacesApiDetail = {
-      weekDaysOpeningHours:
-        googlePlaceDetail.regularOpeningHours.weekdayDescriptions,
-      freeParkingLot: googlePlaceDetail.parkingOptions.freeParkingLot,
-      paidParkingLot: googlePlaceDetail.parkingOptions.paidParkingLot,
-      freeStreetParking: googlePlaceDetail.parkingOptions.freeStreetParking,
-      allowsDogs: googlePlaceDetail.allowsDogs,
-      goodForGroups: googlePlaceDetail.goodForGroups,
-      takeout: googlePlaceDetail.takeout,
-      delivery: googlePlaceDetail.delivery,
-      reservable: googlePlaceDetail.reservable,
-      googleMapsUri: googlePlaceDetail.googleMapsUri,
-    };
-    console.log(googlePlacesApiDetail);
-    const photoResourceName = googlePlaceDetail.photos[0].name;
-    const photoAuthorAttributions =
-      googlePlaceDetail.photos[0].authorAttributions[0]; // 존재하지 않을 수도 있다!
-
-    const photoByGooglePlacesApi =
-      await this.getGooglePlacePhotoByName(photoResourceName);
-    const photoUriByGooglePlacesApi = photoByGooglePlacesApi.photoUri;
-    const uploadedImageUrl = await this.uploadImageByUri(
-      photoUriByGooglePlacesApi,
-    );
-    console.log(photoAuthorAttributions);
-    const placeImage = await this.placeImageRepository.createPlaceImageByGoogle(
-      placeId,
-      uploadedImageUrl,
-      photoAuthorAttributions.displayName,
-      photoAuthorAttributions.uri,
-    );
-
-    return await this.placeDetailRepository.createPlaceDetailByGoogle(
-      placeId,
-      googlePlacesApiDetail,
-    );
-  }
-
-  async searchGooglePlacesByText(text: string): Promise<any> {
+  // ---------외부 API 검색 - Google ---------
+  async getGooglePlacesApiByText(text: string): Promise<any> {
     const place = await axios.post(
       SEARCH_BY_TEXT_URL,
       { textQuery: text, languageCode: 'ko' },
@@ -115,9 +60,24 @@ export class PlaceService {
     return place.data;
   }
 
-  async getGooglePlacePhotoByName(name: string) {
+  async getGooglePlacesApiPlaceDetailsById(
+    googlePlaceId: string,
+  ): Promise<GooglePlacesApiPlaceDetailsRes> {
+    const placeDetail = await axios.get(SEARCH_BY_ID_URL + googlePlaceId, {
+      params: { languageCode: 'ko' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
+        'X-Goog-FieldMask':
+          'id,name,displayName,googleMapsUri,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
+      },
+    });
+    return placeDetail.data;
+  }
+
+  async getGooglePlacesApiPhotoByResourceName(resourceName: string) {
     const placePhoto: any = await axios.get(
-      `https://places.googleapis.com/v1/${name}/media`,
+      `https://places.googleapis.com/v1/${resourceName}/media`,
       {
         params: {
           key: process.env.GOOGLE_API_KEY,
@@ -129,25 +89,80 @@ export class PlaceService {
 
     return placePhoto.data;
   }
+  // --------- 주요 메서드 ---------
+  @Transactional()
+  async createPlaceDetailByGooglePlacesApi(placeId: number) {
+    //DB 내부의 장소 Entity 가져오기
+    const place = await this.placeRepository.findOne({
+      where: { id: placeId },
+    });
+    if (!place) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
 
-  async uploadImageByUri(photoUri: string) {
+    //Text Search를 위한 키워드 생성
+    const simplifiedAddress = addressSimplifier(place.address);
+    const placeName = place.name;
+
+    //Text Search. 결과가 없을 경우 에러 핸들링 필요
+    const googlePlacesApiTextSearchResult = await this.getGooglePlacesApiByText(
+      `${simplifiedAddress} ${placeName}`,
+    );
+    //
+
+    //Text Search 결과로부터 GET PlaceDetails
+    const googlePlacesApiPlaceDetailsResult: GooglePlacesApiPlaceDetailsRes =
+      await this.getGooglePlacesApiPlaceDetailsById(
+        googlePlacesApiTextSearchResult.places[0].id,
+      );
+
+    //내부 PlaceDetail 생성을 위한 인터페이스 파싱 및 DB 저장
+    const placeDetailsForTransferring = this.extractPlaceDetailsForTransferring(
+      googlePlacesApiPlaceDetailsResult,
+    );
+    await this.placeDetailRepository.createPlaceDetailByGoogle(
+      placeId,
+      placeDetailsForTransferring,
+    );
+    //Google Places Api에서 장소 사진 가져와서 S3 업로드, 내부 DB에 릴레이션 형성
+    await this.createPlaceImageByGooglePlacesApiPlaceDetailsRes(
+      placeId,
+      googlePlacesApiPlaceDetailsResult,
+    );
+
+    return { message: 'success' };
+  }
+
+  async uploadImageToS3ByUri(photoUri: string) {
     return await this.s3Service.getAndUploadFromUri(photoUri);
   }
 
-  async getGooglePlaceDetailById(googlePlaceId: string) {
-    const placeDetail = await axios.get(SEARCH_BY_ID_URL + googlePlaceId, {
-      params: { languageCode: 'ko' },
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': process.env.GOOGLE_API_KEY,
-        'X-Goog-FieldMask':
-          'id,name,displayName,googleMapsUri,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
-      },
-      // 'id,name,displayName,googleMapsUri,photos,regularOpeningHours.weekdayDescriptions,parkingOptions,allowsDogs,goodForGroups,takeout,delivery,reservable',
-    });
-    return placeDetail.data;
+  @Transactional()
+  async createPlaceImageByGooglePlacesApiPlaceDetailsRes(
+    placeId: number,
+    googlePlacesApiPlaceDetailsRes: GooglePlacesApiPlaceDetailsRes,
+  ) {
+    const resourceName = googlePlacesApiPlaceDetailsRes.photos[0].name;
+    const authorName =
+      googlePlacesApiPlaceDetailsRes.photos[0].authorAttributions[0]
+        .displayName;
+    const authorUri =
+      googlePlacesApiPlaceDetailsRes.photos[0].authorAttributions[0].uri;
+
+    const googlePlacesApiPhotoRes =
+      await this.getGooglePlacesApiPhotoByResourceName(resourceName);
+
+    const sourcePhotoUri = googlePlacesApiPhotoRes.photoUri;
+    const uploadedImageUri = await this.uploadImageToS3ByUri(sourcePhotoUri);
+    const placeImage = await this.placeImageRepository.createPlaceImageByGoogle(
+      placeId,
+      uploadedImageUri,
+      authorName,
+      authorUri,
+    );
+
+    return placeImage;
   }
-  //regularOpeningHours.weekdayDescriptions
 
   // ---------내부 DB 검색---------
   async getPlaceDetailById(placeId: number): Promise<PlaceDetailResDto> {
@@ -205,15 +220,6 @@ export class PlaceService {
     return createdPlace;
   }
 
-  // deprecated
-  // async createPlaceByKeyword(keyword: string) {
-  //   //keyword로 Kakao Local API 검색, 검색 결과로 장소를 생성
-  //   const kakaoPlace = await this.searchKakaoLocalByKeyword(keyword);
-  //   return await this.placeRepository.savePlaceByKakaoLocalSearchRes(
-  //     kakaoPlace.documents[0],
-  //   );
-  // }
-
   // ---------장소 관련 부가 정보 생성---------
 
   async createPlaceTag(createPlaceTagReqDto: CreatePlaceTagReqDto) {
@@ -238,5 +244,31 @@ export class PlaceService {
     const imageUrl = await this.s3Service.uploadPlaceImage(placeImage);
 
     return await this.placeImageRepository.createPlaceImage(place.id, imageUrl);
+  }
+  // ------ 캡슐화
+  extractPlaceDetailsForTransferring(
+    googlePlacesApiPlaceDetailsResult: GooglePlacesApiPlaceDetailsRes,
+  ) {
+    const placeDetailsForTransferring: placeDetailsForTransferring = {
+      weekDaysOpeningHours:
+        googlePlacesApiPlaceDetailsResult.regularOpeningHours
+          .weekdayDescriptions ?? null,
+      freeParkingLot:
+        googlePlacesApiPlaceDetailsResult.parkingOptions?.freeParkingLot ??
+        null,
+      paidParkingLot:
+        googlePlacesApiPlaceDetailsResult.parkingOptions?.paidParkingLot ??
+        null,
+      freeStreetParking:
+        googlePlacesApiPlaceDetailsResult.parkingOptions?.freeStreetParking ??
+        null,
+      allowsDogs: googlePlacesApiPlaceDetailsResult.allowsDogs ?? null,
+      goodForGroups: googlePlacesApiPlaceDetailsResult.goodForGroups ?? null,
+      takeout: googlePlacesApiPlaceDetailsResult.takeout ?? null,
+      delivery: googlePlacesApiPlaceDetailsResult.delivery ?? null,
+      reservable: googlePlacesApiPlaceDetailsResult.reservable ?? null,
+      googleMapsUri: googlePlacesApiPlaceDetailsResult.googleMapsUri ?? null,
+    };
+    return placeDetailsForTransferring;
   }
 }
