@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
-import { CrawlingService } from './crawling.service';
+import { CrawlingService } from './rabbitmq.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { FirebaseService } from './firebase.service';
