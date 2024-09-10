@@ -44,9 +44,6 @@ export class PlaceDetail {
   googleMapsUri: string;
 
   @OneToOne(() => Place, (place) => place.placeDetail)
+  @JoinColumn()
   place: Place;
-
-  @RelationId((placeDetail: PlaceDetail) => placeDetail.place)
-  @Column()
-  placeId: number;
 }

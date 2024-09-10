@@ -121,7 +121,7 @@ export class PlaceService {
       googlePlacesApiPlaceDetailsResult,
     );
     await this.placeDetailRepository.createPlaceDetailByGoogle(
-      placeId,
+      place,
       placeDetailsForTransferring,
     );
     //Google Places Api에서 장소 사진 가져와서 S3 업로드, 내부 DB에 릴레이션 형성
@@ -170,6 +170,19 @@ export class PlaceService {
     if (!place) {
       throwIeumException('PLACE_NOT_FOUND');
     }
+
+    const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
+    /*
+    const placeDetail = place와 placeDetail JOIN
+    - Place, PlaceDetail JOIN
+    - Place, PlaceDetail을 JOIN, placeDetail로 WHERE 걸어서 필요한 정보들을 Serving
+    const placeImages = placeId로 WHERE 걸어서 Serving
+    const linkedCollections = placeId, userId 사용
+    - 먼저 Collection에서 userId로 WHERE LIKE로 서브쿼리
+    - Collection과 CollectionPlace JOIN, placeId로 WHERE
+    - id, link, content, collectionType, updatedAt SELECT
+    */
+    return placeDetail;
     return new PlaceDetailResDto(place);
   }
 

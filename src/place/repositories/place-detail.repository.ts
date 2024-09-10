@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { placeDetailsForTransferring } from 'src/common/interfaces/google-places-api.interface';
 import { PlaceDetail } from 'src/place/entities/place-detail.entity';
 import { DataSource, Repository } from 'typeorm';
+import { Place } from '../entities/place.entity';
 
 @Injectable()
 export class PlaceDetailRepository extends Repository<PlaceDetail> {
@@ -10,11 +11,11 @@ export class PlaceDetailRepository extends Repository<PlaceDetail> {
   }
 
   async createPlaceDetailByGoogle(
-    placeId: number,
+    place: Place,
     placeDetailByGoogle: placeDetailsForTransferring,
   ) {
     const placeDetail = new PlaceDetail();
-    placeDetail.placeId = placeId;
+    placeDetail.place = place;
     placeDetail.weekDaysOpeningHours = placeDetailByGoogle.weekDaysOpeningHours;
     placeDetail.freeParkingLot = placeDetailByGoogle.freeParkingLot;
     placeDetail.paidParkingLot = placeDetailByGoogle.paidParkingLot;
