@@ -63,7 +63,7 @@ export class PlaceService {
     console.log(googlePlaceDetail);
     const photoResourceName = googlePlaceDetail.photos[0].name;
     const photoAuthorAttributions =
-      googlePlaceDetail.photos[0].authorAttributions;
+      googlePlaceDetail.photos[0].authorAttributions[0];
 
     const photoByGooglePlacesApi =
       await this.getGooglePlacePhotoByName(photoResourceName);
@@ -71,13 +71,13 @@ export class PlaceService {
     const uploadedImageUrl = await this.uploadImageByUri(
       photoUriByGooglePlacesApi,
     );
-
-    // const placeImage = await this.placeImageRepository.createPlaceImageByGoogle(
-    //   placeId,
-    //   uploadedImageUrl,
-    //   photoAuthorAttributions.displayName,
-    //   photoAuthorAttributions.uri,
-    // );
+    console.log(photoAuthorAttributions);
+    const placeImage = await this.placeImageRepository.createPlaceImageByGoogle(
+      placeId,
+      uploadedImageUrl,
+      photoAuthorAttributions.displayName,
+      photoAuthorAttributions.uri,
+    );
     return await googlePlaceDetail;
   }
 

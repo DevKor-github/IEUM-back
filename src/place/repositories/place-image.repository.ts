@@ -20,9 +20,17 @@ export class PlaceImageRepository extends Repository<PlaceImage> {
   }
 
   async createPlaceImageByGoogle(
-    placeId,
-    uploadedImageUrl,
-    authorName,
-    authorUri,
-  ) {}
+    placeId: number,
+    uploadedImageUrl: string,
+    authorName?: string,
+    authorUri?: string,
+  ) {
+    const placeImage = new PlaceImage();
+    placeImage.placeId = placeId;
+    placeImage.url = uploadedImageUrl;
+    placeImage.authorName = authorName;
+    placeImage.authorUri = authorUri;
+
+    return await this.save(placeImage);
+  }
 }
