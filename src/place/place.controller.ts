@@ -47,20 +47,20 @@ export class PlaceController {
   //   return await this.placeService.searchGooglePlacesByAutoComplete(text);
   // }
 
-  @Get('/google/photo')
-  async getGooglePlacePhotoByName(@Query('name') name: string) {
-    return await this.placeService.getGooglePlacesApiPhotoByResourceName(name);
-  }
+  // @Get('/google/photo')
+  // async getGooglePlacePhotoByName(@Query('name') name: string) {
+  //   return await this.placeService.getGooglePlacesApiPhotoByResourceName(name);
+  // }
 
-  @Post('/google/photo')
-  async uploadImageByUri(@Body() body: { uri: string }) {
-    return await this.placeService.uploadImageToS3ByUri(body.uri);
-  }
+  // @Post('/google/photo')
+  // async uploadImageByUri(@Body() body: { uri: string }) {
+  //   return await this.placeService.uploadImageToS3ByUri(body.uri);
+  // }
 
-  @Get('/google/:placeId')
-  async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
-    return await this.placeService.getGooglePlacesApiPlaceDetailsById(placeId);
-  }
+  // @Get('/google/:placeId')
+  // async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
+  //   return await this.placeService.getGooglePlacesApiPlaceDetailsById(placeId);
+  // }
 
   @UseNicknameCheckingAccessGuard()
   @Get('/:placeId')
@@ -71,8 +71,8 @@ export class PlaceController {
     );
   }
 
-  @Get('/:placeId/detail')
-  async getPlaceDetailByGoogle(@Param('placeId') placeId: string) {
+  @Get('/:placeId/create-detail')
+  async createPlaceDetailByGoogle(@Param('placeId') placeId: string) {
     return await this.placeService.createPlaceDetailByGooglePlacesApi(
       parseInt(placeId),
     );

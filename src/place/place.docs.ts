@@ -41,7 +41,7 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiQuery({ name: 'keyword', type: 'string' }),
   ],
   createPlaceImage: [
-    ApiOperation({ summary: '장소 이미지 저장' }),
+    ApiOperation({ summary: '장소 이미지 수동 업로드' }),
     ApiCreatedResponse({
       description: '장소 이미지 저장 성공',
       type: PlaceImage,
@@ -69,39 +69,43 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '텍스트로 구글 Place API 검색' }),
     ApiQuery({ name: 'text', type: 'string' }),
   ],
-  getGooglePlaceDetailById: [
-    ApiOperation({ summary: '특정 장소의 구글 Place API 상세 정보 조회' }),
-  ],
-  getGooglePlacePhotoByName: [
-    ApiOperation({ summary: '이름으로 구글 Place API 사진 검색' }),
-    ApiQuery({ name: 'name', type: 'string' }),
-  ],
-  uploadImageByUri: [
-    ApiOperation({ summary: 'URI로 이미지 업로드' }),
-    ApiCreatedResponse({
-      description: '이미지 업로드 성공',
-      type: PlaceImage,
-    }),
-    ApiIeumExceptionRes(['IMAGE_DOWNLOAD_FAILED', 'AWS_S3_INTERNAL_ERROR']),
-    ApiBody({
-      schema: {
-        type: 'object',
-        properties: {
-          uri: {
-            type: 'string',
-          },
-        },
-      },
-    }),
-  ],
+  // getGooglePlaceDetailById: [
+  //   ApiOperation({ summary: '특정 장소의 구글 Place API 상세 정보 조회' }),
+  // ],
+  // getGooglePlacePhotoByName: [
+  //   ApiOperation({ summary: '이름으로 구글 Place API 사진 검색' }),
+  //   ApiQuery({ name: 'name', type: 'string' }),
+  // ],
+  // uploadImageByUri: [
+  //   ApiOperation({ summary: 'URI로 이미지 업로드' }),
+  //   ApiCreatedResponse({
+  //     description: '이미지 업로드 성공',
+  //     type: PlaceImage,
+  //   }),
+  //   ApiIeumExceptionRes(['IMAGE_DOWNLOAD_FAILED', 'AWS_S3_INTERNAL_ERROR']),
+  //   ApiBody({
+  //     schema: {
+  //       type: 'object',
+  //       properties: {
+  //         uri: {
+  //           type: 'string',
+  //         },
+  //       },
+  //     },
+  //   }),
+  // ],
   // getGooglePlacesByAutoComplete: [
   //   ApiOperation({ summary: '자동완성 텍스트로 구글 Place API 검색' }),
   //   ApiQuery({ name: 'text', type: 'string' }),
   // ],
-  getPlaceDetailByGoogle: [
-    ApiOperation({ summary: '특정 장소의 상세 정보 조회' }),
+  createPlaceDetailByGoogle: [
+    ApiOperation({
+      summary: '특정 장소의 상세 정보 생성 요청',
+      description:
+        '특정 장소의 상세 정보를 Google Places API를 통해 생성하도록 요청합니다. PlaceDetail과 PlaceImage가 생성됩니다.',
+    }),
     ApiOkResponse({
-      description: '상세 정보 조회 성공',
+      description: '상세 정보 요청 성공',
     }),
     ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],

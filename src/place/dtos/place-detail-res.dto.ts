@@ -12,10 +12,12 @@ export class PlaceImageRes {
   @ApiProperty()
   url: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '이미지를 업로드한 사용자의 Google 닉네임' })
   authorName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: '이미지를 업로드한 사용자의 Google Maps프로필 링크',
+  })
   authorUri: string;
 
   constructor(placeImage: PlaceImage) {
@@ -41,7 +43,7 @@ export class LinkedCollectionRes {
   @ApiProperty()
   isViewed: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '조회 시간' })
   updatedAt: Date;
 
   constructor(linkedCollection: Collection) {
@@ -60,13 +62,17 @@ export class PlaceDetailResDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty({ type: String, isArray: true })
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    description: '운영자가 해당 장소에 추가한 태그',
+  })
   customTags: string[];
 
   @ApiProperty()
   simplifiedAddress: string; //간략 주소
 
-  @ApiProperty()
+  @ApiProperty({ description: '장소의 주요 카테고리' })
   primaryCategory: string;
 
   @ApiProperty({ type: String, isArray: true })
@@ -78,19 +84,19 @@ export class PlaceDetailResDto {
   @ApiProperty()
   googleMapsUri: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '무료 주차장 유무' })
   freeParkingLot: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '유료 주차장 유무' })
   paidParkingLot: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '무료 길거리 주차 유무' })
   freeStreetParking: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '반려견 동반 가능 여부' })
   allowsDogs: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '단체석 유무' })
   goodForGroups: boolean;
 
   @ApiProperty()
@@ -99,7 +105,7 @@ export class PlaceDetailResDto {
   @ApiProperty()
   delivery: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '예약 가능 여부' })
   reservable: boolean;
 
   @ApiProperty()
