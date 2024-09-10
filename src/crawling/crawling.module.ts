@@ -7,6 +7,7 @@ import { SlackAlertService } from './slack-alert.service';
 import { CrawlingController } from './crawling.controller';
 import { FirebaseService } from './firebase.service';
 import { UserModule } from 'src/user/user.module';
+import { PlaceModule } from 'src/place/place.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UserModule } from 'src/user/user.module';
       }),
     }),
     CollectionModule,
+    PlaceModule,
     UserModule,
   ],
   providers: [CrawlingService, SlackAlertService, FirebaseService],

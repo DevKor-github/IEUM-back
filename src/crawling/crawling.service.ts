@@ -3,15 +3,15 @@ import {
   defaultNackErrorHandler,
   RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SlackAlertService } from './slack-alert.service';
-import { CollectionService } from 'src/collection/collection.service';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
 import { FirebaseService } from './firebase.service';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { CrawlingMediatorService } from './crawling.mediator.service';
 
 @Injectable()
 export class CrawlingService {
@@ -21,7 +21,7 @@ export class CrawlingService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly slackAlertService: SlackAlertService,
-    private readonly collectionService: CollectionService,
+    private readonly crawlingMediatorService: CrawlingMediatorService,
     private readonly firebaseService: FirebaseService,
   ) {}
 
@@ -59,7 +59,7 @@ export class CrawlingService {
     errorHandler: defaultNackErrorHandler,
   })
   async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
-    const collection = await this.collectionService.createCollection(msg);
+    const collection = await this.crawlingMediatorService.createCollection(msg);
     await this.firebaseService.sendPushNotification(
       msg.userId,
       'SUCCESS',
