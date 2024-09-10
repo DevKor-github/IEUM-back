@@ -12,10 +12,10 @@ export class NormalListMeta<T> {
 export function createNormalList<T, U>(
   rawData: T[],
   transformFn: (item: T) => U,
-): { data: U[]; meta: NormalListMeta<T> } {
+): { items: U[]; meta: NormalListMeta<T> } {
   const meta = new NormalListMeta(rawData);
 
-  const data = rawData.map(transformFn);
+  const items = rawData.map(transformFn);
 
-  return { meta, data };
+  return { meta, items };
 }

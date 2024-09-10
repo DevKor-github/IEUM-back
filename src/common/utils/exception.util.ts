@@ -161,7 +161,7 @@ export const ieumExceptions = {
   },
   //6xxx : Crawling
   UNSUPPORTED_LINK: {
-    name: 'UnsupportedLink',
+    name: 'UNSUPPORTED_LINK',
     message: '지원하지 않는 링크',
     errorCode: 6000,
     statusCode: 400,
@@ -184,6 +184,12 @@ export const ieumExceptions = {
     message: 'AWS S3에 저장하는 과정에서 에러 발생',
     errorCode: 7000,
     statusCode: 500,
+  },
+  IMAGE_DOWNLOAD_FAILED: {
+    name: 'IMAGE_DOWNLOAD_FAILED',
+    message: '이미지 다운로드 실패',
+    errorCode: 7001,
+    statusCode: 502,
   },
   //else
   DEFAULT_INTERNAL_SERVER_ERROR: {
@@ -211,7 +217,7 @@ export const ieumExceptions = {
     statusCode: 403,
   },
   DEFAULT_UNDEFINED: {
-    name: 'DefaultUndefined',
+    name: 'DEFAULT_UNDEFINED',
     message: 'Default Undefined',
     errorCode: 9999,
     statusCode: 500,

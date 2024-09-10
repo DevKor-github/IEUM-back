@@ -18,4 +18,25 @@ export class PlaceImageRepository extends Repository<PlaceImage> {
 
     return await this.save(placeImage);
   }
+
+  async createPlaceImageByGoogle(
+    placeId: number,
+    uploadedImageUrl: string,
+    authorName?: string,
+    authorUri?: string,
+  ) {
+    const placeImage = new PlaceImage();
+    placeImage.placeId = placeId;
+    placeImage.url = uploadedImageUrl;
+    placeImage.authorName = authorName;
+    placeImage.authorUri = authorUri;
+
+    return await this.save(placeImage);
+  }
+
+  async getPlaceImagesByPlaceId(placeId: number): Promise<PlaceImage[]> {
+    return await this.createQueryBuilder('placeImage')
+      .where('placeImage.placeId = :placeId', { placeId })
+      .getMany();
+  }
 }

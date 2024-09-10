@@ -38,14 +38,14 @@ export class MarkersListResDto {
 
   @ApiProperty({ type: [MarkerResDto] })
   @IsArray()
-  data: MarkerResDto[];
+  items: MarkerResDto[];
 
   constructor(rawMarkersList: RawMarker[]) {
-    const { meta, data } = createNormalList(
+    const { meta, items } = createNormalList(
       rawMarkersList,
       (rawMarker) => new MarkerResDto(rawMarker),
     );
     this.meta = meta;
-    this.data = data;
+    this.items = items;
   }
 }

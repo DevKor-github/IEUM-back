@@ -27,14 +27,14 @@ export function cursorPaginateData<T extends RawDataForCursorPagination, U>(
   rawData: T[],
   take: number,
   transformFn: (item: T) => U,
-): { data: U[]; meta: CursorPaginationMeta<T> } {
+): { items: U[]; meta: CursorPaginationMeta<T> } {
   const meta = new CursorPaginationMeta(take, rawData);
   const hasNextPage = meta.hasNextPage;
 
-  const data = hasNextPage
+  const items = hasNextPage
     ? rawData.slice(0, take).map(transformFn)
     : rawData.map(transformFn);
 
-  return { data, meta };
+  return { meta, items };
 }
 //T에는 id를 가진 Raw Data, U에는 Raw Data가 변환된 단일 Data를 넣어준다.

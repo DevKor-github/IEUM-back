@@ -42,15 +42,15 @@ export class CollectionsListResDto {
   @ApiProperty()
   meta: CursorPaginationMeta<RawCollection>;
   @ApiProperty({ type: [CollectionDto] })
-  data: CollectionDto[];
+  items: CollectionDto[];
 
   constructor(rawCollections: RawCollection[]) {
-    const { meta, data } = cursorPaginateData(
+    const { meta, items } = cursorPaginateData(
       rawCollections,
       COLLECTIONS_TAKE,
       (rawCollection) => new CollectionDto(rawCollection),
     );
     this.meta = meta;
-    this.data = data;
+    this.items = items;
   }
 }

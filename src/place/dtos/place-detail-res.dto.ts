@@ -3,7 +3,58 @@ import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/place/entities/place.entity';
+import { PlaceImage } from '../entities/place-image.entity';
+import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
+import { Collection } from 'src/collection/entities/collection.entity';
+import { CollectionType } from 'src/common/enums/collection-type.enum';
 
+export class PlaceImageRes {
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty({ description: '이미지를 업로드한 사용자의 Google 닉네임' })
+  authorName: string;
+
+  @ApiProperty({
+    description: '이미지를 업로드한 사용자의 Google Maps프로필 링크',
+  })
+  authorUri: string;
+
+  constructor(placeImage: PlaceImage) {
+    this.url = placeImage.url;
+    this.authorName = placeImage.authorName;
+    this.authorUri = placeImage.authorUri;
+  }
+}
+
+export class LinkedCollectionRes {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  link: string;
+
+  @ApiProperty({ enum: CollectionType })
+  collectionType: CollectionType;
+
+  @ApiProperty()
+  content: string;
+
+  @ApiProperty()
+  isViewed: boolean;
+
+  @ApiProperty({ description: '조회 시간' })
+  updatedAt: Date;
+
+  constructor(linkedCollection: Collection) {
+    this.id = linkedCollection.id;
+    this.link = linkedCollection.link;
+    this.collectionType = linkedCollection.collectionType;
+    this.content = linkedCollection.content;
+    this.isViewed = linkedCollection.isViewed;
+    this.updatedAt = linkedCollection.updatedAt;
+  }
+}
 export class PlaceDetailResDto {
   @ApiProperty()
   id: number;
@@ -11,26 +62,51 @@ export class PlaceDetailResDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
-  url: string;
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    description: '운영자가 해당 장소에 추가한 태그',
+  })
+  customTags: string[];
 
   @ApiProperty()
   simplifiedAddress: string; //간략 주소
 
-  @ApiProperty()
-  address: string; //지번 주소
+  @ApiProperty({ description: '장소의 주요 카테고리' })
+  primaryCategory: string;
 
-  @ApiProperty()
-  roadAddress: string;
-
-  @ApiProperty()
-  kakaoId: string; //식별을 위한 kakaoId
+  @ApiProperty({ type: String, isArray: true })
+  openingHours: string[];
 
   @ApiProperty()
   phone: string;
 
   @ApiProperty()
-  mappedCateogory: string; //이음 카테고리
+  googleMapsUri: string;
+
+  @ApiProperty({ description: '무료 주차장 유무' })
+  freeParkingLot: boolean;
+
+  @ApiProperty({ description: '유료 주차장 유무' })
+  paidParkingLot: boolean;
+
+  @ApiProperty({ description: '무료 길거리 주차 유무' })
+  freeStreetParking: boolean;
+
+  @ApiProperty({ description: '반려견 동반 가능 여부' })
+  allowsDogs: boolean;
+
+  @ApiProperty({ description: '단체석 유무' })
+  goodForGroups: boolean;
+
+  @ApiProperty()
+  takeout: boolean;
+
+  @ApiProperty()
+  delivery: boolean;
+
+  @ApiProperty({ description: '예약 가능 여부' })
+  reservable: boolean;
 
   @ApiProperty()
   latitude: number; //위도
@@ -39,31 +115,54 @@ export class PlaceDetailResDto {
   longitude: number; //경도
 
   @ApiProperty()
-  locationTags: string[]; //위치 태그
+  address: string; //지번 주소
 
   @ApiProperty()
-  categoryTags: string[]; //카테고리 태그
+  roadAddress: string;
 
-  @ApiProperty()
-  imageUrls: string[]; //이미지 URL
+  @ApiProperty({ type: LinkedCollectionRes, isArray: true })
+  linkedCollections: LinkedCollectionRes[];
 
-  constructor(placeDetail: Place) {
-    const { locationTags, categoryTags } = tagParser(placeDetail.placeTags);
+  @ApiProperty({ type: PlaceImageRes, isArray: true })
+  placeImages: PlaceImageRes[];
 
-    this.id = placeDetail.id;
-    this.name = placeDetail.name;
-    this.url = placeDetail.url;
-    this.simplifiedAddress = addressSimplifier(placeDetail.address);
-    this.address = placeDetail.address;
-    this.roadAddress = placeDetail.roadAddress;
-    this.kakaoId = placeDetail.kakaoId;
-    this.phone = placeDetail.phone;
-    this.mappedCateogory = categoryMapper(placeDetail.primaryCategory);
-    this.latitude = placeDetail.latitude;
-    this.longitude = placeDetail.longitude;
-    this.locationTags = locationTags;
-    this.categoryTags = categoryTags;
-    this.imageUrls = placeDetail.placeImages.map((image) => image.url);
+  constructor(
+    place: Place,
+    placeImages: PlaceImage[],
+    linkedCollections: Collection[],
+  ) {
+    const { locationTags, categoryTags, customTags } = tagParser(
+      place.placeTags,
+    );
+
+    this.id = place.id;
+    this.name = place.name;
+    this.customTags = customTags;
+    this.simplifiedAddress = addressSimplifier(place.address);
+    this.primaryCategory = place.primaryCategory;
+
+    this.openingHours = place.placeDetail.weekDaysOpeningHours;
+    this.freeParkingLot = place.placeDetail.freeParkingLot;
+    this.paidParkingLot = place.placeDetail.paidParkingLot;
+    this.freeStreetParking = place.placeDetail.freeStreetParking;
+    this.allowsDogs = place.placeDetail.allowsDogs;
+    this.takeout = place.placeDetail.takeout;
+    this.delivery = place.placeDetail.delivery;
+    this.reservable = place.placeDetail.reservable;
+    this.goodForGroups = place.placeDetail.goodForGroups;
+    this.googleMapsUri = place.placeDetail.googleMapsUri;
+
+    this.phone = place.phone;
+    this.latitude = place.latitude;
+    this.longitude = place.longitude;
+    this.address = place.address;
+    this.roadAddress = place.roadAddress;
+
+    this.linkedCollections = linkedCollections.map(
+      (linkedCollection) => new LinkedCollectionRes(linkedCollection),
+    );
+    this.placeImages = placeImages.map(
+      (placeImage) => new PlaceImageRes(placeImage),
+    );
   }
-  //이하는 placeDetail에 포함된 부분. 확정 X
 }

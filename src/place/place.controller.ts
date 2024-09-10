@@ -1,9 +1,11 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -29,10 +31,51 @@ export class PlaceController {
     return await this.placeService.getPlacesByPlaceName(placeName);
   }
 
+  @Get('/kakao')
+  async getKakaoPlacesByKeyword(@Query() keyword: string) {
+    return await this.placeService.searchKakaoLocalByKeyword(keyword);
+  }
+
+  @Get('/google')
+  async getGooglePlacesByText(@Query('text') text: string) {
+    return await this.placeService.getGooglePlacesApiByText(text);
+  }
+
+  // deprecated
+  // @Get('/google/auto-complete')
+  // async getGooglePlacesByAutoComplete(@Query('text') text: string) {
+  //   return await this.placeService.searchGooglePlacesByAutoComplete(text);
+  // }
+
+  // @Get('/google/photo')
+  // async getGooglePlacePhotoByName(@Query('name') name: string) {
+  //   return await this.placeService.getGooglePlacesApiPhotoByResourceName(name);
+  // }
+
+  // @Post('/google/photo')
+  // async uploadImageByUri(@Body() body: { uri: string }) {
+  //   return await this.placeService.uploadImageToS3ByUri(body.uri);
+  // }
+
+  // @Get('/google/:placeId')
+  // async getGooglePlaceDetailById(@Param('placeId') placeId: string) {
+  //   return await this.placeService.getGooglePlacesApiPlaceDetailsById(placeId);
+  // }
+
   @UseNicknameCheckingAccessGuard()
   @Get('/:placeId')
-  async getPlaceDetailById(@Param('placeId') placeId: string) {
-    return await this.placeService.getPlaceDetailById(parseInt(placeId));
+  async getPlaceDetailById(@Req() req, @Param('placeId') placeId: string) {
+    return await this.placeService.getPlaceDetailById(
+      req.user.id,
+      parseInt(placeId),
+    );
+  }
+
+  @Get('/:placeId/create-detail')
+  async createPlaceDetailByGoogle(@Param('placeId') placeId: string) {
+    return await this.placeService.createPlaceDetailByGooglePlacesApi(
+      parseInt(placeId),
+    );
   }
 
   @UseNicknameCheckingAccessGuard()
@@ -41,11 +84,6 @@ export class PlaceController {
     @Param('placeId') placeId: string,
   ): Promise<PlacePreviewResDto> {
     return await this.placeService.getPlacePreviewInfoById(parseInt(placeId));
-  }
-
-  @Get('kakao')
-  async getKakaoPlacesByKeyword(@Query() keyword: string) {
-    return await this.placeService.searchKakaoLocalByKeyword(keyword);
   }
 
   @UseInterceptors(FileInterceptor('placeImage'))
