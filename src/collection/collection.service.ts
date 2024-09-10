@@ -39,7 +39,7 @@ export class CollectionService {
   async getLinkedCollections(
     userId: number,
     placeId: number,
-  ): Promise<RawLinkedColletion[]> {
+  ): Promise<Collection[]> {
     return await this.collectionRepository.getLinkedCollections(
       userId,
       placeId,

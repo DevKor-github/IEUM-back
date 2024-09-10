@@ -72,22 +72,13 @@ export class CollectionRepository extends Repository<Collection> {
   async getLinkedCollections(
     userId: number,
     placeId: number,
-  ): Promise<RawLinkedColletion[]> {
+  ): Promise<Collection[]> {
     return await this.createQueryBuilder('collection')
       .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
-      .select([
-        'collection.id AS id',
-        'collection.link AS link',
-        'collection.collection_type AS collection_type',
-        'collection.content AS content',
-        'collection.isViewed AS is_viewed',
-        'collection.updatedAt AS updated_at',
-      ])
       .where('collection.userId = :userId', { userId })
       .andWhere('collectionPlaces.placeId = :placeId', { placeId })
-      .groupBy('collection.id')
-      .orderBy(`collection.id`, 'DESC')
-      .getRawMany();
+      .orderBy('collection.id', 'DESC')
+      .getMany();
   }
 
   async createCollection(

@@ -5,7 +5,54 @@ import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/place/entities/place.entity';
 import { PlaceImage } from '../entities/place-image.entity';
 import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
+import { Collection } from 'src/collection/entities/collection.entity';
+import { CollectionType } from 'src/common/enums/collection-type.enum';
 
+export class PlaceImageRes {
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty()
+  authorName: string;
+
+  @ApiProperty()
+  authorUri: string;
+
+  constructor(placeImage: PlaceImage) {
+    this.url = placeImage.url;
+    this.authorName = placeImage.authorName;
+    this.authorUri = placeImage.authorUri;
+  }
+}
+
+export class LinkedCollectionRes {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  link: string;
+
+  @ApiProperty({ enum: CollectionType })
+  collectionType: CollectionType;
+
+  @ApiProperty()
+  content: string;
+
+  @ApiProperty()
+  isViewed: boolean;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  constructor(linkedCollection: Collection) {
+    this.id = linkedCollection.id;
+    this.link = linkedCollection.link;
+    this.collectionType = linkedCollection.collectionType;
+    this.content = linkedCollection.content;
+    this.isViewed = linkedCollection.isViewed;
+    this.updatedAt = linkedCollection.updatedAt;
+  }
+}
 export class PlaceDetailResDto {
   @ApiProperty()
   id: number;
@@ -13,7 +60,7 @@ export class PlaceDetailResDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, isArray: true })
   customTags: string[];
 
   @ApiProperty()
@@ -22,7 +69,7 @@ export class PlaceDetailResDto {
   @ApiProperty()
   primaryCategory: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, isArray: true })
   openingHours: string[];
 
   @ApiProperty()
@@ -67,16 +114,16 @@ export class PlaceDetailResDto {
   @ApiProperty()
   roadAddress: string;
 
-  @ApiProperty()
-  linkedCollections: RawLinkedColletion[];
+  @ApiProperty({ type: LinkedCollectionRes, isArray: true })
+  linkedCollections: LinkedCollectionRes[];
 
-  @ApiProperty()
-  placeImages: PlaceImage[];
+  @ApiProperty({ type: PlaceImageRes, isArray: true })
+  placeImages: PlaceImageRes[];
 
   constructor(
     place: Place,
     placeImages: PlaceImage[],
-    linkedCollections: RawLinkedColletion[],
+    linkedCollections: Collection[],
   ) {
     const { locationTags, categoryTags, customTags } = tagParser(
       place.placeTags,
@@ -105,8 +152,11 @@ export class PlaceDetailResDto {
     this.address = place.address;
     this.roadAddress = place.roadAddress;
 
-    this.linkedCollections = linkedCollections;
-    this.placeImages = placeImages;
+    this.linkedCollections = linkedCollections.map(
+      (linkedCollection) => new LinkedCollectionRes(linkedCollection),
+    );
+    this.placeImages = placeImages.map(
+      (placeImage) => new PlaceImageRes(placeImage),
+    );
   }
-  //이하는 placeDetail에 포함된 부분. 확정 X
 }

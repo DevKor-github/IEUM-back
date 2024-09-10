@@ -180,8 +180,11 @@ export class PlaceService {
     const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
     const placeImages =
       await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
-    const linkedCollections: RawLinkedColletion[] =
-      await this.collectionService.getLinkedCollections(userId, placeId);
+    const linkedCollections = await this.collectionService.getLinkedCollections(
+      userId,
+      placeId,
+    );
+
     return new PlaceDetailResDto(placeDetail, placeImages, linkedCollections);
     /*
     const placeDetail = place와 placeDetail JOIN
