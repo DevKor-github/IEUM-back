@@ -43,6 +43,9 @@ export class LinkedCollectionRes {
   @ApiProperty()
   isViewed: boolean;
 
+  @ApiProperty()
+  isSaved: boolean;
+
   @ApiProperty({ description: '조회 시간' })
   updatedAt: Date;
 
@@ -61,6 +64,9 @@ export class PlaceDetailResDto {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  isSaved: boolean = false;
 
   @ApiProperty({
     type: String,
@@ -164,9 +170,16 @@ export class PlaceDetailResDto {
     this.address = place.address;
     this.roadAddress = place.roadAddress;
 
-    this.linkedCollections = linkedCollections.map(
-      (linkedCollection) => new LinkedCollectionRes(linkedCollection),
-    );
+    this.linkedCollections = linkedCollections.map((linkedCollection) => {
+      if (
+        linkedCollection.collectionPlaces.some(
+          (collectionPlace) => collectionPlace.isSaved,
+        )
+      ) {
+        this.isSaved = true;
+      }
+      return new LinkedCollectionRes(linkedCollection);
+    });
     this.placeImages = placeImages.map(
       (placeImage) => new PlaceImageRes(placeImage),
     );
