@@ -71,7 +71,7 @@ export class PlaceController {
     );
   }
 
-  @Get('/:placeId/create-detail')
+  @Post('/:placeId/detail')
   async createPlaceDetailByGoogle(@Param('placeId') placeId: string) {
     return await this.placeService.createPlaceDetailByGooglePlacesApi(
       parseInt(placeId),
