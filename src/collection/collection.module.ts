@@ -18,7 +18,6 @@ import { UserModule } from 'src/user/user.module';
   ],
   imports: [
     TypeOrmModule.forFeature([Collection, CollectionPlace]),
-    PlaceModule,
     UserModule,
   ],
   exports: [CollectionService],

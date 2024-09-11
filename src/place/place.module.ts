@@ -13,6 +13,7 @@ import { PlaceDetail } from './entities/place-detail.entity';
 import { PlaceImage } from './entities/place-image.entity';
 import { PlaceTag } from './entities/place-tag.entity';
 import { UserModule } from 'src/user/user.module';
+import { CollectionModule } from 'src/collection/collection.module';
 
 @Module({
   controllers: [PlaceController],
@@ -27,6 +28,7 @@ import { UserModule } from 'src/user/user.module';
   imports: [
     UserModule,
     TagModule,
+    CollectionModule,
     TypeOrmModule.forFeature([Place, PlaceDetail, PlaceImage, PlaceTag]),
   ],
   exports: [PlaceService],
