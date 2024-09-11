@@ -186,16 +186,6 @@ export class PlaceService {
     );
 
     return new PlaceDetailResDto(placeDetail, placeImages, linkedCollections);
-    /*
-    const placeDetail = place와 placeDetail JOIN
-    - Place, PlaceDetail JOIN
-    - Place, PlaceDetail을 JOIN, placeDetail로 WHERE 걸어서 필요한 정보들을 Serving
-    const placeImages = placeId로 WHERE 걸어서 Serving
-    const linkedCollections = placeId, userId 사용
-    - 먼저 Collection에서 userId로 WHERE LIKE로 서브쿼리
-    - Collection과 CollectionPlace JOIN, placeId로 WHERE
-    - id, link, content, collectionType, updatedAt SELECT
-    */
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
