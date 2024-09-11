@@ -105,7 +105,8 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
         '특정 장소의 상세 정보를 Google Places API를 통해 생성하도록 요청합니다. PlaceDetail과 PlaceImage가 생성됩니다.',
     }),
     ApiCreatedResponse({
-      description: '상세 정보 요청 성공',
+      description:
+        '상세 정보 및 이미지 생성 성공. 생성된 placeDetail 엔터티가 리턴됩니다.',
     }),
     ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],

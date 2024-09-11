@@ -119,21 +119,20 @@ export class PlaceService {
         googlePlacesApiTextSearchResult.places[0].id,
       );
 
-    //내부 PlaceDetail 생성을 위한 인터페이스 파싱 및 DB 저장
-    const placeDetailsForTransferring = this.extractPlaceDetailsForTransferring(
-      googlePlacesApiPlaceDetailsResult,
-    );
-    await this.placeDetailRepository.createPlaceDetailByGoogle(
-      place,
-      placeDetailsForTransferring,
-    );
     //Google Places Api에서 장소 사진 가져와서 S3 업로드, 내부 DB에 릴레이션 형성
     await this.createPlaceImageByGooglePlacesApiPlaceDetailsRes(
       placeId,
       googlePlacesApiPlaceDetailsResult,
     );
 
-    return { message: 'success' };
+    //내부 PlaceDetail 생성을 위한 인터페이스 파싱 및 DB 저장
+    const placeDetailsForTransferring = this.extractPlaceDetailsForTransferring(
+      googlePlacesApiPlaceDetailsResult,
+    );
+    return await this.placeDetailRepository.createPlaceDetailByGoogle(
+      place,
+      placeDetailsForTransferring,
+    );
   }
 
   async uploadImageToS3ByUri(photoUri: string) {
