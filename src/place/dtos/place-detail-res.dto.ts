@@ -76,37 +76,37 @@ export class PlaceDetailResDto {
   primaryCategory: string;
 
   @ApiProperty({ type: String, isArray: true })
-  openingHours: string[];
+  openingHours?: string[];
 
   @ApiProperty()
   phone: string;
 
   @ApiProperty()
-  googleMapsUri: string;
+  googleMapsUri?: string;
 
   @ApiProperty({ description: '무료 주차장 유무' })
-  freeParkingLot: boolean;
+  freeParkingLot?: boolean;
 
   @ApiProperty({ description: '유료 주차장 유무' })
-  paidParkingLot: boolean;
+  paidParkingLot?: boolean;
 
   @ApiProperty({ description: '무료 길거리 주차 유무' })
-  freeStreetParking: boolean;
+  freeStreetParking?: boolean;
 
   @ApiProperty({ description: '반려견 동반 가능 여부' })
-  allowsDogs: boolean;
+  allowsDogs?: boolean;
 
   @ApiProperty({ description: '단체석 유무' })
-  goodForGroups: boolean;
+  goodForGroups?: boolean;
 
   @ApiProperty()
-  takeout: boolean;
+  takeout?: boolean;
 
   @ApiProperty()
-  delivery: boolean;
+  delivery?: boolean;
 
   @ApiProperty({ description: '예약 가능 여부' })
-  reservable: boolean;
+  reservable?: boolean;
 
   @ApiProperty()
   latitude: number; //위도
@@ -141,16 +141,18 @@ export class PlaceDetailResDto {
     this.simplifiedAddress = addressSimplifier(place.address);
     this.primaryCategory = place.primaryCategory;
 
-    this.openingHours = place.placeDetail.weekDaysOpeningHours;
-    this.freeParkingLot = place.placeDetail.freeParkingLot;
-    this.paidParkingLot = place.placeDetail.paidParkingLot;
-    this.freeStreetParking = place.placeDetail.freeStreetParking;
-    this.allowsDogs = place.placeDetail.allowsDogs;
-    this.takeout = place.placeDetail.takeout;
-    this.delivery = place.placeDetail.delivery;
-    this.reservable = place.placeDetail.reservable;
-    this.goodForGroups = place.placeDetail.goodForGroups;
-    this.googleMapsUri = place.placeDetail.googleMapsUri;
+    if (place.placeDetail) {
+      this.openingHours = place.placeDetail.weekDaysOpeningHours;
+      this.freeParkingLot = place.placeDetail.freeParkingLot;
+      this.paidParkingLot = place.placeDetail.paidParkingLot;
+      this.freeStreetParking = place.placeDetail.freeStreetParking;
+      this.allowsDogs = place.placeDetail.allowsDogs;
+      this.takeout = place.placeDetail.takeout;
+      this.delivery = place.placeDetail.delivery;
+      this.reservable = place.placeDetail.reservable;
+      this.goodForGroups = place.placeDetail.goodForGroups;
+      this.googleMapsUri = place.placeDetail.googleMapsUri;
+    }
 
     this.phone = place.phone;
     this.latitude = place.latitude;
