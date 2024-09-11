@@ -15,6 +15,7 @@ import { Transactional } from 'typeorm-transactional';
 import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { CATEGORIES_MAPPING_KAKAO } from 'src/common/utils/category-mapper.util';
 
 @Injectable()
 export class FolderService {
@@ -90,10 +91,16 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
+    const mappedCategories = categoryList.reduce((acc, category) => {
+
+      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
+      return acc.concat(mappedCategory);
+    }, []);
+    console.log('mappedCategories', mappedCategories);
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
-      categoryList,
+      mappedCategories,
       folderId,
     );
 
@@ -114,6 +121,12 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
+    {take, cursorId, addressList, categoryList} = placesListReqDto;
+    const mappedCategories = categoryList.reduce((acc, category) => {
+
+      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
+      return acc.concat(mappedCategory);
+    }, []);
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
       placesListReqDto,

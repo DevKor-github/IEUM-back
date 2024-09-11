@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IeumCategories } from 'src/common/utils/category-mapper.util';
 
 export class PlacesListReqDto {
   @ApiProperty()
@@ -21,10 +22,14 @@ export class PlacesListReqDto {
   @IsOptional()
   addressList?: string[] = [];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    isArray: true,
+    required: false,
+    examples: ['Restaurant', 'Cafe', 'Bar', 'Shopping', 'Stay', 'Culture'],
+  })
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsOptional()
-  categoryList?: string[] = [];
+  categoryList?: IeumCategories[] = [];
 }
 
 export class MarkersReqDto extends PickType(PlacesListReqDto, [
