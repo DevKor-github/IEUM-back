@@ -115,6 +115,9 @@ export class PlaceDetailResDto {
   longitude: number; //경도
 
   @ApiProperty()
+  mappedCategory: string;
+
+  @ApiProperty()
   address: string; //지번 주소
 
   @ApiProperty()
@@ -157,6 +160,7 @@ export class PlaceDetailResDto {
     this.phone = place.phone;
     this.latitude = place.latitude;
     this.longitude = place.longitude;
+    this.mappedCategory = categoryMapper(this.primaryCategory);
     this.address = place.address;
     this.roadAddress = place.roadAddress;
 
