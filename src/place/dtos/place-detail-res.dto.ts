@@ -43,6 +43,9 @@ export class LinkedCollectionRes {
   @ApiProperty()
   isViewed: boolean;
 
+  @ApiProperty()
+  isSaved: boolean;
+
   @ApiProperty({ description: '조회 시간' })
   updatedAt: Date;
 
@@ -61,6 +64,9 @@ export class PlaceDetailResDto {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  isSaved: boolean = false;
 
   @ApiProperty({
     type: String,
@@ -115,6 +121,9 @@ export class PlaceDetailResDto {
   longitude: number; //경도
 
   @ApiProperty()
+  mappedCategory: string;
+
+  @ApiProperty()
   address: string; //지번 주소
 
   @ApiProperty()
@@ -157,12 +166,20 @@ export class PlaceDetailResDto {
     this.phone = place.phone;
     this.latitude = place.latitude;
     this.longitude = place.longitude;
+    this.mappedCategory = categoryMapper(this.primaryCategory);
     this.address = place.address;
     this.roadAddress = place.roadAddress;
 
-    this.linkedCollections = linkedCollections.map(
-      (linkedCollection) => new LinkedCollectionRes(linkedCollection),
-    );
+    this.linkedCollections = linkedCollections.map((linkedCollection) => {
+      if (
+        linkedCollection.collectionPlaces.some(
+          (collectionPlace) => collectionPlace.isSaved,
+        )
+      ) {
+        this.isSaved = true;
+      }
+      return new LinkedCollectionRes(linkedCollection);
+    });
     this.placeImages = placeImages.map(
       (placeImage) => new PlaceImageRes(placeImage),
     );
