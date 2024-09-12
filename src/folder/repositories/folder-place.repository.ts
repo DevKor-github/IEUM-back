@@ -26,7 +26,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
         'place.name as name',
         'place.latitude as latitude',
         'place.longitude as longitude',
-        'place.primary_category as category',
+        'place.primary_category as primary_category',
       ])
       .where('folder.user_id = :userId', { userId });
 
@@ -81,14 +81,15 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
         'place.id AS id',
         'place.name AS name',
         'place.address AS address',
-        'place.primary_category AS category ',
+        'place.primary_category AS primary_category ',
         'ARRAY_AGG(placeImage.url ORDER BY placeImage.id DESC) AS "image_urls"',
       ])
       .where('folder.user_id = :userId', { userId })
-      .groupBy('place.id');
+      .groupBy('place.id')
+      .orderBy('place.id', 'DESC');
 
     //folder별로 보여줘야 한다면
-    if (!folderId) {
+    if (folderId !== undefined) {
       query.andWhere('folder.id = :folderId', { folderId });
     } else {
       query.andWhere('folder.type = :folderType', {
@@ -115,12 +116,13 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
         }, {}),
       );
     }
+
     if (mappedCategories && mappedCategories.length != 0) {
       query
         .andWhere('place.primary_category IN (:...categories)')
         .setParameter('categories', mappedCategories);
     }
-    query.orderBy('place.id', 'DESC').limit(take + 1);
+    query.limit(take + 1);
 
     const rawPlacesInfoList = await query.getRawMany();
     return rawPlacesInfoList;
