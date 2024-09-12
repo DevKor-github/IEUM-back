@@ -52,7 +52,7 @@ export class FolderRepository extends Repository<Folder> {
 
     const folderWithPlaceCnt = {
       id: folder.id,
-      userId: folder.userId,
+      userId: folder.user_id,
       name: folder.name,
       type: parseInt(folder.type),
       placeCnt: parseInt(folder.places_cnt),

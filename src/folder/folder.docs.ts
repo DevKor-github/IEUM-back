@@ -46,10 +46,12 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
 
   deleteFolderPlaces: [
     ApiOperation({
-      summary: '디폴트 폴더에서 장소 삭제하기(모든 폴더에서 삭제하기)',
+      summary: '특정 폴더에서 장소 삭제하기',
+      description:
+        '특정 폴더에서 장소를 삭제합니다. 대상 폴더가 디폴트 폴더라면, 모든 폴더에서 해당 장소들을 삭제합니다',
     }),
     ApiOkResponse({
-      description: '디폴트 폴더에서 장소 삭제 성공.',
+      description: '폴더에서 장소 삭제 성공.',
     }),
     ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],

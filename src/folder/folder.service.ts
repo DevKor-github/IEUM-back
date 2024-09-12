@@ -208,7 +208,6 @@ export class FolderService {
   ) {
     const targetFolder =
       await this.folderRepository.getFolderByFolderId(folderId);
-
     if (!targetFolder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -224,6 +223,7 @@ export class FolderService {
           placeIds,
         );
       });
+      return;
     }
 
     return await this.folderPlaceRepository.deleteFolderPlaces(
