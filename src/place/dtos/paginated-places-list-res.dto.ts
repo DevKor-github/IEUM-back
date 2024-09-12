@@ -33,8 +33,8 @@ export class PlaceInfoDto {
     this.id = rawPlaceInfo.id;
     this.name = rawPlaceInfo.name;
     this.simplifiedAddress = addressSimplifier(rawPlaceInfo.address);
-    this.mappedCategory = categoryMapper(rawPlaceInfo.category);
-    this.imageUrl = rawPlaceInfo.imageUrls[0];
+    this.mappedCategory = categoryMapper(rawPlaceInfo.primary_category);
+    this.imageUrl = rawPlaceInfo.image_urls[0];
   }
 }
 
