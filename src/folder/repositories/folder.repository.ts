@@ -32,7 +32,6 @@ export class FolderRepository extends Repository<Folder> {
       placeCnt: parseInt(folder.places_cnt),
     }));
 
-
     return foldersListWithPlaceCnt;
   }
 
@@ -58,11 +57,9 @@ export class FolderRepository extends Repository<Folder> {
       placeCnt: parseInt(folder.places_cnt),
     };
 
-    console.log(folderWithPlaceCnt);
     return folderWithPlaceCnt;
   }
 
-  async getDefaultFolder(userId: number): Promise<Folder> {
   async getDefaultFolder(userId: number): Promise<Folder> {
     let defaultFolder = await this.findOne({
       where: { userId: userId, type: FolderType.Default },
