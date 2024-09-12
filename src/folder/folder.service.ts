@@ -16,6 +16,7 @@ import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CATEGORIES_MAPPING_KAKAO } from 'src/common/utils/category-mapper.util';
+import { Folder } from './entities/folder.entity';
 
 @Injectable()
 export class FolderService {
@@ -43,8 +44,9 @@ export class FolderService {
     return new FolderResDto(folderWithFolderPlaces);
   }
 
-  async createNewFolder(userId: number, folderName: string) {
-    return await this.folderRepository.createFolder(userId, folderName);
+  async createNewFolder(userId: number, folderName: string): Promise<Folder> {
+    const folder = await this.folderRepository.createFolder(userId, folderName);
+    return folder;
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {

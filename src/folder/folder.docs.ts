@@ -4,11 +4,13 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { FoldersListResDto } from './dtos/folders-list.res.dto';
+import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 import { MarkersListResDto } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { FolderController } from './folder.controller';
+import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
+import { Folder } from './entities/folder.entity';
 
 type FolderMethodName = MethodNames<FolderController>;
 
@@ -26,6 +28,7 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '새로운 폴더 생성하기' }),
     ApiCreatedResponse({
       description: '폴더 생성 성공',
+      type: Folder,
     }),
     ApiIeumExceptionRes(['USERINFO_FILL_REQUIRED']),
   ],
@@ -60,7 +63,7 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
       summary: '디폴트 폴더 가져오기',
       description: '로그인한 유저의 디폴트 폴더를 가져옵니다(저장한 장소)',
     }),
-    ApiOkResponse({ description: '성공' }),
+    ApiOkResponse({ description: '성공', type: FolderResDto }),
   ],
   getAllMarkers: [
     ApiOperation({ summary: '저장한 모든 장소의 마커 리스트 가져오기' }),
@@ -84,12 +87,14 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '디폴트 폴더에 장소 추가하기' }),
     ApiCreatedResponse({
       description: '디폴트 폴더에 장소 추가 성공',
+      type: CreateFolderPlaceResDto,
     }),
   ],
   createFolderPlacesIntoFolder: [
     ApiOperation({ summary: '특정 폴더에 장소 추가하기' }),
     ApiCreatedResponse({
       description: '특정 폴더에 장소 추가 성공',
+      type: CreateFolderPlaceResDto,
     }),
     ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],

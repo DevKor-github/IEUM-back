@@ -80,7 +80,7 @@ export class FolderRepository extends Repository<Folder> {
     userId: number,
     folderName: string,
     folderType?: FolderType,
-  ) {
+  ): Promise<Folder> {
     if (folderType === FolderType.Default) {
       const folder = await this.findOne({
         where: { userId: userId, type: folderType, name: folderName },
