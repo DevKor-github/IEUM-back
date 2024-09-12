@@ -5,10 +5,10 @@ import { IeumCategories } from 'src/common/utils/category-mapper.util';
 
 export class PlacesListReqDto {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
-  take: number;
+  take: number = 10;
 
   @ApiPropertyOptional({ nullable: true })
   @IsOptional()
