@@ -1,12 +1,5 @@
 import { MethodNames } from 'src/common/types/method-names.type';
-import { FolderService } from './folder.service';
-import { UseGuards } from '@nestjs/common';
 import {
-  NicknameCheckingAccessGuard,
-  UseNicknameCheckingAccessGuard,
-} from 'src/auth/guards/nickname-check-access.guard';
-import {
-  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -24,6 +17,8 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
     ApiOperation({
       summary:
         '유저의 폴더 리스트 가져오기. type 0 = Default, type 1= Insta, type 2 = Custom',
+      description:
+        '유저의 폴더 리스트를 가져옵니다. 디폴트 폴더를 제외한 나머지 폴더들을 가져옵니다. (내 보관함)',
     }),
     ApiOkResponse({ type: FoldersListResDto }),
   ],
@@ -59,7 +54,10 @@ export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
     ApiIeumExceptionRes(['FOLDER_NOT_FOUND', 'FORBIDDEN_FOLDER']),
   ],
   getDefaultFolder: [
-    ApiOperation({ summary: '로그인한 유저의 디폴트 폴더 가져오기' }),
+    ApiOperation({
+      summary: '디폴트 폴더 가져오기',
+      description: '로그인한 유저의 디폴트 폴더를 가져옵니다(저장한 장소)',
+    }),
     ApiOkResponse({ description: '성공' }),
   ],
   getAllMarkers: [

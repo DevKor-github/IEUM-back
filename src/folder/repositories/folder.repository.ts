@@ -21,6 +21,7 @@ export class FolderRepository extends Repository<Folder> {
         'COUNT(folderPlaces.id) AS places_cnt',
       ])
       .where('folder.userId = :userId', { userId })
+      .andWhere('folder.type != :type', { type: FolderType.Default })
       .groupBy('folder.id')
       .getRawMany();
 
