@@ -15,6 +15,8 @@ import { Transactional } from 'typeorm-transactional';
 import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { CATEGORIES_MAPPING_KAKAO } from 'src/common/utils/category-mapper.util';
+import { Folder } from './entities/folder.entity';
 
 @Injectable()
 export class FolderService {
@@ -30,20 +32,26 @@ export class FolderService {
     return foldersList;
   }
 
-  async getFolderByFolderId(folderId: number) {
-    return await this.folderRepository.getFolderByFolderId(folderId);
+  async getFolderByFolderId(folderId: number): Promise<FolderResDto> {
+    const folder = await this.folderRepository.getFolderByFolderId(folderId);
+    return new FolderResDto(folder);
   }
 
-  async getDefaultFolder(userId: number) {
-    return await this.folderRepository.getDefaultFolder(userId);
+  async getDefaultFolder(userId: number): Promise<FolderResDto> {
+    const defaultFolder = await this.folderRepository.getDefaultFolder(userId);
+    const folderWithFolderPlaces =
+      await this.folderRepository.getFolderByFolderId(defaultFolder.id);
+    return new FolderResDto(folderWithFolderPlaces);
   }
 
-  async createNewFolder(userId: number, folderName: string) {
-    return await this.folderRepository.createFolder(userId, folderName);
+  async createNewFolder(userId: number, folderName: string): Promise<Folder> {
+    const folder = await this.folderRepository.createFolder(userId, folderName);
+    return folder;
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {
-    const targetFolder = await this.getFolderByFolderId(folderId);
+    const targetFolder =
+      await this.folderRepository.getFolderByFolderId(folderId);
     if (!targetFolder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -90,10 +98,14 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
+    const mappedCategories = categoryList.reduce((acc, category) => {
+      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
+      return acc.concat(mappedCategory);
+    }, []);
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
-      categoryList,
+      mappedCategories,
       folderId,
     );
 
@@ -114,9 +126,17 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
+    const { take, cursorId, addressList, categoryList } = placesListReqDto;
+    const mappedCategories = categoryList.reduce((acc, category) => {
+      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
+      return acc.concat(mappedCategory);
+    }, []);
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
-      placesListReqDto,
+      take,
+      addressList,
+      mappedCategories,
+      cursorId,
       folderId,
     );
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
@@ -130,7 +150,7 @@ export class FolderService {
   ) {
     const placeIds = createFolderPlacesReqDto.placeIds;
 
-    const folder = await this.getFolderByFolderId(folderId);
+    const folder = await this.folderRepository.getFolderByFolderId(folderId);
     if (!folder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -182,6 +202,7 @@ export class FolderService {
     );
   }
 
+  @Transactional()
   async deleteFolderPlaces(
     userId: number,
     folderId: number,
@@ -189,7 +210,6 @@ export class FolderService {
   ) {
     const targetFolder =
       await this.folderRepository.getFolderByFolderId(folderId);
-
     if (!targetFolder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -198,11 +218,18 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
-      //해당 유저의 소유가 아닌 폴더-장소들도 다 삭제되는 거 아닌가?
-      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
+      //디폴트 폴더라면, 나머지 폴더에서도 전부 삭제
+      const foldersList = await this.folderRepository.getFoldersList(userId);
+      foldersList.forEach(async (folder) => {
+        await this.folderPlaceRepository.deleteFolderPlaces(
+          folder.id,
+          placeIds,
+        );
+      });
     }
 
     return await this.folderPlaceRepository.deleteFolderPlaces(
+      //해당 폴더에서 삭제
       folderId,
       placeIds,
     );

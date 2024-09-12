@@ -26,7 +26,7 @@ export class MarkerResDto {
   constructor(rawMarker: RawMarker) {
     this.id = rawMarker.id;
     this.name = rawMarker.name;
-    this.mappedCategory = categoryMapper(rawMarker.category);
+    this.mappedCategory = categoryMapper(rawMarker.primary_category);
     this.latitude = rawMarker.latitude;
     this.longitude = rawMarker.longitude;
   }
