@@ -31,12 +31,16 @@ export class FolderService {
     return foldersList;
   }
 
-  async getFolderByFolderId(folderId: number) {
-    return await this.folderRepository.getFolderByFolderId(folderId);
+  async getFolderByFolderId(folderId: number): Promise<FolderResDto> {
+    const folder = await this.folderRepository.getFolderByFolderId(folderId);
+    return new FolderResDto(folder);
   }
 
-  async getDefaultFolder(userId: number) {
-    return await this.folderRepository.getDefaultFolder(userId);
+  async getDefaultFolder(userId: number): Promise<FolderResDto> {
+    const defaultFolder = await this.folderRepository.getDefaultFolder(userId);
+    const folderWithFolderPlaces =
+      await this.folderRepository.getFolderByFolderId(defaultFolder.id);
+    return new FolderResDto(folderWithFolderPlaces);
   }
 
   async createNewFolder(userId: number, folderName: string) {
@@ -44,7 +48,8 @@ export class FolderService {
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {
-    const targetFolder = await this.getFolderByFolderId(folderId);
+    const targetFolder =
+      await this.folderRepository.getFolderByFolderId(folderId);
     if (!targetFolder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -144,7 +149,7 @@ export class FolderService {
   ) {
     const placeIds = createFolderPlacesReqDto.placeIds;
 
-    const folder = await this.getFolderByFolderId(folderId);
+    const folder = await this.folderRepository.getFolderByFolderId(folderId);
     if (!folder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -212,8 +217,13 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
-      //해당 유저의 소유가 아닌 폴더-장소들도 다 삭제되는 거 아닌가?
-      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
+      const foldersList = await this.folderRepository.getFoldersList(userId);
+      foldersList.forEach(async (folder) => {
+        await this.folderPlaceRepository.deleteFolderPlaces(
+          folder.id,
+          placeIds,
+        );
+      });
     }
 
     return await this.folderPlaceRepository.deleteFolderPlaces(
