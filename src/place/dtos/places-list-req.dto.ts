@@ -4,11 +4,11 @@ import { IsEnum, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 import { IeumCategories } from 'src/common/utils/category-mapper.util';
 
 export class PlacesListReqDto {
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiPropertyOptional({ nullable: true, description: '기본값 10' })
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
-  take: number;
+  take: number = 10;
 
   @ApiPropertyOptional({ nullable: true })
   @IsOptional()
@@ -25,7 +25,9 @@ export class PlacesListReqDto {
   @ApiPropertyOptional({
     isArray: true,
     required: false,
-    examples: ['Restaurant', 'Cafe', 'Bar', 'Shopping', 'Stay', 'Culture'],
+    example: ['Restaurant', 'Cafe', 'Bar', 'Shopping', 'Stay', 'Culture'],
+    description:
+      '카테고리 리스트. 실제로는 IeumCategories enum 값들(6개 카테고리)을 사용',
   })
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsOptional()
