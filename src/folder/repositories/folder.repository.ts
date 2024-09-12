@@ -72,6 +72,6 @@ export class FolderRepository extends Repository<Folder> {
   }
 
   async deleteFolder(folderId: number) {
-    await this.delete({ id: folderId });
+    await this.delete({ id: folderId }); //folder-place cascading 되어있는지 체크
   }
 }

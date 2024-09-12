@@ -149,11 +149,4 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
         await this.delete({ folderId: folderId, placeId: placeId }),
     );
   }
-
-  async deleteAllFolderPlaces(placeIds: number[]) {
-    // 특정 장소들에 대한 폴더-장소 관계 삭제
-    await Promise.all(
-      placeIds.map((placeId) => this.delete({ placeId: placeId })),
-    );
-  }
 }

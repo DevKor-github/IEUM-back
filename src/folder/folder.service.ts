@@ -212,8 +212,13 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
-      //해당 유저의 소유가 아닌 폴더-장소들도 다 삭제되는 거 아닌가?
-      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
+      const foldersList = await this.folderRepository.getFoldersList(userId);
+      foldersList.forEach(async (folder) => {
+        await this.folderPlaceRepository.deleteFolderPlaces(
+          folder.id,
+          placeIds,
+        );
+      });
     }
 
     return await this.folderPlaceRepository.deleteFolderPlaces(
