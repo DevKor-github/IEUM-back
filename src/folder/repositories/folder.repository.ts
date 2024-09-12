@@ -27,7 +27,6 @@ export class FolderRepository extends Repository<Folder> {
     const foldersListWithPlaceCnt = foldersList.map((folder) => ({
       id: folder.id,
       userId: folder.user_id,
-      userId: folder.user_id,
       name: folder.name,
       type: parseInt(folder.type),
       placeCnt: parseInt(folder.places_cnt),
