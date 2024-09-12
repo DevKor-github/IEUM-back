@@ -15,7 +15,7 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
   async getMarkers(
     userId: number,
     addressList: string[],
-    categoryList: string[],
+    mappedCategories: string[],
     folderId?: number,
   ): Promise<RawMarker[]> {
     const query = this.createQueryBuilder('folderPlace')
@@ -54,10 +54,10 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     }
 
     //category로 필터링 되어야 한다면
-    if (categoryList && categoryList.length != 0) {
+    if (mappedCategories && mappedCategories.length != 0) {
       query
         .andWhere('place.primary_category IN (:...categories)')
-        .setParameter('categories', categoryList);
+        .setParameter('categories', mappedCategories);
     }
 
     const rawMarkersList = await query.orderBy('place.id', 'DESC').getRawMany();
@@ -67,7 +67,10 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
 
   async getPlacesList(
     userId: number,
-    placesListReqDto: PlacesListReqDto,
+    take: number,
+    addressList: string[],
+    mappedCategories: string[],
+    cursorId?: number,
     folderId?: number,
   ): Promise<RawPlaceInfo[]> {
     const query = this.createQueryBuilder('folderPlace')
@@ -79,14 +82,13 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
         'place.name AS name',
         'place.address AS address',
         'place.primary_category AS category ',
-        // 'placeImage.url',
-        'ARRAY_AGG(placeImage.url ORDER BY placeImage.id DESC) AS "imageUrls"',
+        'ARRAY_AGG(placeImage.url ORDER BY placeImage.id DESC) AS "image_urls"',
       ])
       .where('folder.user_id = :userId', { userId })
       .groupBy('place.id');
 
     //folder별로 보여줘야 한다면
-    if (folderId !== undefined) {
+    if (!folderId) {
       query.andWhere('folder.id = :folderId', { folderId });
     } else {
       query.andWhere('folder.type = :folderType', {
@@ -95,36 +97,30 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     }
 
     //두 번째 호출부터라 cursor값이 있다면
-    if (placesListReqDto.cursorId) {
+    if (cursorId) {
       query.andWhere('place.id < :cursorId', {
-        cursorId: placesListReqDto.cursorId,
+        cursorId: cursorId,
       });
     }
 
-    if (
-      placesListReqDto.addressList &&
-      placesListReqDto.addressList.length != 0
-    ) {
-      const addressConditions = placesListReqDto.addressList.map(
+    if (addressList && addressList.length != 0) {
+      const addressConditions = addressList.map(
         (address, index) => `place.address LIKE :address${index}`,
       );
       query.andWhere(
         `(${addressConditions.join(' OR ')})`,
-        placesListReqDto.addressList.reduce((params, address, index) => {
+        addressList.reduce((params, address, index) => {
           params[`address${index}`] = `${address}%`;
           return params;
         }, {}),
       );
     }
-    if (
-      placesListReqDto.categoryList &&
-      placesListReqDto.categoryList.length != 0
-    ) {
+    if (mappedCategories && mappedCategories.length != 0) {
       query
         .andWhere('place.primary_category IN (:...categories)')
-        .setParameter('categories', placesListReqDto.categoryList);
+        .setParameter('categories', mappedCategories);
     }
-    query.orderBy('place.id', 'DESC').limit(placesListReqDto.take + 1);
+    query.orderBy('place.id', 'DESC').limit(take + 1);
 
     const rawPlacesInfoList = await query.getRawMany();
     return rawPlacesInfoList;

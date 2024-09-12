@@ -92,7 +92,6 @@ export class FolderService {
       }
     }
     const mappedCategories = categoryList.reduce((acc, category) => {
-
       const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
       return acc.concat(mappedCategory);
     }, []);
@@ -121,15 +120,17 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
-    {take, cursorId, addressList, categoryList} = placesListReqDto;
+    const { take, cursorId, addressList, categoryList } = placesListReqDto;
     const mappedCategories = categoryList.reduce((acc, category) => {
-
       const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
       return acc.concat(mappedCategory);
     }, []);
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
-      placesListReqDto,
+      take,
+      addressList,
+      mappedCategories,
+      cursorId,
       folderId,
     );
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
