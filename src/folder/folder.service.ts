@@ -100,7 +100,6 @@ export class FolderService {
       const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
       return acc.concat(mappedCategory);
     }, []);
-    console.log('mappedCategories', mappedCategories);
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
@@ -201,6 +200,7 @@ export class FolderService {
     );
   }
 
+  @Transactional()
   async deleteFolderPlaces(
     userId: number,
     folderId: number,
@@ -216,6 +216,7 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
+      //디폴트 폴더라면, 나머지 폴더에서도 전부 삭제
       const foldersList = await this.folderRepository.getFoldersList(userId);
       foldersList.forEach(async (folder) => {
         await this.folderPlaceRepository.deleteFolderPlaces(
@@ -223,10 +224,10 @@ export class FolderService {
           placeIds,
         );
       });
-      return;
     }
 
     return await this.folderPlaceRepository.deleteFolderPlaces(
+      //해당 폴더에서 삭제
       folderId,
       placeIds,
     );
