@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
 import { FolderType } from 'src/common/enums/folder-type.enum';
-import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
+import { FolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 import {
   createNormalList,
   NormalListMeta,
@@ -20,26 +20,26 @@ export class FolderResDto {
   @ApiProperty()
   placeCnt: number;
 
-  constructor(rawFolderInfo: RawFolderInfo) {
-    this.id = rawFolderInfo.id;
-    this.name = rawFolderInfo.name;
-    this.type = rawFolderInfo.type;
-    this.placeCnt = rawFolderInfo.placeCnt;
+  constructor(folderInfo: FolderInfo) {
+    this.id = folderInfo.id;
+    this.name = folderInfo.name;
+    this.type = folderInfo.type;
+    this.placeCnt = folderInfo.placeCnt;
   }
 }
 
 export class FoldersListResDto {
   @ApiProperty()
-  meta: NormalListMeta<RawFolderInfo>;
+  meta: NormalListMeta<FolderInfo>;
 
   @ApiProperty({ type: [FolderResDto] })
   @IsArray()
   items: FolderResDto[];
 
-  constructor(rawFoldersInfoList: RawFolderInfo[]) {
+  constructor(foldersInfoList: FolderInfo[]) {
     const { meta, items } = createNormalList(
-      rawFoldersInfoList,
-      (rawFolderInfo) => new FolderResDto(rawFolderInfo),
+      foldersInfoList,
+      (folderInfo) => new FolderResDto(folderInfo),
     );
     this.meta = meta;
     this.items = items;
