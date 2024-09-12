@@ -23,13 +23,16 @@ export class FolderRepository extends Repository<Folder> {
       .where('folder.userId = :userId', { userId })
       .groupBy('folder.id')
       .getRawMany();
+
     const foldersListWithPlaceCnt = foldersList.map((folder) => ({
       id: folder.id,
+      userId: folder.user_id,
       userId: folder.user_id,
       name: folder.name,
       type: parseInt(folder.type),
       placeCnt: parseInt(folder.places_cnt),
     }));
+
 
     return foldersListWithPlaceCnt;
   }
@@ -60,6 +63,7 @@ export class FolderRepository extends Repository<Folder> {
     return folderWithPlaceCnt;
   }
 
+  async getDefaultFolder(userId: number): Promise<Folder> {
   async getDefaultFolder(userId: number): Promise<Folder> {
     let defaultFolder = await this.findOne({
       where: { userId: userId, type: FolderType.Default },
