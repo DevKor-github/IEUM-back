@@ -1,17 +1,15 @@
 import { MethodNames } from 'src/common/types/method-names.type';
 import { UserController } from './user.controller';
 import {
-  ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
-import { UseGuards } from '@nestjs/common';
-import { AccessGuard } from 'src/auth/guards/access.guard';
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
-import { FirstLoginResDto } from './dtos/first-login.dto';
+import { FirstLoginReqDto } from './dtos/first-login.dto';
 
 type UserMethodNames = MethodNames<UserController>;
 
@@ -32,10 +30,14 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
   fillUserInfoAndPreference: [
-    ApiOperation({ summary: '유저 정보 및 선호도 입력' }),
+    ApiOperation({
+      summary: '유저 정보 및 선호도 입력',
+      description:
+        '선호 지역들을 전달할 때는, 하나로 묶여있는 지역이라도 각각 따로 보내주세요. ex) 대전/충청/세종으로 묶여있더라도 "대전", "충남", "충북", "세종"을 Array로 전달',
+    }),
     ApiCreatedResponse({
       description: '유저 정보 및 선호도 입력 성공',
-      type: FirstLoginResDto,
+      type: ProfileResDto,
     }),
     ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
