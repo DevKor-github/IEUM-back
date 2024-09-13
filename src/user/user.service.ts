@@ -64,6 +64,12 @@ export class UserService {
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
+    const nicknameCheck = await this.userRepository.getUserByNickname(
+      updateUserProfileReqDto.nickname,
+    );
+    if (nicknameCheck && nicknameCheck.id !== userId) {
+      throwIeumException('DUPLICATED_NICKNAME');
+    }
     await this.userRepository.updateUserInfo(updateUserProfileReqDto, userId);
     await this.preferenceRepository.updateUserPreference(
       updateUserProfileReqDto,
