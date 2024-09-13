@@ -60,7 +60,7 @@ export class UserService {
     updateUserProfileReqDto: UpdateUserProfileReqDto,
     userId: number,
   ): Promise<ProfileResDto> {
-    const user = await this.userRepository.getUserById(userId);
+    const user = await this.userRepository.getUserInfoAndPreferenceById(userId);
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }

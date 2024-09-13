@@ -14,6 +14,23 @@ export class PreferenceRepository extends Repository<Preference> {
     updateUserProfileReqDto: UpdateUserProfileReqDto,
     user: User,
   ) {
-    return await this.save({ ...updateUserProfileReqDto, user });
+    let preference = user.preference;
+    if (!preference) {
+      preference = new Preference();
+      preference.user = user;
+    }
+
+    preference.preferredCompanions =
+      updateUserProfileReqDto.preferredCompanions;
+    preference.preferredRegions = updateUserProfileReqDto.preferredRegions;
+
+    preference.restOrActivity = updateUserProfileReqDto.restOrActivity;
+    preference.cheapOrExpensive = updateUserProfileReqDto.cheapOrExpensive;
+    preference.natureOrCity = updateUserProfileReqDto.natureOrCity;
+    preference.plannedOrImprovise = updateUserProfileReqDto.plannedOrImprovise;
+    preference.popularOrLocal = updateUserProfileReqDto.popularOrLocal;
+    preference.tightOrLoose = updateUserProfileReqDto.tightOrLoose;
+
+    return await this.save(preference);
   }
 }
