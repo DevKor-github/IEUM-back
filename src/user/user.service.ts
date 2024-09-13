@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FirstLoginReqDto } from './dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from './dtos/first-login.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
@@ -56,16 +56,19 @@ export class UserService {
     return new ProfileResDto(user);
   }
 
-  async fillUserInfoAndPreference(
-    firstLoginReqDto: FirstLoginReqDto,
+  async updateUserProfile(
+    updateUserProfileReqDto: UpdateUserProfileReqDto,
     userId: number,
   ): Promise<ProfileResDto> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
-    await this.userRepository.fillUserInfo(firstLoginReqDto, userId);
-    await this.preferenceRepository.fillUserPreference(firstLoginReqDto, user);
+    await this.userRepository.updateUserInfo(updateUserProfileReqDto, userId);
+    await this.preferenceRepository.updateUserPreference(
+      updateUserProfileReqDto,
+      user,
+    );
     const createdUser =
       await this.userRepository.getUserInfoAndPreferenceById(userId);
     return new ProfileResDto(createdUser);

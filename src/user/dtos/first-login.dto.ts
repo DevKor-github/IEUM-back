@@ -20,7 +20,7 @@ import {
   preferredRegion,
 } from 'src/common/enums/preference.enum';
 
-export class FirstLoginReqDto {
+export class UpdateUserProfileReqDto {
   @ApiProperty({ description: '광고 동의 여부', nullable: true })
   @IsBoolean()
   @IsOptional()

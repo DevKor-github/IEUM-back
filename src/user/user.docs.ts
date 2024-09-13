@@ -1,7 +1,6 @@
 import { MethodNames } from 'src/common/types/method-names.type';
 import { UserController } from './user.controller';
 import {
-  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -9,7 +8,6 @@ import {
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
-import { FirstLoginReqDto } from './dtos/first-login.dto';
 
 type UserMethodNames = MethodNames<UserController>;
 
@@ -29,9 +27,9 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     }),
     ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
-  fillUserInfoAndPreference: [
+  updateUserProfile: [
     ApiOperation({
-      summary: '유저 정보 및 선호도 입력',
+      summary: '유저 프로필 변경',
       description:
         '선호 지역들을 전달할 때는, 하나로 묶여있는 지역이라도 각각 따로 보내주세요. ex) 대전/충청/세종으로 묶여있더라도 "대전", "충남", "충북", "세종"을 Array로 전달',
     }),

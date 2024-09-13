@@ -1,4 +1,4 @@
-import { FirstLoginReqDto } from 'src/user/dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from './../dtos/first-login.dto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Preference } from '../entities/preference.entity';
@@ -10,7 +10,10 @@ export class PreferenceRepository extends Repository<Preference> {
     super(Preference, dataSource.createEntityManager());
   }
 
-  async fillUserPreference(firstLoginReqDto: FirstLoginReqDto, user: User) {
-    return await this.save({ ...firstLoginReqDto, user });
+  async updateUserPreference(
+    updateUserProfileReqDto: UpdateUserProfileReqDto,
+    user: User,
+  ) {
+    return await this.save({ ...updateUserProfileReqDto, user });
   }
 }
