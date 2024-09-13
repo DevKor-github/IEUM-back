@@ -92,6 +92,12 @@ export const ieumExceptions = {
     errorCode: 1013,
     statusCode: 400,
   },
+  DUPLICATED_NICKNAME: {
+    name: 'DUPLICATED_NICKNAME',
+    message: '중복된 닉네임이에요.',
+    errorCode: 1014,
+    statusCode: 409,
+  },
   //102x : Kakao
   KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED: {
     name: 'KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED',

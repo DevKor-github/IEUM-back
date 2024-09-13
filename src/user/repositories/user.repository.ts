@@ -1,6 +1,6 @@
+import { UpdateUserProfileReqDto } from '../dtos/update-user-profile-req.dto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { FirstLoginReqDto } from 'src/user/dtos/first-login.dto';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import { User } from '../entities/user.entity';
 
@@ -41,16 +41,19 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async fillUserInfo(firstLoginReqDto: FirstLoginReqDto, id: number) {
+  async updateUserInfo(
+    updateUserProfileReqDto: UpdateUserProfileReqDto,
+    id: number,
+  ) {
     const user = await this.getUserById(id);
 
-    user.isAdConfirmed = firstLoginReqDto.isAdConfirmed
-      ? firstLoginReqDto.isAdConfirmed
+    user.isAdConfirmed = updateUserProfileReqDto.isAdConfirmed
+      ? updateUserProfileReqDto.isAdConfirmed
       : false;
-    user.nickname = firstLoginReqDto.nickname;
-    user.birthDate = new Date(firstLoginReqDto.birthDate);
-    user.sex = firstLoginReqDto.sex;
-    user.mbti = firstLoginReqDto.mbti;
+    user.nickname = updateUserProfileReqDto.nickname;
+    user.birthDate = new Date(updateUserProfileReqDto.birthDate);
+    user.sex = updateUserProfileReqDto.sex;
+    user.mbti = updateUserProfileReqDto.mbti;
 
     return await this.save(user);
   }

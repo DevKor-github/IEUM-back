@@ -1,17 +1,13 @@
 import { MethodNames } from 'src/common/types/method-names.type';
 import { UserController } from './user.controller';
 import {
-  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
-import { UseGuards } from '@nestjs/common';
-import { AccessGuard } from 'src/auth/guards/access.guard';
 import { ProfileResDto } from './dtos/profile-res.dto';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
-import { FirstLoginResDto } from './dtos/first-login.dto';
 
 type UserMethodNames = MethodNames<UserController>;
 
@@ -31,13 +27,23 @@ export const UserDocs: Record<UserMethodNames, MethodDecorator[]> = {
     }),
     ApiIeumExceptionRes(['USER_NOT_FOUND']),
   ],
-  fillUserInfoAndPreference: [
-    ApiOperation({ summary: '유저 정보 및 선호도 입력' }),
+  updateUserProfile: [
+    ApiOperation({
+      summary: '유저 프로필 변경',
+      description: `
+      동반자 정보(preferredCompanions) / 선호 지역 정보(preferredRegions)는 보낼 수 있는 타입이 정해져있습니다!!!
+      Swagger 하단 Schema 정보에서 UpdateUserProfileReqDto를 확인해주세요. 각 필드에 대한 설명도 있어욧
+
+      선호 지역 정보는 Array로 전달해주세요. 프론트엔드 인터페이스상에서 하나로 묶여있더라도, 지역별로 따로 전달해주세요
+      ex) 대전/충청/세종으로 묶여있더라도 "대전", "충남", "충북", "세종"을 Array로 전달.
+
+      변경하지 않을 항목이 있다면, GET /users/me로 불러온 정보를 그대로 전달해주세요.`,
+    }),
     ApiCreatedResponse({
       description: '유저 정보 및 선호도 입력 성공',
-      type: FirstLoginResDto,
+      type: ProfileResDto,
     }),
-    ApiIeumExceptionRes(['USER_NOT_FOUND']),
+    ApiIeumExceptionRes(['USER_NOT_FOUND', 'DUPLICATED_NICKNAME']),
   ],
   deleteUser: [
     ApiOperation({ summary: '회원탈퇴' }),

@@ -7,35 +7,37 @@ import {
   RelationId,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Preference {
   @PrimaryGeneratedColumn()
+  @Exclude()
   id: number;
 
   @Column('varchar', { array: true })
-  preferredRegion: string[];
+  preferredRegions: string[];
 
   @Column('varchar', { array: true })
-  preferredCompanion: string[];
+  preferredCompanions: string[];
 
   @Column()
-  budgetStyle: number; //저렴한~비싼
+  cheapOrExpensive: number; //저렴한~비싼
 
   @Column()
-  planningStyle: number; //계획적~즉흥적
+  plannedOrImprovise: number; //계획적~즉흥적
 
   @Column()
-  scheduleStyle: number; //알차게~여유롭게
+  tightOrLoose: number; //알차게~여유롭게
 
   @Column()
-  destinationStyle1: number; //완전 관광지~완전 로컬
+  popularOrLocal: number; //완전 관광지~완전 로컬
 
   @Column()
-  destinationStyle2: number; //완전 자연~완전 도시
+  natureOrCity: number; //완전 자연~완전 도시
 
   @Column()
-  destinationStyle3: number; //휴양~액티비티
+  restOrActivity: number; //휴양~액티비티
 
   @OneToOne(() => User, (user) => user.preference)
   @JoinColumn()

@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  FirstLoginReqDto,
-  FirstLoginResDto,
-  UserPreferenceDto,
-} from './dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from './dtos/update-user-profile-req.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
@@ -52,31 +48,36 @@ export class UserService {
   }
 
   //유저 정보
-  async getUserProfile(id: number): Promise<ProfileResDto> {
-    const user = await this.userRepository.getUserById(id);
-
+  async getUserProfile(userId: number): Promise<ProfileResDto> {
+    const user = await this.userRepository.getUserInfoAndPreferenceById(userId);
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
     return new ProfileResDto(user);
   }
 
-  async fillUserInfoAndPreference(
-    firstLoginReqDto: FirstLoginReqDto,
-    id: number,
-  ): Promise<FirstLoginResDto> {
-    const user = await this.userRepository.getUserById(id);
+  async updateUserProfile(
+    updateUserProfileReqDto: UpdateUserProfileReqDto,
+    userId: number,
+  ): Promise<ProfileResDto> {
+    const user = await this.userRepository.getUserById(userId);
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
-    await this.userRepository.fillUserInfo(firstLoginReqDto, id);
-    await this.preferenceRepository.fillUserPreference(
-      new UserPreferenceDto(firstLoginReqDto),
-      id,
+    const nicknameCheck = await this.userRepository.getUserByNickname(
+      updateUserProfileReqDto.nickname,
+    );
+    if (nicknameCheck && nicknameCheck.id !== userId) {
+      throwIeumException('DUPLICATED_NICKNAME');
+    }
+    await this.userRepository.updateUserInfo(updateUserProfileReqDto, userId);
+    await this.preferenceRepository.updateUserPreference(
+      updateUserProfileReqDto,
+      user,
     );
     const createdUser =
-      await this.userRepository.getUserInfoAndPreferenceById(id);
-    return new FirstLoginResDto(createdUser);
+      await this.userRepository.getUserInfoAndPreferenceById(userId);
+    return new ProfileResDto(createdUser);
   }
 
   //회원탈퇴
