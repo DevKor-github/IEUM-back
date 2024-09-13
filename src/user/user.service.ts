@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  FirstLoginReqDto,
-  FirstLoginResDto,
-  UserPreferenceDto,
-} from './dtos/first-login.dto';
+import { FirstLoginReqDto } from './dtos/first-login.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
@@ -52,9 +48,8 @@ export class UserService {
   }
 
   //유저 정보
-  async getUserProfile(id: number): Promise<ProfileResDto> {
-    const user = await this.userRepository.getUserById(id);
-
+  async getUserProfile(userId: number): Promise<ProfileResDto> {
+    const user = await this.userRepository.getUserInfoAndPreferenceById(userId);
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
@@ -63,20 +58,17 @@ export class UserService {
 
   async fillUserInfoAndPreference(
     firstLoginReqDto: FirstLoginReqDto,
-    id: number,
-  ): Promise<FirstLoginResDto> {
-    const user = await this.userRepository.getUserById(id);
+    userId: number,
+  ): Promise<ProfileResDto> {
+    const user = await this.userRepository.getUserById(userId);
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
-    await this.userRepository.fillUserInfo(firstLoginReqDto, id);
-    await this.preferenceRepository.fillUserPreference(
-      new UserPreferenceDto(firstLoginReqDto),
-      id,
-    );
+    await this.userRepository.fillUserInfo(firstLoginReqDto, userId);
+    await this.preferenceRepository.fillUserPreference(firstLoginReqDto, user);
     const createdUser =
-      await this.userRepository.getUserInfoAndPreferenceById(id);
-    return new FirstLoginResDto(createdUser);
+      await this.userRepository.getUserInfoAndPreferenceById(userId);
+    return new ProfileResDto(createdUser);
   }
 
   //회원탈퇴
