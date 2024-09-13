@@ -55,8 +55,8 @@ export class UpdateUserProfileReqDto {
   @ApiProperty({
     enum: preferredRegion,
     description:
-      '선호 지역들을 전달. 하나로 묶여있는 지역이라도 각각 따로 보내주세요',
-    example: ['충북', '충남', '대전', '경남', '울산'],
+      '선호 지역들을 전달. 하나로 묶여있는 지역이라도 각각 따로 보내주세요. 예시에 적힌 지역들만 전달 가능합니다. 여기에 해당하지 않으면 400 에러',
+    example: ['대전', '세종', '충북', '충남'],
   })
   @IsNotEmpty()
   @IsArray()

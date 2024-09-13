@@ -15,6 +15,7 @@ export enum preferredRegion {
   JEONBUK = '전북',
   JEONNAM = '전남',
   JEJU = '제주',
+  GANGWON = '강원',
 }
 
 export enum preferredCompanion {

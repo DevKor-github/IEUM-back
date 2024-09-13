@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { UpdateUserProfileReqDto } from './dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from './dtos/update-user-profile-req.dto';
 import { UserService } from './user.service';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';

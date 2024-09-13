@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateUserProfileReqDto } from './dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from './dtos/update-user-profile-req.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { PreferenceRepository } from 'src/user/repositories/preference.repository';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';

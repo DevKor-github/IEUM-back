@@ -1,4 +1,4 @@
-import { UpdateUserProfileReqDto } from './../dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from '../dtos/update-user-profile-req.dto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
