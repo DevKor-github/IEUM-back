@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
 import { User } from '../entities/user.entity';
+import { Preference } from '../entities/preference.entity';
 
 export class ProfileResDto {
   @ApiProperty()
@@ -15,7 +16,7 @@ export class ProfileResDto {
   @ApiProperty()
   birthDate: Date;
 
-  @ApiProperty({ example: 'm' })
+  @ApiProperty({ example: 'M' })
   sex: string;
 
   @ApiProperty({ example: 'ISTJ' })
@@ -23,6 +24,9 @@ export class ProfileResDto {
 
   @ApiProperty()
   isAdConfirmed: boolean;
+
+  @ApiProperty({ type: Preference })
+  preference: Preference;
 
   constructor(user: User) {
     this.uuid = user.uuid;
@@ -32,5 +36,6 @@ export class ProfileResDto {
     this.sex = user.sex;
     this.mbti = user.mbti;
     this.isAdConfirmed = user.isAdConfirmed;
+    this.preference = user.preference;
   }
 }

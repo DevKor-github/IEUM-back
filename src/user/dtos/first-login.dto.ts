@@ -1,10 +1,8 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsEmail,
   IsNotEmpty,
   IsString,
-  IsDate,
   IsArray,
   IsInt,
   Min,
@@ -14,156 +12,118 @@ import {
   MaxLength,
   IsEnum,
   IsOptional,
+  IsIn,
 } from 'class-validator';
-import { OAuthPlatform } from 'src/common/enums/oAuth-platform.enum';
-import { User } from '../entities/user.entity';
+import {
+  MBTI,
+  preferredCompanion,
+  preferredRegion,
+} from 'src/common/enums/preference.enum';
 
 export class FirstLoginReqDto {
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: '광고 동의 여부', nullable: true })
   @IsBoolean()
   @IsOptional()
   isAdConfirmed?: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ description: '닉네임', example: '닉네임' })
   @IsNotEmpty()
   @IsString()
   nickname: string;
 
-  @ApiProperty({ description: '0000-00-00 format', example: '1999-07-08' })
+  @ApiProperty({ description: '생년월일', example: '1999-07-08' })
   @IsNotEmpty()
   @IsDateString() // 0000-00-00형식인지 검증
   birthDate: string;
 
-  @ApiProperty({ example: 'M' })
+  @ApiProperty({ description: '성별. M or F', example: 'M' })
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
   @MaxLength(1)
+  @IsIn(['M', 'F'])
   sex: string;
 
-  @ApiProperty({ example: 'ISTJ' })
+  @ApiProperty({ description: 'MBTI', example: 'ISTJ' })
   @IsNotEmpty()
   @IsString()
   @MinLength(4)
   @MaxLength(4)
-  mbti: string;
+  @IsEnum(MBTI)
+  mbti: MBTI;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: preferredRegion,
+    description:
+      '선호 지역들을 전달. 하나로 묶여있는 지역이라도 각각 따로 보내주세요',
+    example: ['충북', '충남', '대전', '경남', '울산'],
+  })
   @IsNotEmpty()
   @IsArray()
-  @IsString({ each: true })
-  preferredRegion: string[];
+  @IsEnum(preferredRegion, { each: true })
+  preferredRegions: preferredRegion[];
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: preferredCompanion,
+    description: '선호 동반자를 대문자 String으로 전달.',
+    example: ['나홀로', '친구'],
+  })
   @IsNotEmpty()
   @IsArray()
-  @IsString({ each: true })
-  preferredCompanion: string[];
+  @IsEnum(preferredCompanion, { each: true })
+  preferredCompanions: preferredCompanion[];
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 1,
+    description: '저렴한 여행지 ~ 비싼 여행지. 1~5로 입력',
+  })
   @IsInt()
   @Min(1)
   @Max(5)
-  budgetStyle: number;
+  cheapOrExpensive: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 1,
+    description: '계획적인 여행 ~ 즉흥적인 여행. 1~5로 입력',
+  })
   @IsInt()
   @Min(1)
   @Max(5)
-  planningStyle: number;
+  plannedOrImprovise: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 1,
+    description: '알차게 여행 ~ 여유롭게 여행. 1~5로 입력',
+  })
   @IsInt()
   @Min(1)
   @Max(5)
-  scheduleStyle: number;
+  tightOrLoose: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 1,
+    description: '인기있는 여행지 ~ 로컬 여행지. 1~5로 입력',
+  })
   @IsInt()
   @Min(1)
   @Max(5)
-  destinationStyle1: number;
+  popularOrLocal: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 1,
+    description: '자연적인 여행지 ~ 도시적인 여행지. 1~5로 입력',
+  })
   @IsInt()
   @Min(1)
   @Max(5)
-  destinationStyle2: number;
+  natureOrCity: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 1,
+    description: '휴양 여행 ~ 액티비티 여행. 1~5로 입력',
+  })
   @IsInt()
   @Min(1)
   @Max(5)
-  destinationStyle3: number;
-}
-
-export class UserPreferenceDto extends PickType(FirstLoginReqDto, [
-  'preferredRegion',
-  'preferredCompanion',
-  'budgetStyle',
-  'planningStyle',
-  'scheduleStyle',
-  'destinationStyle1',
-  'destinationStyle2',
-  'destinationStyle3',
-]) {
-  constructor(firstLoginReqDto: FirstLoginReqDto) {
-    super(FirstLoginReqDto);
-    this.preferredRegion = firstLoginReqDto.preferredRegion;
-    this.preferredCompanion = firstLoginReqDto.preferredCompanion;
-    this.budgetStyle = firstLoginReqDto.budgetStyle;
-    this.planningStyle = firstLoginReqDto.planningStyle;
-    this.scheduleStyle = firstLoginReqDto.scheduleStyle;
-    this.destinationStyle1 = firstLoginReqDto.destinationStyle1;
-    this.destinationStyle2 = firstLoginReqDto.destinationStyle2;
-    this.destinationStyle3 = firstLoginReqDto.destinationStyle3;
-  }
-}
-
-export class FirstLoginResDto extends PickType(FirstLoginReqDto, [
-  'isAdConfirmed',
-  'nickname',
-  'birthDate',
-  'sex',
-  'mbti',
-  'preferredRegion',
-  'preferredCompanion',
-  'budgetStyle',
-  'planningStyle',
-  'scheduleStyle',
-  'destinationStyle1',
-  'destinationStyle2',
-  'destinationStyle3',
-]) {
-  @ApiProperty()
-  @IsString()
-  uuid: string;
-
-  @ApiProperty()
-  @IsString()
-  oAuthId: string;
-
-  @ApiProperty()
-  @IsEnum(OAuthPlatform)
-  oAuthPlatform: OAuthPlatform;
-
-  constructor(user: User) {
-    super(FirstLoginReqDto);
-    this.isAdConfirmed = user.isAdConfirmed;
-    this.uuid = user.uuid;
-    this.oAuthId = user.oAuthId;
-    this.oAuthPlatform = user.oAuthPlatform;
-    this.nickname = user.nickname;
-    this.birthDate = String(user.birthDate);
-    this.sex = user.sex;
-    this.mbti = user.mbti;
-    this.preferredRegion = user.preference.preferredRegion;
-    this.preferredCompanion = user.preference.preferredCompanion;
-    this.budgetStyle = user.preference.budgetStyle;
-    this.planningStyle = user.preference.planningStyle;
-    this.scheduleStyle = user.preference.scheduleStyle;
-    this.destinationStyle1 = user.preference.destinationStyle1;
-    this.destinationStyle2 = user.preference.destinationStyle2;
-    this.destinationStyle3 = user.preference.destinationStyle3;
-  }
+  restOrActivity: number;
 }
