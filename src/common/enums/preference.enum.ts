@@ -1,4 +1,4 @@
-export enum preferredRegions {
+export enum preferredRegion {
   SEOUL = '서울',
   GYEONGGI = '경기',
   INCHEON = '인천',
@@ -17,7 +17,7 @@ export enum preferredRegions {
   JEJU = '제주',
 }
 
-export enum preferredCompanions {
+export enum preferredCompanion {
   ALONE = '나홀로',
   FAMILY = '가족',
   PARENTS = '부모님',
@@ -25,4 +25,23 @@ export enum preferredCompanions {
   COUPLE = '연인',
   FRIENDS = '친구',
   PETS = '반려동물',
+}
+
+export enum MBTI {
+  ISTJ = 'ISTJ',
+  ISFJ = 'ISFJ',
+  INFJ = 'INFJ',
+  INTJ = 'INTJ',
+  ISTP = 'ISTP',
+  ISFP = 'ISFP',
+  INFP = 'INFP',
+  INTP = 'INTP',
+  ESTP = 'ESTP',
+  ESFP = 'ESFP',
+  ENFP = 'ENFP',
+  ENTP = 'ENTP',
+  ESTJ = 'ESTJ',
+  ESFJ = 'ESFJ',
+  ENFJ = 'ENFJ',
+  ENTJ = 'ENTJ',
 }
