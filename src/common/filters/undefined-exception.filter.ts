@@ -3,10 +3,12 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 
 @Catch()
 export class UndefinedExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(UndefinedExceptionFilter.name);
   catch(exception: Error | HttpException, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
 
@@ -29,5 +31,7 @@ export class UndefinedExceptionFilter implements ExceptionFilter {
       message,
       stack: exception.stack,
     });
+
+    this.logger.error(exception);
   }
 }
