@@ -49,29 +49,29 @@ export class UpdateUserProfileReqDto {
   @IsString()
   @MinLength(4)
   @MaxLength(4)
-  @IsEnum(MBTI)
-  mbti: MBTI;
+  // @IsEnum(MBTI)
+  mbti: string;
 
   @ApiProperty({
-    enum: preferredRegion,
+    // enum: preferredRegion,
     description:
       '선호 지역들을 전달. 하나로 묶여있는 지역이라도 각각 따로 보내주세요. 예시에 적힌 지역들만 전달 가능합니다. 여기에 해당하지 않으면 400 에러',
     example: ['대전', '세종', '충북', '충남'],
   })
   @IsNotEmpty()
   @IsArray()
-  @IsEnum(preferredRegion, { each: true })
-  preferredRegions: preferredRegion[];
+  // @IsEnum(preferredRegion, { each: true })
+  preferredRegions: string[];
 
   @ApiProperty({
-    enum: preferredCompanion,
+    // enum: preferredCompanion,
     description: '선호 동반자를 대문자 String으로 전달.',
     example: ['나홀로', '친구'],
   })
   @IsNotEmpty()
   @IsArray()
-  @IsEnum(preferredCompanion, { each: true })
-  preferredCompanions: preferredCompanion[];
+  // @IsEnum(preferredCompanion, { each: true })
+  preferredCompanions: string[];
 
   @ApiProperty({
     example: 1,
