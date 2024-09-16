@@ -67,7 +67,6 @@ export class RabbitMqService {
     createCollectionReq.placeKeywords = msg.placeKeywords;
     createCollectionReq.content = msg.content;
 
-    console.log('handlingCrawlingResult', createCollectionReq);
     const collection =
       await this.crawlingService.createCollection(createCollectionReq);
     await this.firebaseService.sendPushNotification(

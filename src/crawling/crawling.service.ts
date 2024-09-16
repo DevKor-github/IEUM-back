@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CollectionService } from 'src/collection/collection.service';
 import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
-import { throwIeumException } from 'src/common/utils/exception.util';
+import {
+  IeumException,
+  throwIeumException,
+} from 'src/common/utils/exception.util';
 import { PlaceService } from 'src/place/place.service';
 import { Transactional } from 'typeorm-transactional';
 
@@ -17,21 +20,26 @@ export class CrawlingService {
   @Transactional() //Transactional의 정상적인 작동 의심.
   async createCollection(createCollectionReq: CreateCollectionReqDto) {
     try {
-      console.log('createCollection at crawlingService', createCollectionReq);
       const collection =
         await this.collectionService.createCollectionWithDuplicationCheck(
           createCollectionReq,
         );
 
-      await Promise.all(
+      await Promise.allSettled(
         createCollectionReq.placeKeywords.map(async (placeKeyword) => {
-          const place =
-            await this.placeService.createPlaceByKakaoLocal(placeKeyword);
-          await this.collectionService.createCollectionPlace(
-            collection.id,
-            place.id,
-            placeKeyword,
-          );
+          try {
+            const place =
+              await this.placeService.createPlaceByKakaoLocal(placeKeyword);
+            await this.collectionService.createCollectionPlace(
+              collection.id,
+              place.id,
+              placeKeyword,
+            );
+          } catch (error) {
+            if (error instanceof IeumException) {
+              this.logger.error(`Error occured by ${placeKeyword} : ${error}`);
+            }
+          }
         }),
       );
       return collection;
