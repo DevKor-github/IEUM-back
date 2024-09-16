@@ -204,6 +204,9 @@ export class PlaceService {
   @Transactional()
   async createPlaceByKakaoLocal(keyword: string) {
     const kakaoPlace = await this.searchKakaoLocalByKeyword(keyword);
+    if (kakaoPlace.meta.total_count === 0) {
+      throwIeumException('KAKAO_LOCAL_SEARCH_RESULT_NOT_FOUND');
+    }
     const existedPlace = await this.placeRepository.findOne({
       where: { kakaoId: kakaoPlace.documents[0].id }, // 여기에 커스텀 에러 처리 필요. kakaoPlace?로 해야할듯.
     });

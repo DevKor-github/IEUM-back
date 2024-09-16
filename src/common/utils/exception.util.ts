@@ -165,6 +165,12 @@ export const ieumExceptions = {
     errorCode: 5002,
     statusCode: 400,
   },
+  KAKAO_LOCAL_SEARCH_RESULT_NOT_FOUND: {
+    name: 'KAKAO_LOCAL_SEARCH_RESULT_NOT_FOUND',
+    message: '카카오 로컬 검색 결과 없음',
+    errorCode: 5003,
+    statusCode: 500,
+  },
   //6xxx : Crawling
   UNSUPPORTED_LINK: {
     name: 'UNSUPPORTED_LINK',
