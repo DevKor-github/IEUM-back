@@ -12,6 +12,7 @@ import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface'
 import { FirebaseService } from './firebase.service';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CrawlingService } from './crawling.service';
+import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
 
 @Injectable()
 export class RabbitMqService {
@@ -59,9 +60,18 @@ export class RabbitMqService {
     errorHandler: defaultNackErrorHandler,
   })
   async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
-    const collection = await this.crawlingService.createCollection(msg);
+    const createCollectionReq = new CreateCollectionReqDto();
+    createCollectionReq.userId = parseInt(msg.userId);
+    createCollectionReq.link = msg.link;
+    createCollectionReq.collectionType = msg.collectionType;
+    createCollectionReq.placeKeywords = msg.placeKeywords;
+    createCollectionReq.content = msg.content;
+
+    console.log('handlingCrawlingResult', createCollectionReq);
+    const collection =
+      await this.crawlingService.createCollection(createCollectionReq);
     await this.firebaseService.sendPushNotification(
-      msg.userId,
+      createCollectionReq.userId,
       'SUCCESS',
       collection.id,
     );
