@@ -59,7 +59,10 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.midd
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
-    consumer.apply(WinstonLoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes('*')
+      .apply(WinstonLoggerMiddleware)
+      .forRoutes('*');
   }
 }

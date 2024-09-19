@@ -6,9 +6,9 @@ import { winstonLogger } from '../logger/winston.logger';
 export class WinstonLoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { method, originalUrl, query, body } = req;
+    const user = (req.user as { id: number; oAuthId: string }) ?? null;
     const startTime = Date.now(); // 요청 시작 시간
     const ip = req.ip; // IP 주소
-    // const userAgent = req.get('User-Agent') || ''; // User-Agent 정보
 
     //프로메테우스 수집 요청 로그 기록 안함.
     if (originalUrl == '/metrics') {
@@ -20,10 +20,11 @@ export class WinstonLoggerMiddleware implements NestMiddleware {
       const responseTime = Date.now() - startTime; // 응답 시간
       const requestLogMessage = {
         app: 'IEUM',
+        userId: user?.id,
         method: method,
         endpoint: originalUrl,
         statusCode: statusCode,
-        reponseTime: responseTime,
+        reponseTime: `${responseTime}ms`,
         ip: ip,
         query: query,
         body: body,
