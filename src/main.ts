@@ -6,13 +6,17 @@ import { initializeTransactionalContext } from 'typeorm-transactional';
 import { json, urlencoded } from 'express';
 import { IeumExceptionFilter } from './common/filters/ieum-exception.filter';
 import { UndefinedExceptionFilter } from './common/filters/undefined-exception.filter';
+import { winstonLogger } from './common/logger/winston.logger';
 
 declare const module: any;
 
 async function bootstrap() {
   initializeTransactionalContext();
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    logger: winstonLogger,
+  });
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
   app.useGlobalPipes(

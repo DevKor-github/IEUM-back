@@ -17,6 +17,7 @@ import { S3Service } from './place/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.middleware';
 
 @Module({
   imports: [
@@ -51,7 +52,7 @@ import { JwtModule } from '@nestjs/jwt';
     TripModule,
     FolderModule,
     CollectionModule,
-    CrawlingModule,
+    // CrawlingModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
@@ -59,5 +60,6 @@ import { JwtModule } from '@nestjs/jwt';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer.apply(WinstonLoggerMiddleware).forRoutes('*');
   }
 }
