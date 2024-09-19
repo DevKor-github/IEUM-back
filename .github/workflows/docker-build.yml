@@ -104,6 +104,7 @@ jobs:
           echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL}}" >> .env
           echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL}}" >> .env
           echo "FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN}}" >> .env
+          echo "NEST_ENV=${{secrets.NEST_ENV}}" >> .env
 
           cat .env
       - name: Run Docker for develop
