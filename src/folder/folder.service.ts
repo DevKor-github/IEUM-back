@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
 import { FolderRepository } from 'src/folder/repositories/folder.repository';
 import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
@@ -21,6 +21,8 @@ import { PlaceService } from 'src/place/place.service';
 
 @Injectable()
 export class FolderService {
+  private readonly logger = new Logger(FolderService.name);
+
   constructor(
     private readonly folderRepository: FolderRepository,
     private readonly folderPlaceRepository: FolderPlaceRepository,
@@ -159,10 +161,24 @@ export class FolderService {
     if (folder.userId !== userId) {
       throwIeumException('FORBIDDEN_FOLDER');
     }
-    //placeId에 대한 유효성 체크가 가능한가?
-    placeIds.forEach(async (placeId) => {
-      await this.folderPlaceRepository.createFolderPlace(folderId, placeId);
-    });
+    //placeId에 대한 유효성 체크가 가능한가? -> placeService 주입.
+    //
+    await Promise.all(
+      placeIds.map(async (placeId) => {
+        const place = await this.placeService.getPlaceDetailById(placeId); // 내부에서 유효성 체크 일어난다.
+        if (!place.placeDetail) {
+          // 만약 이 내부에서 fail이 일어나면 어떻게 처리할 것인가?
+          try {
+            await this.placeService.createPlaceDetailByGooglePlacesApi(placeId);
+          } catch (error) {
+            this.logger.error(
+              `Failed to create PlaceDetail By placeId : ${placeId}`,
+            );
+          }
+        }
+        await this.folderPlaceRepository.createFolderPlace(folderId, placeId);
+      }),
+    );
   }
 
   @Transactional()
