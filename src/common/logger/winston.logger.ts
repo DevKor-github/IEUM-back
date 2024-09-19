@@ -2,9 +2,9 @@ import { utilities, WinstonModule } from 'nest-winston';
 import * as winstonDaily from 'winston-daily-rotate-file';
 import * as winston from 'winston';
 
-const logDir = __dirname + '/../../logs'; // 로그 파일 저장 경로
-// const logDir = '/app/logs';
-console.log(__dirname);
+// const logDir = __dirname + '/../../logs'; // 로그 파일 저장 경로
+const logDir = '/app/logs';
+// console.log(__dirname);
 
 const transports: winston.transport[] = [
   // 모든 레벨 로그를 파일에 저장
