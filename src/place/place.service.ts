@@ -167,16 +167,19 @@ export class PlaceService {
   }
 
   // ---------내부 DB 검색---------
-  async getPlaceDetailById(
+  async getPlaceDetailById(placeId: number): Promise<Place> {
+    const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
+    if (!placeDetail) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
+    return placeDetail;
+  }
+
+  async getPlaceDetailWithImagesAndCollectionsById(
     userId: number,
     placeId: number,
   ): Promise<PlaceDetailResDto> {
-    const place = await this.placeRepository.getPlaceDetailById(placeId);
-    if (!place) {
-      throwIeumException('PLACE_NOT_FOUND');
-    }
-
-    const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
+    const placeDetail = await this.getPlaceDetailById(placeId);
     const placeImages =
       await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
     const linkedCollections = await this.collectionService.getLinkedCollections(
