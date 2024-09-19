@@ -20,7 +20,7 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '장소명으로 DB 내의 장소 검색' }),
     ApiQuery({ name: 'placeName', type: 'string' }),
   ],
-  getPlaceDetailById: [
+  getPlaceDetailWithImagesAndCollectionsById: [
     ApiOperation({ summary: '특정 장소의 상세 정보 조회' }),
     ApiOkResponse({
       description: '상세 정보 조회 성공',
