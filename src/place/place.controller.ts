@@ -64,8 +64,11 @@ export class PlaceController {
 
   @UseNicknameCheckingAccessGuard()
   @Get('/:placeId')
-  async getPlaceDetailById(@Req() req, @Param('placeId') placeId: string) {
-    return await this.placeService.getPlaceDetailById(
+  async getPlaceDetailWithImagesAndCollectionsById(
+    @Req() req,
+    @Param('placeId') placeId: string,
+  ) {
+    return await this.placeService.getPlaceDetailWithImagesAndCollectionsById(
       req.user.id,
       parseInt(placeId),
     );
