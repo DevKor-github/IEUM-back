@@ -14,9 +14,10 @@ export class PlaceImage {
   id: number;
 
   @ManyToOne(() => Place, (place) => place.placeImages, {
+    nullable: true,
     onDelete: 'SET NULL',
   })
-  place: Place;
+  place: Place | null;
 
   @RelationId((placeImage: PlaceImage) => placeImage.place)
   @Column()
