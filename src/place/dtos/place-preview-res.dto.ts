@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/place/entities/place.entity';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
 export class PlacePreviewResDto {
   @ApiProperty()
@@ -12,7 +13,7 @@ export class PlacePreviewResDto {
   name: string;
 
   @ApiProperty()
-  ieumCategory: string;
+  ieumCategory: IeumCategory;
 
   @ApiProperty()
   simplifiedAddress: string;
@@ -32,11 +33,11 @@ export class PlacePreviewResDto {
   @ApiProperty()
   longitude: number;
 
-  constructor(place: Place) {
+  constructor(place: Place, ieumCategory: IeumCategory) {
     const { locationTags, categoryTags } = tagParser(place.placeTags);
     this.id = place.id;
     this.name = place.name;
-    this.ieumCategory = categoryMapper(place.primaryCategory);
+    this.ieumCategory = ieumCategory;
     this.simplifiedAddress = addressSimplifier(place.address);
     this.imageUrl =
       place.placeImages.length != 0 ? place.placeImages[0].url : null;

@@ -122,7 +122,7 @@ export class PlaceDetailResDto {
   longitude: number; //경도
 
   @ApiProperty()
-  ieumCategory: string;
+  ieumCategory: IeumCategory;
 
   @ApiProperty()
   address: string; //지번 주소
@@ -140,6 +140,7 @@ export class PlaceDetailResDto {
     place: Place,
     placeImages: PlaceImage[],
     linkedCollections: Collection[],
+    ieumCategory: IeumCategory,
   ) {
     const { locationTags, categoryTags, customTags } = tagParser(
       place.placeTags,
@@ -167,7 +168,7 @@ export class PlaceDetailResDto {
     this.phone = place.phone;
     this.latitude = place.latitude;
     this.longitude = place.longitude;
-    this.ieumCategory = categoryMapper(this.primaryCategory);
+    this.ieumCategory = ieumCategory;
     this.address = place.address;
     this.roadAddress = place.roadAddress;
 

@@ -1,3 +1,4 @@
+import { IeumCategory } from '../enums/ieum-category.enum';
 import { RawDataForCursorPagination } from './../utils/cursor-pagination.util';
 
 export interface RawPlaceInfo extends RawDataForCursorPagination {
@@ -5,5 +6,6 @@ export interface RawPlaceInfo extends RawDataForCursorPagination {
   name: string;
   address: string;
   primary_category: string;
+  ieumCategory?: IeumCategory;
   image_urls: string[];
 }

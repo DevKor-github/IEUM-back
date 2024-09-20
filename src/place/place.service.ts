@@ -23,6 +23,8 @@ import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
 import { CollectionService } from 'src/collection/collection.service';
 import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
+import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
 @Injectable()
 export class PlaceService {
@@ -34,6 +36,7 @@ export class PlaceService {
     private readonly collectionService: CollectionService,
     private readonly tagService: TagService,
     private readonly s3Service: S3Service,
+    private readonly kakaoCategoryMappingService: KakaoCategoryMappingService,
   ) {}
 
   // ---------외부 API 검색 - 카카오 ---------
@@ -290,5 +293,25 @@ export class PlaceService {
       googleMapsUri: googlePlacesApiPlaceDetailsResult.googleMapsUri ?? null,
     };
     return placeDetailsForTransferring;
+  }
+
+  async getIeumCategoryByKakaoCategory(
+    kakaoCategory: string,
+  ): Promise<IeumCategory> {
+    const result =
+      await this.kakaoCategoryMappingService.getIeumCategoryByKakaoCategory(
+        kakaoCategory,
+      );
+    return result.ieumCategory;
+  }
+
+  async getKakaoCategoriesByIeumCategory(
+    ieumCategory: IeumCategory,
+  ): Promise<string[]> {
+    const result =
+      await this.kakaoCategoryMappingService.getKakaoCategoriesByIeumCategory(
+        ieumCategory,
+      );
+    return result.map((mapping) => mapping.kakaoCategory);
   }
 }
