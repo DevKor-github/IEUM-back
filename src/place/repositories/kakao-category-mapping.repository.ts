@@ -39,6 +39,16 @@ export class KakaoCategoryMappingRepository extends Repository<KakaoCategoryMapp
     return await this.save(kakaoCategoryMapping);
   }
 
+  async updateKakaoCategoryMapping(
+    ieumCategory: IeumCategory,
+    kakaoCategory: string,
+  ): Promise<KakaoCategoryMapping> {
+    const kakaoCategoryMapping =
+      await this.getIeumCategoryByKakaoCategory(kakaoCategory);
+    kakaoCategoryMapping.ieumCategory = ieumCategory;
+    return await this.save(kakaoCategoryMapping);
+  }
+
   async deleteKakaoCategoryMapping(
     kakaoCategory: string,
   ): Promise<KakaoCategoryMapping> {

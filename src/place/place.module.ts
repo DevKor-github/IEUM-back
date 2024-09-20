@@ -15,6 +15,7 @@ import { PlaceTag } from './entities/place-tag.entity';
 import { UserModule } from 'src/user/user.module';
 import { CollectionModule } from 'src/collection/collection.module';
 import { KakaoCategoryMapping } from './entities/kakao-category-mapping.entity';
+import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 
 @Module({
   controllers: [PlaceController],
@@ -38,6 +39,6 @@ import { KakaoCategoryMapping } from './entities/kakao-category-mapping.entity';
       KakaoCategoryMapping,
     ]),
   ],
-  exports: [PlaceService],
+  exports: [PlaceService, KakaoCategoryMappingService],
 })
 export class PlaceModule {}
