@@ -137,6 +137,16 @@ export class FolderService {
       folderId,
     );
 
+    await Promise.all(
+      rawMarkersList.map(async (marker) => {
+        marker.ieumCategory =
+          await this.placeService.getIeumCategoryByKakaoCategory(
+            marker.primary_category,
+          );
+        return marker; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
+    );
+
     return new MarkersListResDto(rawMarkersList);
   }
 
@@ -166,6 +176,16 @@ export class FolderService {
       mappedCategories,
       cursorId,
       folderId,
+    );
+
+    await Promise.all(
+      rawPlacesInfoList.map(async (placeInfo) => {
+        placeInfo.ieumCategory =
+          await this.placeService.getIeumCategoryByKakaoCategory(
+            placeInfo.primary_category,
+          );
+        return placeInfo; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
     );
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }

@@ -189,8 +189,15 @@ export class PlaceService {
       userId,
       placeId,
     );
-
-    return new PlaceDetailResDto(placeDetail, placeImages, linkedCollections);
+    const ieumCategory = await this.getIeumCategoryByKakaoCategory(
+      placeDetail.primaryCategory,
+    );
+    return new PlaceDetailResDto(
+      placeDetail,
+      placeImages,
+      linkedCollections,
+      ieumCategory,
+    );
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
@@ -198,7 +205,10 @@ export class PlaceService {
     if (!place) {
       throwIeumException('PLACE_NOT_FOUND');
     }
-    return new PlacePreviewResDto(place);
+    const ieumCategory = await this.getIeumCategoryByKakaoCategory(
+      place.primaryCategory,
+    );
+    return new PlacePreviewResDto(place, ieumCategory);
   }
 
   async getPlacesByPlaceName(placeName: string): Promise<Place[]> {
@@ -302,6 +312,9 @@ export class PlaceService {
       await this.kakaoCategoryMappingService.getIeumCategoryByKakaoCategory(
         kakaoCategory,
       );
+    if (!result) {
+      return IeumCategory.OTHERS;
+    }
     return result.ieumCategory;
   }
 

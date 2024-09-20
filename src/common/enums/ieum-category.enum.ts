@@ -5,4 +5,5 @@ export enum IeumCategory {
   MUSEUM = 'MUSEUM',
   STAY = 'STAY',
   SHOPPING = 'SHOPPING',
+  OTHERS = 'OTHERS',
 }
