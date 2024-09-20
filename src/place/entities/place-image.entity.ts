@@ -13,7 +13,9 @@ export class PlaceImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Place, (place) => place.placeImages)
+  @ManyToOne(() => Place, (place) => place.placeImages, {
+    onDelete: 'SET NULL',
+  })
   place: Place;
 
   @RelationId((placeImage: PlaceImage) => placeImage.place)
