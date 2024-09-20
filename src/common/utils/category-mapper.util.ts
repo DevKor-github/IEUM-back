@@ -8,12 +8,12 @@ export const CATEGORIES_MAPPING_KAKAO = {
 };
 
 export enum IeumCategories {
-  Restaurant = 'Restaurant',
-  Cafe = 'Cafe',
-  Bar = 'Bar',
-  Shopping = 'Shopping',
-  Stay = 'Stay',
-  Culture = 'Culture',
+  FOOD = 'FOOD',
+  CAFE = 'CAFE',
+  ALCOHOL = 'ALCOHOL',
+  MUSEUM = 'MUSEUM',
+  STAY = 'STAY',
+  SHOPPING = 'SHOPPING',
 }
 
 export function categoryMapper(category: string): string {
