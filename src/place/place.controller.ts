@@ -32,7 +32,8 @@ export class PlaceController {
   }
 
   @Get('/kakao')
-  async getKakaoPlacesByKeyword(@Query() keyword: string) {
+  async getKakaoPlacesByKeyword(@Query('keyword') keyword: string) {
+    console.log(keyword);
     return await this.placeService.searchKakaoLocalByKeyword(keyword);
   }
 
