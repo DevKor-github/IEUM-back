@@ -12,7 +12,10 @@ import {
   MarkerResDto,
   MarkersListResDto,
 } from 'src/place/dtos/markers-list-res.dto';
-import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import {
+  MarkersReqDto,
+  PlacesListReqDto,
+} from 'src/place/dtos/places-list-req.dto';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 
 import { Transactional } from 'typeorm-transactional';
@@ -113,8 +116,7 @@ export class FolderService {
 
   async getMarkers(
     userId: number,
-    addressList: string[],
-    categoryList: string[],
+    markersReqDto: MarkersReqDto,
     folderId?: number,
   ): Promise<MarkersListResDto> {
     if (folderId) {
@@ -126,14 +128,18 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
-    const mappedCategories = categoryList.reduce((acc, category) => {
-      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
-      return acc.concat(mappedCategory);
-    }, []);
+    const { addressList, categoryList } = markersReqDto;
+    const kakaoCategoriesForFiltering = await Promise.all(
+      categoryList.map(async (category) => {
+        return await this.placeService.getKakaoCategoriesByIeumCategory(
+          category,
+        );
+      }),
+    );
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
-      mappedCategories,
+      kakaoCategoriesForFiltering.flat(),
       folderId,
     );
 
@@ -165,15 +171,19 @@ export class FolderService {
       }
     }
     const { take, cursorId, addressList, categoryList } = placesListReqDto;
-    const mappedCategories = categoryList.reduce((acc, category) => {
-      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
-      return acc.concat(mappedCategory);
-    }, []);
+    const kakaoCategoriesForFiltering = await Promise.all(
+      categoryList.map(async (category) => {
+        return await this.placeService.getKakaoCategoriesByIeumCategory(
+          category,
+        );
+      }),
+    );
+
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
       take,
       addressList,
-      mappedCategories,
+      kakaoCategoriesForFiltering.flat(),
       cursorId,
       folderId,
     );

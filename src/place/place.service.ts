@@ -325,6 +325,9 @@ export class PlaceService {
       await this.kakaoCategoryMappingService.getKakaoCategoriesByIeumCategory(
         ieumCategory,
       );
+    if (!result) {
+      return [];
+    }
     return result.map((mapping) => mapping.kakaoCategory);
   }
 }

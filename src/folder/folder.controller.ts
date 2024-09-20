@@ -90,11 +90,7 @@ export class FolderController {
     @Query() markersReqDto: MarkersReqDto,
     @Req() req,
   ): Promise<MarkersListResDto> {
-    return await this.folderService.getMarkers(
-      req.user.id,
-      markersReqDto.addressList,
-      markersReqDto.categoryList,
-    );
+    return await this.folderService.getMarkers(req.user.id, markersReqDto);
   }
 
   @Get('/:folderId/markers')
@@ -106,8 +102,7 @@ export class FolderController {
     console.log('controller before method', req.user);
     return await this.folderService.getMarkers(
       req.user.id,
-      markersReqDto.addressList,
-      markersReqDto.categoryList,
+      markersReqDto,
       folderId,
     );
   }
