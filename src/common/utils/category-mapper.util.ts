@@ -7,15 +7,6 @@ export const CATEGORIES_MAPPING_KAKAO = {
   Culture: ['문화시설', '관광명소'],
 };
 
-export enum IeumCategories {
-  FOOD = 'FOOD',
-  CAFE = 'CAFE',
-  ALCOHOL = 'ALCOHOL',
-  MUSEUM = 'MUSEUM',
-  STAY = 'STAY',
-  SHOPPING = 'SHOPPING',
-}
-
 export function categoryMapper(category: string): string {
   for (const [key, values] of Object.entries(CATEGORIES_MAPPING_KAKAO)) {
     if (values.includes(category)) {

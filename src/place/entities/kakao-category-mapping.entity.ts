@@ -1,4 +1,4 @@
-import { IeumCategories } from 'src/common/utils/category-mapper.util';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
@@ -9,6 +9,6 @@ export class KakaoCategoryMapping {
   @Column({ unique: true })
   kakaoCategory: string;
 
-  @Column({ type: 'enum', enum: IeumCategories })
-  ieumCategory: IeumCategories;
+  @Column({ type: 'enum', enum: IeumCategory })
+  ieumCategory: IeumCategory;
 }

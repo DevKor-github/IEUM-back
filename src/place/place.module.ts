@@ -14,6 +14,7 @@ import { PlaceImage } from './entities/place-image.entity';
 import { PlaceTag } from './entities/place-tag.entity';
 import { UserModule } from 'src/user/user.module';
 import { CollectionModule } from 'src/collection/collection.module';
+import { KakaoCategoryMapping } from './entities/kakao-category-mapping.entity';
 
 @Module({
   controllers: [PlaceController],
@@ -29,7 +30,13 @@ import { CollectionModule } from 'src/collection/collection.module';
     UserModule,
     TagModule,
     CollectionModule,
-    TypeOrmModule.forFeature([Place, PlaceDetail, PlaceImage, PlaceTag]),
+    TypeOrmModule.forFeature([
+      Place,
+      PlaceDetail,
+      PlaceImage,
+      PlaceTag,
+      KakaoCategoryMapping,
+    ]),
   ],
   exports: [PlaceService],
 })
