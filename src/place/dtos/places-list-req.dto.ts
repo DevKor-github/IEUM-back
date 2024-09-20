@@ -25,7 +25,7 @@ export class PlacesListReqDto {
   @ApiPropertyOptional({
     isArray: true,
     required: false,
-    example: ['Restaurant', 'Cafe', 'Bar', 'Shopping', 'Stay', 'Culture'],
+    example: ['FOOD', 'CAFE', 'ALCOHOL'],
     description:
       '카테고리 리스트. 실제로는 IeumCategories enum 값들(6개 카테고리)을 사용',
   })

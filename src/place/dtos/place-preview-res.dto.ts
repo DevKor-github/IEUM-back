@@ -12,7 +12,7 @@ export class PlacePreviewResDto {
   name: string;
 
   @ApiProperty()
-  mappedCategory: string;
+  ieumCategory: string;
 
   @ApiProperty()
   simplifiedAddress: string;
@@ -36,7 +36,7 @@ export class PlacePreviewResDto {
     const { locationTags, categoryTags } = tagParser(place.placeTags);
     this.id = place.id;
     this.name = place.name;
-    this.mappedCategory = categoryMapper(place.primaryCategory);
+    this.ieumCategory = categoryMapper(place.primaryCategory);
     this.simplifiedAddress = addressSimplifier(place.address);
     this.imageUrl =
       place.placeImages.length != 0 ? place.placeImages[0].url : null;

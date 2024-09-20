@@ -7,6 +7,7 @@ import { PlaceImage } from '../entities/place-image.entity';
 import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 import { Collection } from 'src/collection/entities/collection.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
 export class PlaceImageRes {
   @ApiProperty()
@@ -121,7 +122,7 @@ export class PlaceDetailResDto {
   longitude: number; //경도
 
   @ApiProperty()
-  mappedCategory: string;
+  ieumCategory: string;
 
   @ApiProperty()
   address: string; //지번 주소
@@ -166,7 +167,7 @@ export class PlaceDetailResDto {
     this.phone = place.phone;
     this.latitude = place.latitude;
     this.longitude = place.longitude;
-    this.mappedCategory = categoryMapper(this.primaryCategory);
+    this.ieumCategory = categoryMapper(this.primaryCategory);
     this.address = place.address;
     this.roadAddress = place.roadAddress;
 

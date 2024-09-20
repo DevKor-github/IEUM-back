@@ -23,7 +23,7 @@ export class PlaceInfoDto {
 
   @ApiProperty()
   @IsString()
-  mappedCategory: string;
+  ieumCategory: string;
 
   @ApiProperty()
   @IsString()
@@ -33,7 +33,7 @@ export class PlaceInfoDto {
     this.id = rawPlaceInfo.id;
     this.name = rawPlaceInfo.name;
     this.simplifiedAddress = addressSimplifier(rawPlaceInfo.address);
-    this.mappedCategory = categoryMapper(rawPlaceInfo.primary_category);
+    this.ieumCategory = categoryMapper(rawPlaceInfo.primary_category);
     this.imageUrl = rawPlaceInfo.image_urls[0];
   }
 }
