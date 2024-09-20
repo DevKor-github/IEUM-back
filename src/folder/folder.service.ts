@@ -24,7 +24,7 @@ import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CATEGORIES_MAPPING_KAKAO } from 'src/common/utils/category-mapper.util';
 import { Folder } from './entities/folder.entity';
-import { PlaceService } from 'src/place/place.service';
+import { PlaceService } from 'src/place/services/place.service';
 
 @Injectable()
 export class FolderService {

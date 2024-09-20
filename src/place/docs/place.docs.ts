@@ -1,5 +1,5 @@
 import { MethodNames } from 'src/common/types/method-names.type';
-import { PlaceController } from './place.controller';
+import { PlaceController } from '../controllers/place.controller';
 import {
   ApiBody,
   ApiConsumes,
@@ -8,10 +8,10 @@ import {
   ApiOperation,
   ApiQuery,
 } from '@nestjs/swagger';
-import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
+import { PlaceDetailResDto } from '../dtos/place-detail-res.dto';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
-import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceImage } from './entities/place-image.entity';
+import { PlacePreviewResDto } from '../dtos/place-preview-res.dto';
+import { PlaceImage } from '../entities/place-image.entity';
 
 type PlaceMethodName = MethodNames<PlaceController>;
 

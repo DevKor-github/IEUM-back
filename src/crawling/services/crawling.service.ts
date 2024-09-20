@@ -5,7 +5,7 @@ import {
   IeumException,
   throwIeumException,
 } from 'src/common/utils/exception.util';
-import { PlaceService } from 'src/place/place.service';
+import { PlaceService } from 'src/place/services/place.service';
 import { Transactional } from 'typeorm-transactional';
 
 @Injectable()

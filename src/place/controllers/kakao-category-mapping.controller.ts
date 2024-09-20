@@ -7,12 +7,12 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 import { ApiTags } from '@nestjs/swagger';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
-import { KakaoCategoryMappingDocs } from './kakao-category-mapping.docs';
-import { KakaoCategoryMappingReqDto } from './dtos/kakao-category-mapping-req.dto';
+import { KakaoCategoryMappingDocs } from '../docs/kakao-category-mapping.docs';
+import { KakaoCategoryMappingReqDto } from '../dtos/kakao-category-mapping-req.dto';
+import { KakaoCategoryMappingService } from '../services/kakao-category-mapping.service';
 
 @ApplyDocs(KakaoCategoryMappingDocs)
 @ApiTags('카테고리 매핑 API')

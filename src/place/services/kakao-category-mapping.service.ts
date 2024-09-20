@@ -1,7 +1,8 @@
-import { KakaoCategoryMapping } from './entities/kakao-category-mapping.entity';
 import { Injectable } from '@nestjs/common';
-import { KakaoCategoryMappingRepository } from './repositories/kakao-category-mapping.repository';
+
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import { KakaoCategoryMappingRepository } from '../repositories/kakao-category-mapping.repository';
+import { KakaoCategoryMapping } from '../entities/kakao-category-mapping.entity';
 
 @Injectable()
 export class KakaoCategoryMappingService {

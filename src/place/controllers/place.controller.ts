@@ -9,12 +9,12 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { PlaceService } from './place.service';
+import { PlaceService } from '../services/place.service';
 import { ApiTags } from '@nestjs/swagger';
-import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { Place } from './entities/place.entity';
+import { PlacePreviewResDto } from '../dtos/place-preview-res.dto';
+import { Place } from '../entities/place.entity';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
-import { PlaceDocs } from './place.docs';
+import { PlaceDocs } from '../docs/place.docs';
 import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 

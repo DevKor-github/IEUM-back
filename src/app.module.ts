@@ -13,7 +13,7 @@ import { UserModule } from './user/user.module';
 import { TripModule } from './trip/trip.module';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
-import { S3Service } from './place/s3.service';
+import { S3Service } from './place/services/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';

@@ -1,4 +1,4 @@
-import { placeDetailsForTransferring } from './../common/interfaces/google-places-api.interface';
+import { placeDetailsForTransferring } from '../../common/interfaces/google-places-api.interface';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import {
@@ -9,15 +9,15 @@ import {
 import { PlaceRepository } from 'src/place/repositories/place.repository';
 import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
 import { Transactional } from 'typeorm-transactional';
-import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
+import { PlacePreviewResDto } from '../dtos/place-preview-res.dto';
+import { PlaceDetailResDto } from '../dtos/place-detail-res.dto';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
-import { S3Service } from 'src/place/s3.service';
-import { PlaceTagRepository } from './repositories/place-tag.repository';
-import { PlaceDetailRepository } from './repositories/place-detail.repository';
-import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
-import { Place } from './entities/place.entity';
+import { S3Service } from 'src/place/services/s3.service';
+import { PlaceTagRepository } from '../repositories/place-tag.repository';
+import { PlaceDetailRepository } from '../repositories/place-detail.repository';
+import { CreatePlaceTagReqDto } from '../dtos/create-place-tag-req.dto';
+import { Place } from '../entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';

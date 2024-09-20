@@ -2,12 +2,12 @@ import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
 import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
-import { FirebaseService } from './firebase.service';
+
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { CrawlingDocs } from './crawling.docs';
-import { Request } from 'express';
 import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
-import { RabbitMqService } from './rabbitmq.service';
+import { FirebaseService } from './services/firebase.service';
+import { RabbitMqService } from './services/rabbitmq.service';
 
 @ApplyDocs(CrawlingDocs)
 @ApiTags('크롤링 API')

@@ -5,7 +5,6 @@ import {
 } from '@golevelup/nestjs-rabbitmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { SlackAlertService } from './slack-alert.service';
-import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
@@ -13,6 +12,7 @@ import { FirebaseService } from './firebase.service';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CrawlingService } from './crawling.service';
 import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
+import { CrawlingCollectionReqDto } from '../dtos/crawling-collection-req.dto';
 
 @Injectable()
 export class RabbitMqService {

@@ -1,5 +1,5 @@
 import { MethodNames } from 'src/common/types/method-names.type';
-import { KakaoCategoryMappingController } from './kakao-category-mapping.controller';
+import { KakaoCategoryMappingController } from '../controllers/kakao-category-mapping.controller';
 import {
   ApiCreatedResponse,
   ApiNoContentResponse,

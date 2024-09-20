@@ -2,13 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CollectionPlaceRepository } from 'src/collection/repositories/collection-place.repository';
 import { CollectionRepository } from 'src/collection/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
-import { PlaceService } from 'src/place/place.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { Collection } from './entities/collection.entity';
-import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 
 @Injectable()
 export class CollectionService {
