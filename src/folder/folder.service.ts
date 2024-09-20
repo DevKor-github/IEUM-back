@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
 import { FolderRepository } from 'src/folder/repositories/folder.repository';
-import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
+import {
+  FolderResDto,
+  FoldersListResDto,
+  FoldersWithThumbnailListResDto,
+} from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import {
@@ -34,6 +38,26 @@ export class FolderService {
     const rawFoldersList = await this.folderRepository.getFoldersList(userId);
     const foldersList = new FoldersListResDto(rawFoldersList);
     return foldersList;
+  }
+
+  async getFoldersWithThumbnailList(
+    userId: number,
+  ): Promise<FoldersWithThumbnailListResDto> {
+    const rawFoldersList = await this.folderRepository.getFoldersList(userId);
+    const folderThumbnails = [];
+    for (const folder of rawFoldersList) {
+      const folderThumbnail = await this.getFolderThumbnail(folder.id);
+      folderThumbnails.push(folderThumbnail);
+    }
+    const foldersList = new FoldersWithThumbnailListResDto(
+      rawFoldersList,
+      folderThumbnails,
+    );
+    return foldersList;
+  }
+
+  async getFolderThumbnail(folderId: number): Promise<string> {
+    return await this.folderPlaceRepository.getFolderThumbnail(folderId);
   }
 
   async getFolderByFolderId(folderId: number): Promise<FolderResDto> {

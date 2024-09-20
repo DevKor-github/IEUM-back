@@ -34,8 +34,8 @@ export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
   @Get('/')
-  async getFoldersList(@Req() req): Promise<FoldersListResDto> {
-    return await this.folderService.getFoldersList(req.user.id);
+  async getFoldersWithThumbnailList(@Req() req): Promise<FoldersListResDto> {
+    return await this.folderService.getFoldersWithThumbnailList(req.user.id);
   }
 
   @Post('/')

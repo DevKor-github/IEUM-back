@@ -4,7 +4,11 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
+import {
+  FolderResDto,
+  FoldersListResDto,
+  FoldersWithThumbnailListResDto,
+} from './dtos/folders-list.res.dto';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 import { MarkersListResDto } from 'src/place/dtos/markers-list-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
@@ -15,14 +19,14 @@ import { Folder } from './entities/folder.entity';
 type FolderMethodName = MethodNames<FolderController>;
 
 export const FolderDocs: Record<FolderMethodName, MethodDecorator[]> = {
-  getFoldersList: [
+  getFoldersWithThumbnailList: [
     ApiOperation({
       summary:
         '유저의 폴더 리스트 가져오기. type 0 = Default, type 1= Insta, type 2 = Custom',
       description:
-        '유저의 폴더 리스트를 가져옵니다. 디폴트 폴더를 제외한 나머지 폴더들을 가져옵니다. (내 보관함)',
+        '유저의 폴더 리스트를 가져옵니다. 디폴트 폴더를 제외한 나머지 폴더들을 가져옵니다. (내 보관함). 썸네일을 같이 가져옵니다',
     }),
-    ApiOkResponse({ type: FoldersListResDto }),
+    ApiOkResponse({ type: FoldersWithThumbnailListResDto }),
   ],
   createNewFolder: [
     ApiOperation({ summary: '새로운 폴더 생성하기' }),
