@@ -9,7 +9,13 @@ import {
 } from '@nestjs/common';
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import { ApiTags } from '@nestjs/swagger';
+import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
+import { KakaoCategoryMappingDocs } from './kakao-category-mapping.docs';
+import { KakaoCategoryMappingReqDto } from './dtos/kakao-category-mapping-req.dto';
 
+@ApplyDocs(KakaoCategoryMappingDocs)
+@ApiTags('카테고리 매핑 API')
 @Controller('kakao-category-mapping')
 export class KakaoCategoryMappingController {
   constructor(
@@ -28,21 +34,21 @@ export class KakaoCategoryMappingController {
 
   @Post('')
   async createKakaoCategoryMapping(
-    @Body() body: { ieumCategory: IeumCategory; kakaoCategory: string },
+    @Body() createKakaoCategoryMappingReq: KakaoCategoryMappingReqDto,
   ) {
     return await this.kakaoCategoryMappingService.createKakaoCategoryMapping(
-      body.ieumCategory,
-      body.kakaoCategory,
+      createKakaoCategoryMappingReq.ieumCategory,
+      createKakaoCategoryMappingReq.kakaoCategory,
     );
   }
 
   @Put('')
   async updateKakaoCategoryMapping(
-    @Body() body: { ieumCategory: IeumCategory; kakaoCategory: string },
+    @Body() updateKakaoCategoryMappingReq: KakaoCategoryMappingReqDto,
   ) {
     return await this.kakaoCategoryMappingService.updateKakaoCategoryMapping(
-      body.ieumCategory,
-      body.kakaoCategory,
+      updateKakaoCategoryMappingReq.ieumCategory,
+      updateKakaoCategoryMappingReq.kakaoCategory,
     );
   }
 

@@ -16,9 +16,11 @@ import { UserModule } from 'src/user/user.module';
 import { CollectionModule } from 'src/collection/collection.module';
 import { KakaoCategoryMapping } from './entities/kakao-category-mapping.entity';
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
+import { KakaoCategoryMappingRepository } from './repositories/kakao-category-mapping.repository';
+import { KakaoCategoryMappingController } from './kakao-category-mapping.controller';
 
 @Module({
-  controllers: [PlaceController],
+  controllers: [PlaceController, KakaoCategoryMappingController],
   providers: [
     PlaceService,
     PlaceRepository,
@@ -26,6 +28,8 @@ import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
     PlaceImageRepository,
     PlaceDetailRepository,
     S3Service,
+    KakaoCategoryMappingService,
+    KakaoCategoryMappingRepository,
   ],
   imports: [
     UserModule,

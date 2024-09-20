@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
-import { IeumCategories } from 'src/common/utils/category-mapper.util';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
 export class PlacesListReqDto {
   @ApiPropertyOptional({ nullable: true, description: '기본값 10' })
@@ -31,7 +31,7 @@ export class PlacesListReqDto {
   })
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   @IsOptional()
-  categoryList?: IeumCategories[] = [];
+  categoryList?: IeumCategory[] = [];
 }
 
 export class MarkersReqDto extends PickType(PlacesListReqDto, [
