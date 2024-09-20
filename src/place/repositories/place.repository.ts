@@ -84,10 +84,7 @@ export class PlaceRepository extends Repository<Place> {
       roadAddress: kakaoLocalSearchRes.road_address_name,
       kakaoId: kakaoLocalSearchRes.id,
       phone: kakaoLocalSearchRes.phone,
-      primaryCategory:
-        kakaoLocalSearchRes.category_group_name.length !== 0
-          ? kakaoLocalSearchRes.category_group_name
-          : kakaoLocalSearchRes.category_name.split(' > ')[1],
+      primaryCategory: kakaoLocalSearchRes.category_name.split(' > ').pop(),
       latitude: Number(kakaoLocalSearchRes.y),
       longitude: Number(kakaoLocalSearchRes.x),
     });
