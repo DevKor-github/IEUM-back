@@ -13,8 +13,11 @@ export class PlaceImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Place, (place) => place.placeImages)
-  place: Place;
+  @ManyToOne(() => Place, (place) => place.placeImages, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  place: Place | null;
 
   @RelationId((placeImage: PlaceImage) => placeImage.place)
   @Column()

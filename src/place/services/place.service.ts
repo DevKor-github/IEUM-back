@@ -1,4 +1,4 @@
-import { placeDetailsForTransferring } from './../common/interfaces/google-places-api.interface';
+import { placeDetailsForTransferring } from '../../common/interfaces/google-places-api.interface';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import {
@@ -9,20 +9,22 @@ import {
 import { PlaceRepository } from 'src/place/repositories/place.repository';
 import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
 import { Transactional } from 'typeorm-transactional';
-import { PlacePreviewResDto } from './dtos/place-preview-res.dto';
-import { PlaceDetailResDto } from './dtos/place-detail-res.dto';
+import { PlacePreviewResDto } from '../dtos/place-preview-res.dto';
+import { PlaceDetailResDto } from '../dtos/place-detail-res.dto';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
-import { S3Service } from 'src/place/s3.service';
-import { PlaceTagRepository } from './repositories/place-tag.repository';
-import { PlaceDetailRepository } from './repositories/place-detail.repository';
-import { CreatePlaceTagReqDto } from './dtos/create-place-tag-req.dto';
-import { Place } from './entities/place.entity';
+import { S3Service } from 'src/place/services/s3.service';
+import { PlaceTagRepository } from '../repositories/place-tag.repository';
+import { PlaceDetailRepository } from '../repositories/place-detail.repository';
+import { CreatePlaceTagReqDto } from '../dtos/create-place-tag-req.dto';
+import { Place } from '../entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
 import { CollectionService } from 'src/collection/collection.service';
 import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
+import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
 @Injectable()
 export class PlaceService {
@@ -34,6 +36,7 @@ export class PlaceService {
     private readonly collectionService: CollectionService,
     private readonly tagService: TagService,
     private readonly s3Service: S3Service,
+    private readonly kakaoCategoryMappingService: KakaoCategoryMappingService,
   ) {}
 
   // ---------외부 API 검색 - 카카오 ---------
@@ -186,8 +189,15 @@ export class PlaceService {
       userId,
       placeId,
     );
-
-    return new PlaceDetailResDto(placeDetail, placeImages, linkedCollections);
+    const ieumCategory = await this.getIeumCategoryByKakaoCategory(
+      placeDetail.primaryCategory,
+    );
+    return new PlaceDetailResDto(
+      placeDetail,
+      placeImages,
+      linkedCollections,
+      ieumCategory,
+    );
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
@@ -195,7 +205,10 @@ export class PlaceService {
     if (!place) {
       throwIeumException('PLACE_NOT_FOUND');
     }
-    return new PlacePreviewResDto(place);
+    const ieumCategory = await this.getIeumCategoryByKakaoCategory(
+      place.primaryCategory,
+    );
+    return new PlacePreviewResDto(place, ieumCategory);
   }
 
   async getPlacesByPlaceName(placeName: string): Promise<Place[]> {
@@ -290,5 +303,31 @@ export class PlaceService {
       googleMapsUri: googlePlacesApiPlaceDetailsResult.googleMapsUri ?? null,
     };
     return placeDetailsForTransferring;
+  }
+
+  async getIeumCategoryByKakaoCategory(
+    kakaoCategory: string,
+  ): Promise<IeumCategory> {
+    const result =
+      await this.kakaoCategoryMappingService.getIeumCategoryByKakaoCategory(
+        kakaoCategory,
+      );
+    if (!result) {
+      return IeumCategory.OTHERS;
+    }
+    return result.ieumCategory;
+  }
+
+  async getKakaoCategoriesByIeumCategory(
+    ieumCategory: IeumCategory,
+  ): Promise<string[]> {
+    const result =
+      await this.kakaoCategoryMappingService.getKakaoCategoriesByIeumCategory(
+        ieumCategory,
+      );
+    if (!result) {
+      return [];
+    }
+    return result.map((mapping) => mapping.kakaoCategory);
   }
 }

@@ -7,3 +7,7 @@ export interface FolderInfo {
   type: FolderType;
   placeCnt: number;
 }
+
+export interface FolderInfoWithThumbnail extends FolderInfo {
+  folderThumbnailUrl: string;
+}

@@ -23,9 +23,7 @@ export class CollectionPlace {
   @Column()
   collectionId: number;
 
-  @ManyToOne(() => Place, (place) => place.collectionPlaces, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Place, (place) => place.collectionPlaces)
   place: Place;
 
   @RelationId((collectionPlace: CollectionPlace) => collectionPlace.place)

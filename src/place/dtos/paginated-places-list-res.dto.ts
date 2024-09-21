@@ -7,6 +7,7 @@ import {
   cursorPaginateData,
   CursorPaginationMeta,
 } from 'src/common/utils/cursor-pagination.util';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
 export class PlaceInfoDto {
   @ApiProperty()
@@ -22,8 +23,7 @@ export class PlaceInfoDto {
   simplifiedAddress: string;
 
   @ApiProperty()
-  @IsString()
-  mappedCategory: string;
+  ieumCategory: IeumCategory;
 
   @ApiProperty()
   @IsString()
@@ -33,7 +33,7 @@ export class PlaceInfoDto {
     this.id = rawPlaceInfo.id;
     this.name = rawPlaceInfo.name;
     this.simplifiedAddress = addressSimplifier(rawPlaceInfo.address);
-    this.mappedCategory = categoryMapper(rawPlaceInfo.primary_category);
+    this.ieumCategory = rawPlaceInfo.ieumCategory;
     this.imageUrl = rawPlaceInfo.image_urls[0];
   }
 }

@@ -39,7 +39,7 @@ export class Preference {
   @Column()
   restOrActivity: number; //휴양~액티비티
 
-  @OneToOne(() => User, (user) => user.preference)
+  @OneToOne(() => User, (user) => user.preference, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 }

@@ -12,6 +12,19 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     super(FolderPlace, dataSource.createEntityManager());
   }
 
+  async getFolderThumbnail(folderId: number): Promise<string> {
+    const result = await this.createQueryBuilder('folderPlace')
+      .leftJoin('folderPlace.place', 'place')
+      .leftJoin('place.placeImages', 'placeImage')
+      .select('placeImage.url', 'url')
+      .where('folderPlace.folderId = :folderId', { folderId })
+      .andWhere('placeImage.url IS NOT NULL') // PlaceImage가 존재하는 경우만 필터링
+      .limit(1) // 첫 번째 결과만 가져옴
+      .getRawOne();
+
+    return result?.url;
+  }
+
   async getMarkers(
     userId: number,
     addressList: string[],

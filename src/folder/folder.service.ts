@@ -1,14 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
 import { FolderRepository } from 'src/folder/repositories/folder.repository';
-import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
+import {
+  FolderResDto,
+  FoldersListResDto,
+  FoldersWithThumbnailListResDto,
+} from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import {
   MarkerResDto,
   MarkersListResDto,
 } from 'src/place/dtos/markers-list-res.dto';
-import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import {
+  MarkersReqDto,
+  PlacesListReqDto,
+} from 'src/place/dtos/places-list-req.dto';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 
 import { Transactional } from 'typeorm-transactional';
@@ -17,7 +24,7 @@ import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CATEGORIES_MAPPING_KAKAO } from 'src/common/utils/category-mapper.util';
 import { Folder } from './entities/folder.entity';
-import { PlaceService } from 'src/place/place.service';
+import { PlaceService } from 'src/place/services/place.service';
 
 @Injectable()
 export class FolderService {
@@ -34,6 +41,26 @@ export class FolderService {
     const rawFoldersList = await this.folderRepository.getFoldersList(userId);
     const foldersList = new FoldersListResDto(rawFoldersList);
     return foldersList;
+  }
+
+  async getFoldersWithThumbnailList(
+    userId: number,
+  ): Promise<FoldersWithThumbnailListResDto> {
+    const rawFoldersList = await this.folderRepository.getFoldersList(userId);
+    const folderThumbnails = [];
+    for (const folder of rawFoldersList) {
+      const folderThumbnail = await this.getFolderThumbnail(folder.id);
+      folderThumbnails.push(folderThumbnail);
+    }
+    const foldersList = new FoldersWithThumbnailListResDto(
+      rawFoldersList,
+      folderThumbnails,
+    );
+    return foldersList;
+  }
+
+  async getFolderThumbnail(folderId: number): Promise<string> {
+    return await this.folderPlaceRepository.getFolderThumbnail(folderId);
   }
 
   async getFolderByFolderId(folderId: number): Promise<FolderResDto> {
@@ -89,8 +116,7 @@ export class FolderService {
 
   async getMarkers(
     userId: number,
-    addressList: string[],
-    categoryList: string[],
+    markersReqDto: MarkersReqDto,
     folderId?: number,
   ): Promise<MarkersListResDto> {
     if (folderId) {
@@ -102,15 +128,29 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
-    const mappedCategories = categoryList.reduce((acc, category) => {
-      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
-      return acc.concat(mappedCategory);
-    }, []);
+    const { addressList, categoryList } = markersReqDto;
+    const kakaoCategoriesForFiltering = await Promise.all(
+      categoryList.map(async (category) => {
+        return await this.placeService.getKakaoCategoriesByIeumCategory(
+          category,
+        );
+      }),
+    );
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
-      mappedCategories,
+      kakaoCategoriesForFiltering.flat(),
       folderId,
+    );
+
+    await Promise.all(
+      rawMarkersList.map(async (marker) => {
+        marker.ieumCategory =
+          await this.placeService.getIeumCategoryByKakaoCategory(
+            marker.primary_category,
+          );
+        return marker; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
     );
 
     return new MarkersListResDto(rawMarkersList);
@@ -131,17 +171,31 @@ export class FolderService {
       }
     }
     const { take, cursorId, addressList, categoryList } = placesListReqDto;
-    const mappedCategories = categoryList.reduce((acc, category) => {
-      const mappedCategory = CATEGORIES_MAPPING_KAKAO[category] || [];
-      return acc.concat(mappedCategory);
-    }, []);
+    const kakaoCategoriesForFiltering = await Promise.all(
+      categoryList.map(async (category) => {
+        return await this.placeService.getKakaoCategoriesByIeumCategory(
+          category,
+        );
+      }),
+    );
+
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
       take,
       addressList,
-      mappedCategories,
+      kakaoCategoriesForFiltering.flat(),
       cursorId,
       folderId,
+    );
+
+    await Promise.all(
+      rawPlacesInfoList.map(async (placeInfo) => {
+        placeInfo.ieumCategory =
+          await this.placeService.getIeumCategoryByKakaoCategory(
+            placeInfo.primary_category,
+          );
+        return placeInfo; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
     );
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }

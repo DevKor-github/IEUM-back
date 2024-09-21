@@ -43,7 +43,7 @@ export class PlaceDetail {
   @Column({ nullable: true })
   googleMapsUri: string;
 
-  @OneToOne(() => Place, (place) => place.placeDetail)
+  @OneToOne(() => Place, (place) => place.placeDetail, { onDelete: 'CASCADE' })
   @JoinColumn()
   place: Place;
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
+import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 import { RawMarker } from 'src/common/interfaces/raw-marker.interface';
 import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import {
@@ -15,7 +16,7 @@ export class MarkerResDto {
   name: string;
 
   @ApiProperty()
-  mappedCategory: string;
+  ieumCategory: IeumCategory;
 
   @ApiProperty()
   latitude: number; //위도
@@ -26,7 +27,7 @@ export class MarkerResDto {
   constructor(rawMarker: RawMarker) {
     this.id = rawMarker.id;
     this.name = rawMarker.name;
-    this.mappedCategory = categoryMapper(rawMarker.primary_category);
+    this.ieumCategory = rawMarker.ieumCategory;
     this.latitude = rawMarker.latitude;
     this.longitude = rawMarker.longitude;
   }

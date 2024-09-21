@@ -20,7 +20,7 @@ export class Folder {
   @Column()
   name: string;
 
-  @ManyToOne(() => User, (user) => user.folders)
+  @ManyToOne(() => User, (user) => user.folders, { onDelete: 'CASCADE' })
   user: User;
 
   @Exclude()
