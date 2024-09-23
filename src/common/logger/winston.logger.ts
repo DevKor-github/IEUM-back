@@ -2,7 +2,7 @@ import { utilities, WinstonModule } from 'nest-winston';
 import * as winstonDaily from 'winston-daily-rotate-file';
 import * as winston from 'winston';
 
-// const logDir = __dirname + '/../../logs'; // 로그 파일 저장 경로
+// const logDir = __dirname + '/../../log s'; // 로그 파일 저장 경로
 const logDir = '/app/logs';
 // console.log(__dirname);
 
