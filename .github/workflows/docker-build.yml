@@ -62,6 +62,7 @@ jobs:
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY}}" >> .env
           echo "SECRET_KEY_ACCESS=${{ secrets.SECRET_KEY_ACCESS}}" >> .env
           echo "SECRET_KEY_REFRESH=${{ secrets.SECRET_KEY_REFRESH}}" >> .env
+          echo "NODE_ENV=production" >> .env
 
           cat .env
       - name: Run Docker for main
@@ -104,7 +105,7 @@ jobs:
           echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL}}" >> .env
           echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL}}" >> .env
           echo "FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN}}" >> .env
-          echo "NEST_ENV=${{secrets.NEST_ENV}}" >> .env
+          echo "NODE_ENV=development" >> .env
 
           cat .env
       - name: Run Docker for develop
