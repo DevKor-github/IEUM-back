@@ -52,7 +52,7 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.midd
     TripModule,
     FolderModule,
     CollectionModule,
-    // CrawlingModule,
+    CrawlingModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
