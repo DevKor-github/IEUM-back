@@ -1,6 +1,9 @@
 import { utilities, WinstonModule } from 'nest-winston';
 import * as winstonDaily from 'winston-daily-rotate-file';
 import * as winston from 'winston';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 // const logDir = __dirname + '/../../log s'; // 로그 파일 저장 경로
 const isProd = process.env.NODE_ENV === 'production';
