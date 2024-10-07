@@ -11,17 +11,16 @@ import { TagModule } from './tag/tag.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TripModule } from './trip/trip.module';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { CustomResponseInterceptor } from './common/interceptors/custom-response.interceptor';
 import { FolderModule } from './folder/folder.module';
 import { CollectionModule } from './collection/collection.module';
-import { S3Service } from './place/s3.service';
+import { S3Service } from './place/services/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { ExporterService } from './exporter/exporter.service';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ExporterMiddleware } from './common/middleware/exporter.middleware';
+import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.middleware';
 
 @Module({
   imports: [
@@ -65,20 +64,15 @@ import { ExporterMiddleware } from './common/middleware/exporter.middleware';
     CrawlingModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CustomResponseInterceptor,
-    },
-    // { provide: APP_FILTER, useClass: CustomExceptionFilter },
-    S3Service,
-    ExporterService,
-  ],
+  providers: [AppService, S3Service, ExporterService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes('*')
+      .apply(WinstonLoggerMiddleware)
+      .forRoutes('*');
     consumer.apply(ExporterMiddleware).forRoutes('*');
   }
 }

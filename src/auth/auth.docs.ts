@@ -26,6 +26,8 @@ export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
   socialLogin: [
     ApiOperation({
       summary: '소셜 로그인',
+      description:
+        'OAuthPlatform: Kakao, Naver, Apple. FCMToken은 푸시 알림을 받는 기기의 토큰으로, 필수는 아닙니다',
     }),
     ApiCreatedResponse({
       description: '소셜 로그인 성공',

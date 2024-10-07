@@ -10,12 +10,11 @@ export class PlaceRepository extends Repository<Place> {
   }
 
   // ---------장소 검색---------
-  async getPlaceDetailById(placeId: number): Promise<any> {
+  async getPlaceDetailById(placeId: number): Promise<Place> {
     return await this.createQueryBuilder('place')
+      .leftJoinAndSelect('place.placeDetail', 'placeDetail')
       .leftJoinAndSelect('place.placeTags', 'placeTags')
       .leftJoinAndSelect('placeTags.tag', 'tag')
-      .leftJoinAndSelect('place.placeImages', 'placeImages')
-      // .leftJoinAndSelect('place.placeDetail', 'placeDetail')
       .where('place.id = :placeId', { placeId })
       .getOne();
   }
@@ -85,10 +84,7 @@ export class PlaceRepository extends Repository<Place> {
       roadAddress: kakaoLocalSearchRes.road_address_name,
       kakaoId: kakaoLocalSearchRes.id,
       phone: kakaoLocalSearchRes.phone,
-      primaryCategory:
-        kakaoLocalSearchRes.category_group_name.length !== 0
-          ? kakaoLocalSearchRes.category_group_name
-          : kakaoLocalSearchRes.category_name.split(' > ')[1],
+      primaryCategory: kakaoLocalSearchRes.category_name.split(' > ').pop(),
       latitude: Number(kakaoLocalSearchRes.y),
       longitude: Number(kakaoLocalSearchRes.x),
     });

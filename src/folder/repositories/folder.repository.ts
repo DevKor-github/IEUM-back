@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FolderType } from 'src/common/enums/folder-type.enum';
-import { RawFolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
+import { FolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Folder } from '../entities/folder.entity';
 
@@ -10,26 +10,58 @@ export class FolderRepository extends Repository<Folder> {
     super(Folder, dataSource.createEntityManager());
   }
 
-  async getFoldersList(userId: number): Promise<RawFolderInfo[]> {
-    const foldersList = await this.find({
-      where: { userId: userId },
-      relations: ['folderPlaces'],
-    });
+  async getFoldersList(userId: number): Promise<FolderInfo[]> {
+    const foldersList = await this.createQueryBuilder('folder')
+      .leftJoinAndSelect('folder.folderPlaces', 'folderPlaces')
+      .select([
+        'folder.id AS id',
+        'folder.userId AS user_id',
+        'folder.name AS name',
+        'folder.type AS type',
+        'COUNT(folderPlaces.id) AS places_cnt',
+      ])
+      .where('folder.userId = :userId', { userId })
+      .andWhere('folder.type != :type', { type: FolderType.Default })
+      .groupBy('folder.id')
+      .getRawMany();
 
     const foldersListWithPlaceCnt = foldersList.map((folder) => ({
       id: folder.id,
+      userId: folder.user_id,
       name: folder.name,
-      type: folder.type,
-      placeCnt: folder.folderPlaces.length,
+      type: parseInt(folder.type),
+      placeCnt: parseInt(folder.places_cnt),
     }));
+
     return foldersListWithPlaceCnt;
   }
 
-  async getFolderByFolderId(folderId: number) {
-    return await this.findOne({ where: { id: folderId } });
+  async getFolderByFolderId(folderId: number): Promise<FolderInfo> {
+    const folder = await this.createQueryBuilder('folder')
+      .leftJoinAndSelect('folder.folderPlaces', 'folderPlaces')
+      .select([
+        'folder.id AS id',
+        'folder.userId AS user_id',
+        'folder.name AS name',
+        'folder.type AS type',
+        'COUNT(folderPlaces.id) AS places_cnt',
+      ])
+      .where('folder.id = :folderId', { folderId })
+      .groupBy('folder.id')
+      .getRawOne();
+
+    const folderWithPlaceCnt = {
+      id: folder.id,
+      userId: folder.user_id,
+      name: folder.name,
+      type: parseInt(folder.type),
+      placeCnt: parseInt(folder.places_cnt),
+    };
+
+    return folderWithPlaceCnt;
   }
 
-  async getDefaultFolder(userId: number) {
+  async getDefaultFolder(userId: number): Promise<Folder> {
     let defaultFolder = await this.findOne({
       where: { userId: userId, type: FolderType.Default },
     });
@@ -48,7 +80,7 @@ export class FolderRepository extends Repository<Folder> {
     userId: number,
     folderName: string,
     folderType?: FolderType,
-  ) {
+  ): Promise<Folder> {
     if (folderType === FolderType.Default) {
       const folder = await this.findOne({
         where: { userId: userId, type: folderType, name: folderName },
@@ -72,6 +104,6 @@ export class FolderRepository extends Repository<Folder> {
   }
 
   async deleteFolder(folderId: number) {
-    await this.delete({ id: folderId });
+    await this.delete({ id: folderId }); //folder-place cascading 되어있는지 체크
   }
 }

@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
+  RelationId,
 } from 'typeorm';
 import { Place } from './place.entity';
 
@@ -12,28 +13,37 @@ export class PlaceDetail {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('jsonb', { nullable: true })
-  parkingOptions: JSON; //주차 여부.. json으로 저장?
+  @Column('varchar', { array: true, nullable: true })
+  weekDaysOpeningHours: string[]; //영업시간
 
   @Column({ nullable: true })
-  allowsDogs: string; //반려동물 동반 여부
+  freeParkingLot: boolean;
 
   @Column({ nullable: true })
-  goodForGroups: string; //단체석 여부
+  paidParkingLot: boolean;
 
   @Column({ nullable: true })
-  reservable: string; //포장 여부
+  freeStreetParking: boolean;
 
   @Column({ nullable: true })
-  delivery: string; //배달 여부
+  allowsDogs: boolean; //반려동물 동반 여부
 
   @Column({ nullable: true })
-  takeout: string; //예약 가능 여부
+  goodForGroups: boolean; //단체석 여부
 
-  @Column('varchar', { array: true })
-  opening: string[]; //영업시간
+  @Column({ nullable: true })
+  reservable: boolean; //포장 여부
 
-  @OneToOne(() => Place, (place) => place.placeDetail)
+  @Column({ nullable: true })
+  delivery: boolean; //배달 여부
+
+  @Column({ nullable: true })
+  takeout: boolean; //예약 가능 여부
+
+  @Column({ nullable: true })
+  googleMapsUri: string;
+
+  @OneToOne(() => Place, (place) => place.placeDetail, { onDelete: 'CASCADE' })
   @JoinColumn()
   place: Place;
 }

@@ -44,16 +44,16 @@ export class CollectionPlacesListResDto {
   @ApiProperty()
   meta: NormalListMeta<RawCollectionPlace>; //GET /collections에서 정의한 listMeta 재활용
   @ApiProperty({ type: [CollectionPlaceDto] })
-  data: CollectionPlaceDto[];
+  items: CollectionPlaceDto[];
 
   constructor(rawCollectionPlaces: RawCollectionPlace[], collectionId: number) {
-    const { meta, data } = createNormalList(
+    const { meta, items } = createNormalList(
       rawCollectionPlaces,
       (rawCollectionPlace) =>
         new CollectionPlaceDto(collectionId, rawCollectionPlace),
     );
 
     this.meta = meta;
-    this.data = data;
+    this.items = items;
   }
 }

@@ -34,8 +34,8 @@ export class FolderController {
   constructor(private readonly folderService: FolderService) {}
 
   @Get('/')
-  async getFoldersList(@Req() req): Promise<FoldersListResDto> {
-    return await this.folderService.getFoldersList(req.user.id);
+  async getFoldersWithThumbnailList(@Req() req): Promise<FoldersListResDto> {
+    return await this.folderService.getFoldersWithThumbnailList(req.user.id);
   }
 
   @Post('/')
@@ -90,11 +90,7 @@ export class FolderController {
     @Query() markersReqDto: MarkersReqDto,
     @Req() req,
   ): Promise<MarkersListResDto> {
-    return await this.folderService.getMarkers(
-      req.user.id,
-      markersReqDto.addressList,
-      markersReqDto.categoryList,
-    );
+    return await this.folderService.getMarkers(req.user.id, markersReqDto);
   }
 
   @Get('/:folderId/markers')
@@ -106,8 +102,7 @@ export class FolderController {
     console.log('controller before method', req.user);
     return await this.folderService.getMarkers(
       req.user.id,
-      markersReqDto.addressList,
-      markersReqDto.categoryList,
+      markersReqDto,
       folderId,
     );
   }

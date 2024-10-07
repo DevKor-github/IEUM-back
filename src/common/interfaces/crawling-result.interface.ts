@@ -1,7 +1,7 @@
 import { CollectionType } from '../enums/collection-type.enum';
 
 export interface CrawlingResult {
-  userId: number;
+  userId: string;
   collectionType: CollectionType;
   link: string;
   content: string;

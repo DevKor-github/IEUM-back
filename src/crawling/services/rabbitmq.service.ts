@@ -3,25 +3,26 @@ import {
   defaultNackErrorHandler,
   RabbitSubscribe,
 } from '@golevelup/nestjs-rabbitmq';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SlackAlertService } from './slack-alert.service';
-import { CollectionService } from 'src/collection/collection.service';
-import { CrawlingCollectionReqDto } from './dtos/crawling-collection-req.dto';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { CrawlingResult } from 'src/common/interfaces/crawling-result.interface';
 import { FirebaseService } from './firebase.service';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { CrawlingService } from './crawling.service';
+import { CreateCollectionReqDto } from 'src/collection/dtos/create-collection-req.dto';
+import { CrawlingCollectionReqDto } from '../dtos/crawling-collection-req.dto';
 
 @Injectable()
-export class CrawlingService {
+export class RabbitMqService {
   private MAX_RETRY_COUNT = 3;
-  private readonly logger = new Logger(CrawlingService.name);
+  private readonly logger = new Logger(RabbitMqService.name);
 
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly slackAlertService: SlackAlertService,
-    private readonly collectionService: CollectionService,
+    private readonly crawlingService: CrawlingService,
     private readonly firebaseService: FirebaseService,
   ) {}
 
@@ -59,9 +60,17 @@ export class CrawlingService {
     errorHandler: defaultNackErrorHandler,
   })
   async handlingCrawlingResult(msg: CrawlingResult, amqpMsg: any) {
-    const collection = await this.collectionService.createCollection(msg);
+    const createCollectionReq = new CreateCollectionReqDto();
+    createCollectionReq.userId = parseInt(msg.userId);
+    createCollectionReq.link = msg.link;
+    createCollectionReq.collectionType = msg.collectionType;
+    createCollectionReq.placeKeywords = msg.placeKeywords;
+    createCollectionReq.content = msg.content;
+
+    const collection =
+      await this.crawlingService.createCollection(createCollectionReq);
     await this.firebaseService.sendPushNotification(
-      msg.userId,
+      createCollectionReq.userId,
       'SUCCESS',
       collection.id,
     );

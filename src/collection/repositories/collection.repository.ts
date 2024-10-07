@@ -4,6 +4,7 @@ import { COLLECTIONS_TAKE } from 'src/common/constants/pagination.constant';
 import { RawCollection } from 'src/common/interfaces/raw-collection.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { Collection } from '../entities/collection.entity';
+import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 
 @Injectable()
 export class CollectionRepository extends Repository<Collection> {
@@ -66,6 +67,18 @@ export class CollectionRepository extends Repository<Collection> {
       });
     }
     return await query.getRawMany();
+  }
+
+  async getLinkedCollections(
+    userId: number,
+    placeId: number,
+  ): Promise<Collection[]> {
+    return await this.createQueryBuilder('collection')
+      .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
+      .where('collection.userId = :userId', { userId })
+      .andWhere('collectionPlaces.placeId = :placeId', { placeId })
+      .orderBy('collection.id', 'DESC')
+      .getMany();
   }
 
   async createCollection(

@@ -10,19 +10,25 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class PlaceImage {
-  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Place, (place) => place.placeImages)
-  place: Place;
+  @ManyToOne(() => Place, (place) => place.placeImages, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  place: Place | null;
 
-  @ApiProperty()
   @RelationId((placeImage: PlaceImage) => placeImage.place)
   @Column()
   placeId: number;
 
-  @ApiProperty()
   @Column()
   url: string;
+
+  @Column({ nullable: true })
+  authorName: string;
+
+  @Column({ nullable: true })
+  authorUri: string;
 }

@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { FirstLoginReqDto, FirstLoginResDto } from './dtos/first-login.dto';
+import { UpdateUserProfileReqDto } from './dtos/update-user-profile-req.dto';
 import { UserService } from './user.service';
 import { NickNameDuplicateCheckResDto } from './dtos/nickname-dupliate-check-res.dto';
 import { ProfileResDto } from './dtos/profile-res.dto';
@@ -32,20 +32,20 @@ export class UserController {
 
   //사용자 프로필 정보 불러오기.
   @UseAccessGuard()
-  @Get('/me/profile')
+  @Get('/me')
   async getUserProfile(@Req() req): Promise<ProfileResDto> {
     return await this.userService.getUserProfile(req.user.id);
   }
 
   //최초 로그인시 유저 정보 받아오기.
   @UseAccessGuard()
-  @Put('/me/info')
-  async fillUserInfoAndPreference(
-    @Body() firstLoginReqDto: FirstLoginReqDto,
+  @Put('/me')
+  async updateUserProfile(
+    @Body() updateUserProfileReqDto: UpdateUserProfileReqDto,
     @Req() req,
-  ): Promise<FirstLoginResDto> {
-    return await this.userService.fillUserInfoAndPreference(
-      firstLoginReqDto,
+  ): Promise<ProfileResDto> {
+    return await this.userService.updateUserProfile(
+      updateUserProfileReqDto,
       req.user.id,
     );
   }

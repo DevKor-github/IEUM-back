@@ -1,26 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { FolderPlaceRepository } from 'src/folder/repositories/folder-place.repository';
 import { FolderRepository } from 'src/folder/repositories/folder.repository';
-import { FolderResDto, FoldersListResDto } from './dtos/folders-list.res.dto';
+import {
+  FolderResDto,
+  FoldersListResDto,
+  FoldersWithThumbnailListResDto,
+} from './dtos/folders-list.res.dto';
 import { CreateFolderReqDto } from './dtos/create-folder-req.dto';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import {
   MarkerResDto,
   MarkersListResDto,
 } from 'src/place/dtos/markers-list-res.dto';
-import { PlacesListReqDto } from 'src/place/dtos/places-list-req.dto';
+import {
+  MarkersReqDto,
+  PlacesListReqDto,
+} from 'src/place/dtos/places-list-req.dto';
 import { CreateFolderPlacesReqDto } from './dtos/create-folder-place-req.dto';
 
 import { Transactional } from 'typeorm-transactional';
 import { CreateFolderPlaceResDto } from './dtos/create-folder-place-res.dto';
 import { PlacesListResDto } from 'src/place/dtos/paginated-places-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { CATEGORIES_MAPPING_KAKAO } from 'src/common/utils/category-mapper.util';
+import { Folder } from './entities/folder.entity';
+import { PlaceService } from 'src/place/services/place.service';
 
 @Injectable()
 export class FolderService {
+  private readonly logger = new Logger(FolderService.name);
+
   constructor(
     private readonly folderRepository: FolderRepository,
     private readonly folderPlaceRepository: FolderPlaceRepository,
+    private readonly placeService: PlaceService,
   ) {}
 
   // ------폴더 관련 메서드------
@@ -30,20 +43,46 @@ export class FolderService {
     return foldersList;
   }
 
-  async getFolderByFolderId(folderId: number) {
-    return await this.folderRepository.getFolderByFolderId(folderId);
+  async getFoldersWithThumbnailList(
+    userId: number,
+  ): Promise<FoldersWithThumbnailListResDto> {
+    const rawFoldersList = await this.folderRepository.getFoldersList(userId);
+    const folderThumbnails = [];
+    for (const folder of rawFoldersList) {
+      const folderThumbnail = await this.getFolderThumbnail(folder.id);
+      folderThumbnails.push(folderThumbnail);
+    }
+    const foldersList = new FoldersWithThumbnailListResDto(
+      rawFoldersList,
+      folderThumbnails,
+    );
+    return foldersList;
   }
 
-  async getDefaultFolder(userId: number) {
-    return await this.folderRepository.getDefaultFolder(userId);
+  async getFolderThumbnail(folderId: number): Promise<string> {
+    return await this.folderPlaceRepository.getFolderThumbnail(folderId);
   }
 
-  async createNewFolder(userId: number, folderName: string) {
-    return await this.folderRepository.createFolder(userId, folderName);
+  async getFolderByFolderId(folderId: number): Promise<FolderResDto> {
+    const folder = await this.folderRepository.getFolderByFolderId(folderId);
+    return new FolderResDto(folder);
+  }
+
+  async getDefaultFolder(userId: number): Promise<FolderResDto> {
+    const defaultFolder = await this.folderRepository.getDefaultFolder(userId);
+    const folderWithFolderPlaces =
+      await this.folderRepository.getFolderByFolderId(defaultFolder.id);
+    return new FolderResDto(folderWithFolderPlaces);
+  }
+
+  async createNewFolder(userId: number, folderName: string): Promise<Folder> {
+    const folder = await this.folderRepository.createFolder(userId, folderName);
+    return folder;
   }
 
   async changeFolderName(userId: number, folderId: number, folderName: string) {
-    const targetFolder = await this.getFolderByFolderId(folderId);
+    const targetFolder =
+      await this.folderRepository.getFolderByFolderId(folderId);
     if (!targetFolder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -77,8 +116,7 @@ export class FolderService {
 
   async getMarkers(
     userId: number,
-    addressList: string[],
-    categoryList: string[],
+    markersReqDto: MarkersReqDto,
     folderId?: number,
   ): Promise<MarkersListResDto> {
     if (folderId) {
@@ -90,11 +128,29 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
+    const { addressList, categoryList } = markersReqDto;
+    const kakaoCategoriesForFiltering = await Promise.all(
+      categoryList.map(async (category) => {
+        return await this.placeService.getKakaoCategoriesByIeumCategory(
+          category,
+        );
+      }),
+    );
     const rawMarkersList = await this.folderPlaceRepository.getMarkers(
       userId,
       addressList,
-      categoryList,
+      kakaoCategoriesForFiltering.flat(),
       folderId,
+    );
+
+    await Promise.all(
+      rawMarkersList.map(async (marker) => {
+        marker.ieumCategory =
+          await this.placeService.getIeumCategoryByKakaoCategory(
+            marker.primary_category,
+          );
+        return marker; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
     );
 
     return new MarkersListResDto(rawMarkersList);
@@ -114,10 +170,32 @@ export class FolderService {
         throwIeumException('FORBIDDEN_FOLDER');
       }
     }
+    const { take, cursorId, addressList, categoryList } = placesListReqDto;
+    const kakaoCategoriesForFiltering = await Promise.all(
+      categoryList.map(async (category) => {
+        return await this.placeService.getKakaoCategoriesByIeumCategory(
+          category,
+        );
+      }),
+    );
+
     const rawPlacesInfoList = await this.folderPlaceRepository.getPlacesList(
       userId,
-      placesListReqDto,
+      take,
+      addressList,
+      kakaoCategoriesForFiltering.flat(),
+      cursorId,
       folderId,
+    );
+
+    await Promise.all(
+      rawPlacesInfoList.map(async (placeInfo) => {
+        placeInfo.ieumCategory =
+          await this.placeService.getIeumCategoryByKakaoCategory(
+            placeInfo.primary_category,
+          );
+        return placeInfo; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
     );
     return new PlacesListResDto(rawPlacesInfoList, placesListReqDto.take);
   }
@@ -130,17 +208,31 @@ export class FolderService {
   ) {
     const placeIds = createFolderPlacesReqDto.placeIds;
 
-    const folder = await this.getFolderByFolderId(folderId);
+    const folder = await this.folderRepository.getFolderByFolderId(folderId);
     if (!folder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
     if (folder.userId !== userId) {
       throwIeumException('FORBIDDEN_FOLDER');
     }
-    //placeId에 대한 유효성 체크가 가능한가?
-    placeIds.forEach(async (placeId) => {
-      await this.folderPlaceRepository.createFolderPlace(folderId, placeId);
-    });
+    //placeId에 대한 유효성 체크가 가능한가? -> placeService 주입.
+    //
+    await Promise.all(
+      placeIds.map(async (placeId) => {
+        const place = await this.placeService.getPlaceDetailById(placeId); // 내부에서 유효성 체크 일어난다.
+        if (!place.placeDetail) {
+          // 만약 이 내부에서 fail이 일어나면 어떻게 처리할 것인가?
+          try {
+            await this.placeService.createPlaceDetailByGooglePlacesApi(placeId);
+          } catch (error) {
+            this.logger.error(
+              `Failed to create PlaceDetail By placeId : ${placeId}`,
+            );
+          }
+        }
+        await this.folderPlaceRepository.createFolderPlace(folderId, placeId);
+      }),
+    );
   }
 
   @Transactional()
@@ -182,6 +274,7 @@ export class FolderService {
     );
   }
 
+  @Transactional()
   async deleteFolderPlaces(
     userId: number,
     folderId: number,
@@ -189,7 +282,6 @@ export class FolderService {
   ) {
     const targetFolder =
       await this.folderRepository.getFolderByFolderId(folderId);
-
     if (!targetFolder) {
       throwIeumException('FOLDER_NOT_FOUND');
     }
@@ -198,11 +290,18 @@ export class FolderService {
     }
 
     if (targetFolder.type == FolderType.Default) {
-      //해당 유저의 소유가 아닌 폴더-장소들도 다 삭제되는 거 아닌가?
-      return await this.folderPlaceRepository.deleteAllFolderPlaces(placeIds);
+      //디폴트 폴더라면, 나머지 폴더에서도 전부 삭제
+      const foldersList = await this.folderRepository.getFoldersList(userId);
+      foldersList.forEach(async (folder) => {
+        await this.folderPlaceRepository.deleteFolderPlaces(
+          folder.id,
+          placeIds,
+        );
+      });
     }
 
     return await this.folderPlaceRepository.deleteFolderPlaces(
+      //해당 폴더에서 삭제
       folderId,
       placeIds,
     );

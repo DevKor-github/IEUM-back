@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CollectionPlaceRepository } from 'src/collection/repositories/collection-place.repository';
 import { CollectionRepository } from 'src/collection/repositories/collection.repository';
 import { CreateCollectionReqDto } from './dtos/create-collection-req.dto';
-import { PlaceService } from 'src/place/place.service';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { Collection } from './entities/collection.entity';
 
 @Injectable()
 export class CollectionService {
@@ -14,46 +14,7 @@ export class CollectionService {
   constructor(
     private readonly collectionRepository: CollectionRepository,
     private readonly collectionPlaceRepository: CollectionPlaceRepository,
-    private readonly placeService: PlaceService,
   ) {}
-
-  @Transactional() //Transactional의 정상적인 작동 의심.
-  async createCollection(createCollectionReq: CreateCollectionReqDto) {
-    try {
-      if (
-        //중복이면 그대로 리턴해주는게 맞지 않은가? 고민해보기
-        await this.collectionRepository.isDuplicatedCollection(
-          createCollectionReq.userId,
-          createCollectionReq.link,
-        )
-      ) {
-        throwIeumException('CONFLICTED_COLLECTION');
-      }
-
-      const collection = await this.collectionRepository.createCollection(
-        createCollectionReq.userId,
-        createCollectionReq.collectionType,
-        createCollectionReq.link,
-        createCollectionReq.content,
-      );
-
-      await Promise.all(
-        createCollectionReq.placeKeywords.map(async (placeKeyword) => {
-          const place =
-            await this.placeService.createPlaceByKakaoLocal(placeKeyword);
-          await this.collectionPlaceRepository.createCollectionPlace(
-            collection.id,
-            place.id,
-            placeKeyword,
-          );
-        }),
-      );
-      return collection;
-    } catch (e) {
-      this.logger.error(e.message, e.stack);
-      throwIeumException('CREATE_COLLECTION_FAILED');
-    }
-  }
 
   async getUnviewedCollections(
     userId: number,
@@ -73,6 +34,16 @@ export class CollectionService {
     return new CollectionsListResDto(viewedCollections);
   }
 
+  async getLinkedCollections(
+    userId: number,
+    placeId: number,
+  ): Promise<Collection[]> {
+    return await this.collectionRepository.getLinkedCollections(
+      userId,
+      placeId,
+    );
+  }
+
   @Transactional()
   async getCollectionPlaces(userId: number, collectionId: number) {
     const collection = await this.collectionRepository.findOne({
@@ -86,5 +57,40 @@ export class CollectionService {
       await this.collectionPlaceRepository.getCollectionPlaces(collectionId);
     await this.collectionRepository.updateIsViewed(userId, collectionId);
     return new CollectionPlacesListResDto(collectionPlaces, collectionId);
+  }
+
+  async createCollectionWithDuplicationCheck(
+    createCollectionReq: CreateCollectionReqDto,
+  ): Promise<Collection> {
+    if (
+      //중복이면 그대로 리턴해주는게 맞지 않은가? 고민해보기
+      await this.collectionRepository.isDuplicatedCollection(
+        createCollectionReq.userId,
+        createCollectionReq.link,
+      )
+    ) {
+      throwIeumException('CONFLICTED_COLLECTION');
+    }
+
+    const collection = await this.collectionRepository.createCollection(
+      createCollectionReq.userId,
+      createCollectionReq.collectionType,
+      createCollectionReq.link,
+      createCollectionReq.content,
+    );
+
+    return collection;
+  }
+
+  async createCollectionPlace(
+    collectionId: number,
+    placeId: number,
+    placeKeyword: string,
+  ) {
+    await this.collectionPlaceRepository.createCollectionPlace(
+      collectionId,
+      placeId,
+      placeKeyword,
+    );
   }
 }

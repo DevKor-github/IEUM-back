@@ -13,14 +13,16 @@ export class FolderTag {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Folder, (folder) => folder.folderTags)
+  @ManyToOne(() => Folder, (folder) => folder.folderTags, {
+    onDelete: 'CASCADE',
+  })
   folder: Folder;
 
   @RelationId((folderTag: FolderTag) => folderTag.folder)
   @Column()
   folderId: number;
 
-  @ManyToOne(() => Tag, (tag) => tag.folderTags)
+  @ManyToOne(() => Tag, (tag) => tag.folderTags, { onDelete: 'CASCADE' })
   tag: Tag;
 
   @RelationId((folderTag: FolderTag) => folderTag.tag)

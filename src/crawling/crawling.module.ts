@@ -2,11 +2,15 @@ import { CollectionModule } from '../collection/collection.module';
 import { Module } from '@nestjs/common';
 
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { CrawlingService } from './crawling.service';
-import { SlackAlertService } from './slack-alert.service';
+
 import { CrawlingController } from './crawling.controller';
-import { FirebaseService } from './firebase.service';
+
 import { UserModule } from 'src/user/user.module';
+import { PlaceModule } from 'src/place/place.module';
+import { CrawlingService } from './services/crawling.service';
+import { FirebaseService } from './services/firebase.service';
+import { RabbitMqService } from './services/rabbitmq.service';
+import { SlackAlertService } from './services/slack-alert.service';
 
 @Module({
   imports: [
@@ -36,9 +40,15 @@ import { UserModule } from 'src/user/user.module';
       }),
     }),
     CollectionModule,
+    PlaceModule,
     UserModule,
   ],
-  providers: [CrawlingService, SlackAlertService, FirebaseService],
+  providers: [
+    RabbitMqService,
+    SlackAlertService,
+    FirebaseService,
+    CrawlingService,
+  ],
   controllers: [CrawlingController],
 })
 export class CrawlingModule {}
