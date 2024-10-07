@@ -17,6 +17,9 @@ import { S3Service } from './place/services/s3.service';
 import { CrawlingModule } from './crawling/crawling.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { ExporterService } from './exporter/exporter.service';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { ExporterMiddleware } from './common/middleware/exporter.middleware';
 import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.middleware';
 
 @Module({
@@ -44,6 +47,12 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.midd
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    PrometheusModule.register({
+      path: '/metrics',
+      defaultMetrics: {
+        enabled: true,
+      },
+    }),
     JwtModule.register({}),
     PlaceModule,
     TagModule,
@@ -55,7 +64,7 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.midd
     CrawlingModule,
   ],
   controllers: [AppController],
-  providers: [AppService, S3Service],
+  providers: [AppService, S3Service, ExporterService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -64,5 +73,6 @@ export class AppModule implements NestModule {
       .forRoutes('*')
       .apply(WinstonLoggerMiddleware)
       .forRoutes('*');
+    consumer.apply(ExporterMiddleware).forRoutes('*');
   }
 }
