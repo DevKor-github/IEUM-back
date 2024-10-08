@@ -21,6 +21,9 @@ export class CollectionDto {
   content: string;
 
   @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
   collectionPlacesCount: number;
 
   @ApiProperty()
@@ -31,6 +34,7 @@ export class CollectionDto {
     this.collectionType = CollectionType[rawCollection.collection_type];
     this.link = rawCollection.link;
     this.content = rawCollection.content;
+    this.createdAt = rawCollection.created_at;
     this.collectionPlacesCount = Number(rawCollection.collection_places_count);
     this.savedCollectionPlacesCount = Number(
       rawCollection.saved_collection_places_count,

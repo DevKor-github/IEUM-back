@@ -24,6 +24,7 @@ export class CollectionRepository extends Repository<Collection> {
         'collection.collection_type AS collection_type',
         'collection.content AS content',
         'collection.isViewed AS is_viewed',
+        'collection.createdAt AS created_at',
         'COUNT(collectionPlaces.id) as collection_places_count',
         `SUM(CASE WHEN collectionPlaces.isSaved = true THEN 1 ELSE 0 END) as saved_collection_places_count`,
       ])
@@ -53,6 +54,7 @@ export class CollectionRepository extends Repository<Collection> {
         'collection.collection_type AS collection_type',
         'collection.content AS content',
         'collection.isViewed AS is_viewed',
+        'collection.createdAt AS created_at',
         'COUNT(collectionPlaces.id) as collection_places_count',
       ])
       .where('collection.userId = :userId', { userId })

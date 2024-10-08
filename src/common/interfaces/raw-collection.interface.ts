@@ -7,6 +7,7 @@ export interface RawCollection extends RawDataForCursorPagination {
   collection_type: CollectionType;
   content: string;
   is_viewed: boolean;
+  created_at: Date;
   collection_places_count: number;
   saved_collection_places_count: number;
 }

@@ -5,7 +5,7 @@ interface ieumExceptionRes {
   statusCode: number;
 }
 
-export const ieumExceptions = {
+export const ieumExceptions: Record<string, ieumExceptionRes> = {
   //1xxx : Auth
   INVALID_REFRESH_TOKEN: {
     name: 'INVALID_REFRESH_TOKEN',
