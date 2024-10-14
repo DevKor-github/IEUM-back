@@ -10,7 +10,6 @@ import { FolderType } from 'src/common/enums/folder-type.enum';
 
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { Folder } from './entities/folder.entity';
-import { PlaceService } from 'src/place/services/place.service';
 import { FolderInfo } from 'src/common/interfaces/raw-folder-info.interface';
 
 @Injectable()
@@ -20,7 +19,6 @@ export class FolderService {
   constructor(
     private readonly folderRepository: FolderRepository,
     private readonly folderPlaceRepository: FolderPlaceRepository,
-    private readonly placeService: PlaceService,
   ) {}
 
   // ------폴더 관련 메서드------

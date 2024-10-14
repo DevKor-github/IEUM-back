@@ -63,18 +63,6 @@ export class PlaceController {
   //   return await this.placeService.getGooglePlacesApiPlaceDetailsById(placeId);
   // }
 
-  @UseNicknameCheckingAccessGuard()
-  @Get('/:placeId')
-  async getPlaceDetailWithImagesAndCollectionsById(
-    @Req() req,
-    @Param('placeId') placeId: string,
-  ) {
-    return await this.placeService.getPlaceDetailWithImagesAndCollectionsById(
-      req.user.id,
-      parseInt(placeId),
-    );
-  }
-
   @Post('/:placeId/detail')
   async createPlaceDetailByGoogle(@Param('placeId') placeId: string) {
     return await this.placeService.createPlaceDetailByGooglePlacesApi(
