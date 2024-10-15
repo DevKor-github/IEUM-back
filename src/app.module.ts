@@ -21,6 +21,9 @@ import { ExporterService } from './exporter/exporter.service';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ExporterMiddleware } from './common/middleware/exporter.middleware';
 import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.middleware';
+import { CollectionComplexModule } from './collection-complex/collection-complex.module';
+import { PlaceComplexModule } from './place-complex/place-complex.module';
+import { FolderComplexModule } from './folder-complex/folder-complex.module';
 
 @Module({
   imports: [
@@ -62,6 +65,9 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.midd
     FolderModule,
     CollectionModule,
     CrawlingModule,
+    CollectionComplexModule,
+    PlaceComplexModule,
+    FolderComplexModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service, ExporterService],

@@ -12,6 +12,16 @@ export class FolderPlaceRepository extends Repository<FolderPlace> {
     super(FolderPlace, dataSource.createEntityManager());
   }
 
+  async checkFolderPlaceExistence(
+    folderId: number,
+    placeId: number,
+  ): Promise<boolean> {
+    const folderPlace = await this.findOne({
+      where: { folderId: folderId, placeId: placeId },
+    });
+    return !!folderPlace;
+  }
+
   async getFolderThumbnail(folderId: number): Promise<string> {
     const result = await this.createQueryBuilder('folderPlace')
       .leftJoin('folderPlace.place', 'place')

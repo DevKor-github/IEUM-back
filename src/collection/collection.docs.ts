@@ -1,16 +1,8 @@
 import { MethodNames } from 'src/common/types/method-names.type';
 import { CollectionController } from './collection.controller';
-import { UseGuards } from '@nestjs/common';
-import { AccessGuard } from 'src/auth/guards/access.guard';
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiOperation,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
-import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 
 type CollectionMethodName = MethodNames<CollectionController>;

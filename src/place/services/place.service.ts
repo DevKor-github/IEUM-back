@@ -10,7 +10,6 @@ import { PlaceRepository } from 'src/place/repositories/place.repository';
 import { PlaceImageRepository } from 'src/place/repositories/place-image.repository';
 import { Transactional } from 'typeorm-transactional';
 import { PlacePreviewResDto } from '../dtos/place-preview-res.dto';
-import { PlaceDetailResDto } from '../dtos/place-detail-res.dto';
 import { TagService } from 'src/tag/tag.service';
 import { TagType } from 'src/common/enums/tag-type.enum';
 import { S3Service } from 'src/place/services/s3.service';
@@ -21,8 +20,6 @@ import { Place } from '../entities/place.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
-import { CollectionService } from 'src/collection/collection.service';
-import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 
@@ -33,7 +30,6 @@ export class PlaceService {
     private readonly placeTagRepository: PlaceTagRepository,
     private readonly placeImageRepository: PlaceImageRepository,
     private readonly placeDetailRepository: PlaceDetailRepository,
-    private readonly collectionService: CollectionService,
     private readonly tagService: TagService,
     private readonly s3Service: S3Service,
     private readonly kakaoCategoryMappingService: KakaoCategoryMappingService,
@@ -137,6 +133,9 @@ export class PlaceService {
       placeDetailsForTransferring,
     );
   }
+  async getPlaceImagesByPlaceId(placeId: number) {
+    return await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
+  }
 
   async uploadImageToS3ByUri(photoUri: string) {
     return await this.s3Service.getAndUploadFromUri(photoUri);
@@ -170,34 +169,21 @@ export class PlaceService {
   }
 
   // ---------내부 DB 검색---------
+  async getPlaceByIdWithCheckingStatus(placeId: number) {
+    const place = await this.placeRepository.getPlaceByPlaceId(placeId);
+    if (!place) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
+
+    return place;
+  }
+
   async getPlaceDetailById(placeId: number): Promise<Place> {
     const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
     if (!placeDetail) {
       throwIeumException('PLACE_NOT_FOUND');
     }
     return placeDetail;
-  }
-
-  async getPlaceDetailWithImagesAndCollectionsById(
-    userId: number,
-    placeId: number,
-  ): Promise<PlaceDetailResDto> {
-    const placeDetail = await this.getPlaceDetailById(placeId);
-    const placeImages =
-      await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
-    const linkedCollections = await this.collectionService.getLinkedCollections(
-      userId,
-      placeId,
-    );
-    const ieumCategory = await this.getIeumCategoryByKakaoCategory(
-      placeDetail.primaryCategory,
-    );
-    return new PlaceDetailResDto(
-      placeDetail,
-      placeImages,
-      linkedCollections,
-      ieumCategory,
-    );
   }
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {

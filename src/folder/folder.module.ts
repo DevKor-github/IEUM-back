@@ -16,7 +16,6 @@ import { PlaceModule } from 'src/place/place.module';
   imports: [
     TypeOrmModule.forFeature([Folder, FolderPlace, FolderTag]),
     UserModule,
-    PlaceModule,
   ],
   exports: [FolderService],
 })

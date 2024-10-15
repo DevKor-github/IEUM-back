@@ -3,6 +3,7 @@ import { IsArray } from 'class-validator';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import {
   FolderInfo,
+  FolderInfoWithPlaceExistence,
   FolderInfoWithThumbnail,
 } from 'src/common/interfaces/raw-folder-info.interface';
 import {
@@ -39,6 +40,16 @@ export class FolderWithThumbnailResDto extends FolderResDto {
   constructor(folderInfoWithThumbnail: FolderInfoWithThumbnail) {
     super(folderInfoWithThumbnail);
     this.thumbnailUrl = folderInfoWithThumbnail.folderThumbnailUrl;
+  }
+}
+
+export class FolderWithPlaceExistenceResDto extends FolderResDto {
+  @ApiProperty()
+  placeExistence: boolean;
+
+  constructor(folderInfo: FolderInfoWithPlaceExistence) {
+    super(folderInfo);
+    this.placeExistence = folderInfo.placeExistence;
   }
 }
 export class FoldersListResDto {
@@ -79,6 +90,24 @@ export class FoldersWithThumbnailListResDto {
       foldersInfoWithThumbnailList,
       (folderInfoWithThumbnail) =>
         new FolderWithThumbnailResDto(folderInfoWithThumbnail),
+    );
+    this.meta = meta;
+    this.items = items;
+  }
+}
+
+export class FoldersWithPlaceExistenceListResDto {
+  @ApiProperty()
+  meta: NormalListMeta<FolderInfo>;
+
+  @ApiProperty({ type: [FolderWithPlaceExistenceResDto] })
+  @IsArray()
+  items: FolderWithPlaceExistenceResDto[];
+
+  constructor(foldersInfoList: FolderInfoWithPlaceExistence[]) {
+    const { meta, items } = createNormalList(
+      foldersInfoList,
+      (folderInfo) => new FolderWithPlaceExistenceResDto(folderInfo),
     );
     this.meta = meta;
     this.items = items;

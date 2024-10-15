@@ -44,6 +44,21 @@ export class CollectionService {
     );
   }
 
+  async getCollectionPlaceDetail(
+    userId: number,
+    collectionId: number,
+    collectionPlaceId: number,
+  ) {
+    //특정 collectionPlaceId에 대해서 유저의 폴더 목록 가져와서, 각 폴더에 대해 collectionPlaceId의 포함 여부 확인
+    //collectionPlaceId가 포
+    // const collectionPlace =
+    //   await this.collectionPlaceRepository.getCollectionPlaceDetail(
+    //     collectionPlaceId,
+    //   );
+    // await this.collectionRepository.updateIsViewed(userId, collectionId);
+    // return collectionPlace;
+  }
+
   @Transactional()
   async getCollectionPlaces(userId: number, collectionId: number) {
     const collection = await this.collectionRepository.findOne({
