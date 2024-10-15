@@ -22,6 +22,10 @@ export class FolderService {
   ) {}
 
   // ------폴더 관련 메서드------
+  async getAllFoldersList(userId: number): Promise<FolderInfo[]> {
+    return await this.folderRepository.getFoldersList(userId, true);
+  }
+
   async getRawFoldersList(userId: number) {
     return await this.folderRepository.getFoldersList(userId);
   }
@@ -72,6 +76,10 @@ export class FolderService {
     return folder;
   }
 
+  async getRawDefaultFolder(userId: number) {
+    return await this.folderRepository.getDefaultFolder(userId);
+  }
+
   async getDefaultFolder(userId: number): Promise<FolderResDto> {
     const defaultFolder = await this.folderRepository.getDefaultFolder(userId);
     const folderWithFolderPlaces =
@@ -118,6 +126,15 @@ export class FolderService {
 
   // ------폴더-장소 관련 메서드------
 
+  async checkFolderPlaceExistence(
+    folderId: number,
+    placeId: number,
+  ): Promise<boolean> {
+    return await this.folderPlaceRepository.checkFolderPlaceExistence(
+      folderId,
+      placeId,
+    );
+  }
   async getRawMarkers(
     userId: number,
     addressList: string[],

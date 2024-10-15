@@ -10,6 +10,11 @@ export class PlaceRepository extends Repository<Place> {
   }
 
   // ---------장소 검색---------
+  async getPlaceByPlaceId(placeId: number): Promise<Place> {
+    return await this.createQueryBuilder('place')
+      .where('place.id = :placeId', { placeId })
+      .getOne();
+  }
   async getPlaceDetailById(placeId: number): Promise<Place> {
     return await this.createQueryBuilder('place')
       .leftJoinAndSelect('place.placeDetail', 'placeDetail')

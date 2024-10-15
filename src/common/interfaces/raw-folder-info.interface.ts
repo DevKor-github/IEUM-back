@@ -11,3 +11,7 @@ export interface FolderInfo {
 export interface FolderInfoWithThumbnail extends FolderInfo {
   folderThumbnailUrl: string;
 }
+
+export interface FolderInfoWithPlaceExistence extends FolderInfo {
+  placeExistence: boolean;
+}

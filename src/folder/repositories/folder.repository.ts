@@ -10,8 +10,11 @@ export class FolderRepository extends Repository<Folder> {
     super(Folder, dataSource.createEntityManager());
   }
 
-  async getFoldersList(userId: number): Promise<FolderInfo[]> {
-    const foldersList = await this.createQueryBuilder('folder')
+  async getFoldersList(
+    userId: number,
+    withDefaultFolder: boolean = false,
+  ): Promise<FolderInfo[]> {
+    const query = await this.createQueryBuilder('folder')
       .leftJoinAndSelect('folder.folderPlaces', 'folderPlaces')
       .select([
         'folder.id AS id',
@@ -21,9 +24,13 @@ export class FolderRepository extends Repository<Folder> {
         'COUNT(folderPlaces.id) AS places_cnt',
       ])
       .where('folder.userId = :userId', { userId })
-      .andWhere('folder.type != :type', { type: FolderType.Default })
-      .groupBy('folder.id')
-      .getRawMany();
+      .groupBy('folder.id');
+
+    if (!withDefaultFolder) {
+      query.andWhere('folder.type != :type', { type: FolderType.Default });
+    }
+
+    const foldersList = await query.getRawMany();
 
     const foldersListWithPlaceCnt = foldersList.map((folder) => ({
       id: folder.id,

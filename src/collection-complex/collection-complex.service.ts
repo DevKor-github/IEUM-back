@@ -10,6 +10,4 @@ export class CollectionComplexService {
     private readonly folderService: FolderService,
     private readonly placeService: PlaceService,
   ) {}
-
-  async getCollectionPlaceDetail(collectionPlaceId: number) {}
 }

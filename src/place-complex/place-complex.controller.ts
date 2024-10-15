@@ -22,4 +22,16 @@ export class PlaceComplexController {
       parseInt(placeId),
     );
   }
+
+  @UseNicknameCheckingAccessGuard()
+  @Get('/:placeId/folders')
+  async getFoldersListWithPlaceExistence(
+    @Req() req,
+    @Param('placeId') placeId: string,
+  ) {
+    return await this.placeComplexService.getFoldersListWithPlaceExistence(
+      req.user.id,
+      parseInt(placeId),
+    );
+  }
 }

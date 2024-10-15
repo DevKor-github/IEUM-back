@@ -169,6 +169,15 @@ export class PlaceService {
   }
 
   // ---------내부 DB 검색---------
+  async getPlaceByIdWithCheckingStatus(placeId: number) {
+    const place = await this.placeRepository.getPlaceByPlaceId(placeId);
+    if (!place) {
+      throwIeumException('PLACE_NOT_FOUND');
+    }
+
+    return place;
+  }
+
   async getPlaceDetailById(placeId: number): Promise<Place> {
     const placeDetail = await this.placeRepository.getPlaceDetailById(placeId);
     if (!placeDetail) {
