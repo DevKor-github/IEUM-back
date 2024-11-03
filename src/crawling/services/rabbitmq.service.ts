@@ -30,11 +30,26 @@ export class RabbitMqService {
     userId: number,
     crawlingCollectionReqDto: CrawlingCollectionReqDto,
   ) {
-    const link = crawlingCollectionReqDto.link;
+    console.log(userId);
+    console.log(crawlingCollectionReqDto);
+    //https://m.blog.naver.com/981jeju/223562563053
+    //https://m.blog.naver.com/PostView.naver?blogId=981jeju&logNo=223562563053&proxyReferer=https:%2F%2Fm.search.naver.com%2F&trackingCode=nx
+    let link = crawlingCollectionReqDto.link;
     let collectionType;
     switch (true) {
       case link.includes('blog.naver.com'):
         collectionType = CollectionType.NAVER;
+        const url = new URL(link);
+        const params = url.searchParams;
+
+        if (params.has('proxyReferer')) {
+          const blogId = params.get('blogId');
+          const logNo = params.get('logNo');
+
+          if (blogId && logNo) {
+            link = `https://blog.naver.com/${blogId}/${logNo}`;
+          }
+        }
         break;
       case link.includes('instagram.com'):
         collectionType = CollectionType.INSTAGRAM;
@@ -42,6 +57,7 @@ export class RabbitMqService {
       default:
         throwIeumException('UNSUPPORTED_LINK');
     }
+    console.log(link);
     await this.amqpConnection.publish('ieum_exchange', 'request', {
       userId,
       link,

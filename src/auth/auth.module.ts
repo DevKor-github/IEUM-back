@@ -10,6 +10,6 @@ import { NicknameCheckingAccessGuard } from './guards/nickname-check-access.guar
   imports: [UserModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService],
-  exports: [],
+  exports: [JwtModule],
 })
 export class AuthModule {}

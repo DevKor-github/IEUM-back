@@ -8,6 +8,7 @@ import { CrawlingDocs } from './crawling.docs';
 import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { FirebaseService } from './services/firebase.service';
 import { RabbitMqService } from './services/rabbitmq.service';
+import { UseRefreshGuard } from 'src/auth/guards/refresh.guard';
 
 @ApplyDocs(CrawlingDocs)
 @ApiTags('크롤링 API')
@@ -18,7 +19,7 @@ export class CrawlingController {
     private readonly firebaseService: FirebaseService,
   ) {}
 
-  @UseNicknameCheckingAccessGuard()
+  @UseRefreshGuard()
   @Post('')
   async requestCrawling(@Req() req, @Body() body: CrawlingCollectionReqDto) {
     return await this.rabbitMqService.requestCrawling(req.user.id, body);
