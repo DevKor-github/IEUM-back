@@ -24,10 +24,12 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston.logger.midd
 import { CollectionComplexModule } from './collection-complex/collection-complex.module';
 import { PlaceComplexModule } from './place-complex/place-complex.module';
 import { FolderComplexModule } from './folder-complex/folder-complex.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'postgres',

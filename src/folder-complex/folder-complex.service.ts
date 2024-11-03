@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FolderType } from 'src/common/enums/folder-type.enum';
+import { CreateFolderPlaceEvent } from 'src/common/events/create-folder-place-event';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CreateFolderPlacesReqDto } from 'src/folder/dtos/create-folder-place-req.dto';
 import { CreateFolderPlaceResDto } from 'src/folder/dtos/create-folder-place-res.dto';
@@ -19,6 +21,7 @@ export class FolderComplexService {
   constructor(
     private readonly folderService: FolderService,
     private readonly placeService: PlaceService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async getMarkers(
@@ -120,6 +123,11 @@ export class FolderComplexService {
         if (!place.placeDetail) {
           // 만약 이 내부에서 fail이 일어나면 어떻게 처리할 것인가?
           try {
+            // 여기서 이벤트 발생으로 처리하기
+            // this.eventEmitter.emit(
+            //   'createFolderPlace',
+            //   new CreateFolderPlaceEvent(userId, place.id, folderId),
+            // );
             await this.placeService.createPlaceDetailByGooglePlacesApi(placeId);
           } catch (error) {
             this.logger.error(
