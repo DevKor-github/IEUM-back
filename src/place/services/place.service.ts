@@ -22,6 +22,7 @@ import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import { PlacesListNoPaginationResDto } from '../dtos/paginated-places-list-res.dto';
 
 @Injectable()
 export class PlaceService {
@@ -195,6 +196,29 @@ export class PlaceService {
       place.primaryCategory,
     );
     return new PlacePreviewResDto(place, ieumCategory);
+  }
+
+  async getPlacePreviewInfoByIds(
+    placeIds: number[],
+  ): Promise<PlacesListNoPaginationResDto> {
+    //빈 배열 처리.
+    if (placeIds.length == 0) {
+      return new PlacesListNoPaginationResDto([]);
+    }
+
+    const rawPlacesInfoList =
+      await this.placeRepository.getPlacePreviewInfoByIds(placeIds);
+
+    await Promise.all(
+      rawPlacesInfoList.map(async (placeInfo) => {
+        placeInfo.ieumCategory = await this.getIeumCategoryByKakaoCategory(
+          placeInfo.primary_category,
+        );
+        return placeInfo; // 이 반환값은 실제로 사용되지 않지만, 명시적으로 표현
+      }),
+    );
+
+    return new PlacesListNoPaginationResDto(rawPlacesInfoList);
   }
 
   async getPlacesByPlaceName(placeName: string): Promise<Place[]> {
