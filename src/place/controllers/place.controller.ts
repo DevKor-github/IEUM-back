@@ -37,6 +37,15 @@ export class PlaceController {
     return await this.placeService.searchKakaoLocalByKeyword(keyword);
   }
 
+  @Post('/kakao/csvFile')
+  @UseInterceptors(FileInterceptor('csvFile'))
+  async createKakaoPlacesFromCsvFile(
+    @UploadedFile() csvFile: Express.Multer.File,
+  ) {
+    const fileBuffer = csvFile.buffer; // 메모리에서 파일 버퍼 읽기
+    return await this.placeService.createKakaoPlacesFromCsvFile(fileBuffer);
+  }
+
   @Get('/google')
   async getGooglePlacesByText(@Query('text') text: string) {
     return await this.placeService.getGooglePlacesApiByText(text);
