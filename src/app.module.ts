@@ -64,7 +64,7 @@ import { FolderComplexModule } from './folder-complex/folder-complex.module';
     TripModule,
     FolderModule,
     CollectionModule,
-    CrawlingModule,
+    //CrawlingModule,
     CollectionComplexModule,
     PlaceComplexModule,
     FolderComplexModule,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Place } from 'src/place/entities/place.entity';
 import { DataSource, Repository } from 'typeorm';
 import { KakaoLocalSearchRes } from 'src/common/interfaces/kakao-local-search-res.interface';
+import { RawPlaceInfo } from 'src/common/interfaces/raw-place-info.interface';
 
 @Injectable()
 export class PlaceRepository extends Repository<Place> {
@@ -45,6 +46,26 @@ export class PlaceRepository extends Repository<Place> {
       .getOne();
 
     return placePreviewInfo;
+  }
+
+  async getPlacePreviewInfoByIds(placeIds: number[]): Promise<RawPlaceInfo[]> {
+    const placePreviewInfoList = await this.createQueryBuilder('place')
+      .leftJoinAndSelect('place.placeTags', 'placeTag')
+      .leftJoinAndSelect('placeTag.tag', 'tag')
+      .leftJoinAndSelect('place.placeImages', 'placeImage')
+      .select([
+        'place.id AS id',
+        'place.name AS name',
+        'place.address AS address',
+        'place.primary_category AS primary_category ',
+        'ARRAY_AGG(placeImage.url ORDER BY placeImage.id DESC) AS "image_urls"',
+      ])
+      .where('place.id IN (:...placeIds)', { placeIds })
+      .groupBy('place.id')
+      .orderBy('place.id', 'DESC')
+      .getRawMany();
+
+    return placePreviewInfoList;
   }
 
   async getPlacesByPlaceName(placeName: string): Promise<Place[]> {

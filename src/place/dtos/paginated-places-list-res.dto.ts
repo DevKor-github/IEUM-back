@@ -8,6 +8,10 @@ import {
   CursorPaginationMeta,
 } from 'src/common/utils/cursor-pagination.util';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import {
+  createNormalList,
+  NormalListMeta,
+} from 'src/common/utils/normal-list.util';
 
 export class PlaceInfoDto {
   @ApiProperty()
@@ -50,6 +54,23 @@ export class PlacesListResDto {
     const { meta, items } = cursorPaginateData(
       rawData,
       take,
+      (item) => new PlaceInfoDto(item),
+    );
+
+    this.meta = meta;
+    this.items = items;
+  }
+}
+
+export class PlacesListNoPaginationResDto {
+  @ApiProperty()
+  meta: NormalListMeta<RawPlaceInfo>; //GET /collections에서 정의한 listMeta 재활용
+  @ApiProperty({ type: [PlaceInfoDto] })
+  items: PlaceInfoDto[];
+
+  constructor(rawData: RawPlaceInfo[]) {
+    const { meta, items } = createNormalList(
+      rawData,
       (item) => new PlaceInfoDto(item),
     );
 
