@@ -22,6 +22,8 @@ import { addressSimplifier } from 'src/common/utils/address-simplifier.util';
 import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-places-api.interface';
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import { Readable } from 'stream';
+import * as readline from 'readline';
 
 @Injectable()
 export class PlaceService {
@@ -91,6 +93,23 @@ export class PlaceService {
 
     return placePhoto.data;
   }
+
+  // --------- csv 파일 처리 메서드 --------
+
+  async createKakaoPlacesFromCsvFile(fileBuffer: Buffer): Promise<void> {
+    const stream = Readable.from(fileBuffer); // 파일 버퍼를 스트림으로 변환
+
+    const rl = readline.createInterface({
+      input: stream,
+      crlfDelay: Infinity, // 윈도우에서도 줄바꿈을 제대로 인식하도록 설정
+    });
+
+    for await (const line of rl) {
+      this.createPlaceByKakaoLocal(line);
+      // console.log(line);
+    }
+  }
+
   // --------- 주요 메서드 ---------
   @Transactional()
   async createPlaceDetailByGooglePlacesApi(placeId: number) {
