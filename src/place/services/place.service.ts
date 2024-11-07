@@ -23,6 +23,7 @@ import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-pla
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 import { PlacesListNoPaginationResDto } from '../dtos/paginated-places-list-res.dto';
+import { RecommendedPlacesListReqDto } from '../dtos/rec-places-list-req.dto';
 
 @Injectable()
 export class PlaceService {
@@ -92,6 +93,14 @@ export class PlaceService {
 
     return placePhoto.data;
   }
+
+  // --------- 외부 API 호출: AI 서버 ---------
+  async getRecommendedPlacesIds(
+    recommendedPlacesListReqDto: RecommendedPlacesListReqDto,
+  ) {}
+
+  async getRecommendedSchedule() {}
+
   // --------- 주요 메서드 ---------
   @Transactional()
   async createPlaceDetailByGooglePlacesApi(placeId: number) {
