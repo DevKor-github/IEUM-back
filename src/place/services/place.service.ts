@@ -105,7 +105,7 @@ export class PlaceService {
     });
 
     for await (const line of rl) {
-      this.createPlaceByKakaoLocal(line);
+      await this.createPlaceByKakaoLocal(line);
       // console.log(line);
     }
   }
