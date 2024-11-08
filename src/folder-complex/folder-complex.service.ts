@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FolderType } from 'src/common/enums/folder-type.enum';
+import { CreateFolderPlaceEvent } from 'src/common/events/create-folder-place-event';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { CreateFolderPlacesReqDto } from 'src/folder/dtos/create-folder-place-req.dto';
 import { CreateFolderPlaceResDto } from 'src/folder/dtos/create-folder-place-res.dto';
@@ -19,6 +21,7 @@ export class FolderComplexService {
   constructor(
     private readonly folderService: FolderService,
     private readonly placeService: PlaceService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async getMarkers(
@@ -116,18 +119,12 @@ export class FolderComplexService {
     //
     await Promise.all(
       placeIds.map(async (placeId) => {
-        const place = await this.placeService.getPlaceDetailById(placeId); // 내부에서 유효성 체크 일어난다.
-        if (!place.placeDetail) {
-          // 만약 이 내부에서 fail이 일어나면 어떻게 처리할 것인가?
-          try {
-            await this.placeService.createPlaceDetailByGooglePlacesApi(placeId);
-          } catch (error) {
-            this.logger.error(
-              `Failed to create PlaceDetail By placeId : ${placeId}`,
-            );
-          }
-        }
         await this.folderService.createFolderPlace(folderId, placeId);
+        this.eventEmitter.emit(
+          'createFolderPlace',
+          new CreateFolderPlaceEvent(userId, placeId, folderId),
+        );
+        this.logger.log(`${placeId} 처리 끝, 이벤트 발생`);
       }),
     );
   }
