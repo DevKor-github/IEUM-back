@@ -1,5 +1,5 @@
 import { placeDetailsForTransferring } from '../../common/interfaces/google-places-api.interface';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import {
   SEARCH_BY_ID_URL,
@@ -27,6 +27,7 @@ import { CreateFolderPlaceEvent } from 'src/common/events/create-folder-place-ev
 
 @Injectable()
 export class PlaceService {
+  private readonly logger = new Logger(PlaceService.name);
   constructor(
     private readonly placeRepository: PlaceRepository,
     private readonly placeTagRepository: PlaceTagRepository,
@@ -96,7 +97,9 @@ export class PlaceService {
   // --------- 주요 메서드 ---------
   @OnEvent('createFolderPlace') // event : CreateFolderPlaceEvent 받아서.
   async handleCreateFolderPlaceEvent(event: CreateFolderPlaceEvent) {
+    this.logger.log(`${event.placeId} 처리 시작, 이벤트 처리 시작`);
     await this.createPlaceDetailByGooglePlacesApi(event.placeId);
+    this.logger.log(`${event.placeId} 처리 끝, 이벤트 처리 끝`);
   }
 
   @Transactional()

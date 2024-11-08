@@ -124,6 +124,7 @@ export class FolderComplexService {
           'createFolderPlace',
           new CreateFolderPlaceEvent(userId, placeId, folderId),
         );
+        this.logger.log(`${placeId} 처리 끝, 이벤트 발생`);
       }),
     );
   }
