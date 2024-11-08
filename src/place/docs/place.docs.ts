@@ -32,6 +32,28 @@ export const PlaceDocs: Record<PlaceMethodName, MethodDecorator[]> = {
     ApiOperation({ summary: '키워드로 카카오 Place API 검색' }),
     ApiQuery({ name: 'keyword', type: 'string' }),
   ],
+  createKakaoPlacesFromCsvFile: [
+    ApiOperation({
+      summary: 'csv 파일에서 키워드 추출해 카카로 Place API 검색 및 DB저장.',
+    }),
+    ApiOkResponse({
+      description: '카카오 Place API 검색 및 DB 저장 성공.',
+    }),
+    ApiIeumExceptionRes(['KAKAO_LOCAL_SEARCH_RESULT_NOT_FOUND']),
+    ApiConsumes('multipart/form-data'),
+    ApiBody({
+      description: 'upload UTF-8 format csv file',
+      schema: {
+        type: 'object',
+        properties: {
+          csvFile: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    }),
+  ],
   createPlaceImage: [
     ApiOperation({ summary: '장소 이미지 수동 업로드' }),
     ApiCreatedResponse({
