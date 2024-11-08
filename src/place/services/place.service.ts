@@ -23,6 +23,7 @@ import { GooglePlacesApiPlaceDetailsRes } from 'src/common/interfaces/google-pla
 import { KakaoCategoryMappingService } from './kakao-category-mapping.service';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
 import { OnEvent } from '@nestjs/event-emitter';
+import { CreateFolderPlaceEvent } from 'src/common/events/create-folder-place-event';
 
 @Injectable()
 export class PlaceService {
@@ -93,7 +94,11 @@ export class PlaceService {
     return placePhoto.data;
   }
   // --------- 주요 메서드 ---------
-  // @OnEvent('createFolderPlace') // event : CreateFolderPlaceEvent 받아서.
+  @OnEvent('createFolderPlace') // event : CreateFolderPlaceEvent 받아서.
+  async handleCreateFolderPlaceEvent(event: CreateFolderPlaceEvent) {
+    await this.createPlaceDetailByGooglePlacesApi(event.placeId);
+  }
+
   @Transactional()
   async createPlaceDetailByGooglePlacesApi(placeId: number) {
     //DB 내부의 장소 Entity 가져오기

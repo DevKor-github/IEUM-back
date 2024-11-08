@@ -119,23 +119,11 @@ export class FolderComplexService {
     //
     await Promise.all(
       placeIds.map(async (placeId) => {
-        const place = await this.placeService.getPlaceDetailById(placeId); // 내부에서 유효성 체크 일어난다.
-        if (!place.placeDetail) {
-          // 만약 이 내부에서 fail이 일어나면 어떻게 처리할 것인가?
-          try {
-            // 여기서 이벤트 발생으로 처리하기
-            // this.eventEmitter.emit(
-            //   'createFolderPlace',
-            //   new CreateFolderPlaceEvent(userId, place.id, folderId),
-            // );
-            await this.placeService.createPlaceDetailByGooglePlacesApi(placeId);
-          } catch (error) {
-            this.logger.error(
-              `Failed to create PlaceDetail By placeId : ${placeId}`,
-            );
-          }
-        }
         await this.folderService.createFolderPlace(folderId, placeId);
+        this.eventEmitter.emit(
+          'createFolderPlace',
+          new CreateFolderPlaceEvent(userId, placeId, folderId),
+        );
       }),
     );
   }
