@@ -23,12 +23,16 @@ export class RelatedCollectionDto {
   @ApiProperty()
   createdAt: Date;
 
+  @ApiProperty()
+  isSaved: boolean;
+
   constructor(rawCollection: RawRelatedCollection) {
     this.id = rawCollection.id;
     this.collectionType = CollectionType[rawCollection.collection_type];
     this.link = rawCollection.link;
     this.content = rawCollection.content;
     this.createdAt = rawCollection.created_at;
+    this.isSaved = rawCollection.is_saved;
   }
 }
 

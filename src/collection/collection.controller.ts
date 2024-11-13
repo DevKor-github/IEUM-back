@@ -6,6 +6,7 @@ import { CollectionDocs } from './collection.docs';
 import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { RelatedCollectionsListResDto } from './dtos/paginated-related-collections-list-res.dto';
 import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
+import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 
 @UseNicknameCheckingAccessGuard()
 @ApplyDocs(CollectionDocs)
@@ -18,7 +19,7 @@ export class CollectionController {
   async getUnviewedCollections(
     @Req() req,
     @Query('cursorId') cursorId?: number,
-  ): Promise<RelatedCollectionsListResDto> {
+  ): Promise<CollectionsListResDto> {
     return await this.collectionService.getUnviewedCollections(
       req.user.id,
       cursorId,
@@ -29,7 +30,7 @@ export class CollectionController {
   async getViewedCollection(
     @Req() req,
     @Query('cursorId') cursorId?: number,
-  ): Promise<RelatedCollectionsListResDto> {
+  ): Promise<CollectionsListResDto> {
     return await this.collectionService.getViewedCollections(
       req.user.id,
       cursorId,
