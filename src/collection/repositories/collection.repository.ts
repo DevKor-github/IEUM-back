@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { COLLECTIONS_TAKE } from 'src/common/constants/pagination.constant';
-import { RawCollection } from 'src/common/interfaces/raw-collection.interface';
+import { RawRelatedCollection } from 'src/common/interfaces/raw-related-collection.interface';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { Collection } from '../entities/collection.entity';
-import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
+import { RawCollectionWithPlaces } from 'src/common/interfaces/raw-collection-with-places.interface';
+import { RawCollection } from 'src/common/interfaces/raw-collection.interface';
 
 @Injectable()
 export class CollectionRepository extends Repository<Collection> {
@@ -12,7 +13,7 @@ export class CollectionRepository extends Repository<Collection> {
     super(Collection, dataSource.createEntityManager());
   }
 
-  async getViewedCollections(
+  async getViewedCollectionsByUserId(
     userId: number,
     cursorId: number,
   ): Promise<RawCollection[]> {
@@ -42,7 +43,7 @@ export class CollectionRepository extends Repository<Collection> {
     return await query.getRawMany();
   }
 
-  async getUnviewedCollections(
+  async getUnviewedCollectionsByUserId(
     userId: number,
     cursorId: number,
   ): Promise<RawCollection[]> {
@@ -71,16 +72,58 @@ export class CollectionRepository extends Repository<Collection> {
     return await query.getRawMany();
   }
 
-  async getLinkedCollections(
+  async getMyRelatedCollectionsByPlaceId(
     userId: number,
     placeId: number,
-  ): Promise<Collection[]> {
-    return await this.createQueryBuilder('collection')
+    cursorId?: number,
+  ): Promise<RawRelatedCollection[]> {
+    const query = this.createQueryBuilder('collection')
       .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
+      .select([
+        'collection.id AS id',
+        'collection.link AS link',
+        'collection.collection_type AS collection_type',
+        'collection.content AS content',
+        'collection.createdAt AS created_at',
+      ])
       .where('collection.userId = :userId', { userId })
       .andWhere('collectionPlaces.placeId = :placeId', { placeId })
+      .groupBy('collection.id')
       .orderBy('collection.id', 'DESC')
-      .getMany();
+      .limit(COLLECTIONS_TAKE + 1);
+
+    if (cursorId) {
+      query.andWhere('collection.id < :cursorId', { cursorId });
+    }
+
+    return await query.getRawMany();
+  }
+
+  async getOthersRelatedCollectionsByPlaceId(
+    userId: number,
+    placeId: number,
+    cursorId?: number,
+  ): Promise<RawRelatedCollection[]> {
+    const query = this.createQueryBuilder('collection')
+      .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
+      .select([
+        'collection.id AS id',
+        'collection.link AS link',
+        'collection.collection_type AS collection_type',
+        'collection.content AS content',
+        'collection.createdAt AS created_at',
+      ])
+      .where('collection.userId != :userId', { userId })
+      .andWhere('collectionPlaces.placeId = :placeId', { placeId })
+      .groupBy('collection.id')
+      .orderBy('collection.id', 'DESC')
+      .limit(COLLECTIONS_TAKE + 1);
+
+    if (cursorId) {
+      query.andWhere('collection.id < :cursorId', { cursorId });
+    }
+
+    return await query.getRawMany();
   }
 
   async createCollection(

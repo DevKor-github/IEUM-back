@@ -4,6 +4,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { CollectionDocs } from './collection.docs';
 import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
+import { RelatedCollectionsListResDto } from './dtos/paginated-related-collections-list-res.dto';
+import { CollectionPlacesListResDto } from './dtos/collection-places-list-res.dto';
 
 @UseNicknameCheckingAccessGuard()
 @ApplyDocs(CollectionDocs)
@@ -16,7 +18,7 @@ export class CollectionController {
   async getUnviewedCollections(
     @Req() req,
     @Query('cursorId') cursorId?: number,
-  ) {
+  ): Promise<RelatedCollectionsListResDto> {
     return await this.collectionService.getUnviewedCollections(
       req.user.id,
       cursorId,
@@ -24,7 +26,10 @@ export class CollectionController {
   }
 
   @Get('viewed')
-  async getViewedCollection(@Req() req, @Query('cursorId') cursorId?: number) {
+  async getViewedCollection(
+    @Req() req,
+    @Query('cursorId') cursorId?: number,
+  ): Promise<RelatedCollectionsListResDto> {
     return await this.collectionService.getViewedCollections(
       req.user.id,
       cursorId,
@@ -35,7 +40,7 @@ export class CollectionController {
   async getCollectionPlaces(
     @Req() req,
     @Param('collectionId') collectionId: number,
-  ) {
+  ): Promise<CollectionPlacesListResDto> {
     return await this.collectionService.getCollectionPlaces(
       req.user.id,
       collectionId,

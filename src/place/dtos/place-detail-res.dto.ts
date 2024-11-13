@@ -4,7 +4,6 @@ import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/place/entities/place.entity';
 import { PlaceImage } from '../entities/place-image.entity';
-import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 import { Collection } from 'src/collection/entities/collection.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
@@ -28,7 +27,7 @@ export class PlaceImageRes {
   }
 }
 
-export class LinkedCollectionRes {
+export class RelatedCollectionRes {
   @ApiProperty()
   id: number;
 
@@ -50,13 +49,13 @@ export class LinkedCollectionRes {
   @ApiProperty({ description: '조회 시간' })
   updatedAt: Date;
 
-  constructor(linkedCollection: Collection) {
-    this.id = linkedCollection.id;
-    this.link = linkedCollection.link;
-    this.collectionType = linkedCollection.collectionType;
-    this.content = linkedCollection.content;
-    this.isViewed = linkedCollection.isViewed;
-    this.updatedAt = linkedCollection.updatedAt;
+  constructor(relatedCollection: Collection) {
+    this.id = relatedCollection.id;
+    this.link = relatedCollection.link;
+    this.collectionType = relatedCollection.collectionType;
+    this.content = relatedCollection.content;
+    this.isViewed = relatedCollection.isViewed;
+    this.updatedAt = relatedCollection.updatedAt;
   }
 }
 export class PlaceDetailResDto {
@@ -130,8 +129,11 @@ export class PlaceDetailResDto {
   @ApiProperty()
   roadAddress: string;
 
-  @ApiProperty({ type: LinkedCollectionRes, isArray: true })
-  linkedCollections: LinkedCollectionRes[];
+  @ApiProperty({ type: RelatedCollectionRes, isArray: true })
+  myRelatedCollections: RelatedCollectionRes[];
+
+  @ApiProperty({ type: RelatedCollectionRes, isArray: true })
+  othersRelatedCollections: RelatedCollectionRes[];
 
   @ApiProperty({ type: PlaceImageRes, isArray: true })
   placeImages: PlaceImageRes[];
@@ -139,7 +141,8 @@ export class PlaceDetailResDto {
   constructor(
     place: Place,
     placeImages: PlaceImage[],
-    linkedCollections: Collection[],
+    myRelatedCollections: Collection[],
+    othersRelatedCollections: Collection[],
     ieumCategory: IeumCategory,
   ) {
     const { locationTags, categoryTags, customTags } = tagParser(
