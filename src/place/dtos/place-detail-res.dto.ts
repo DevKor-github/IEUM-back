@@ -104,7 +104,7 @@ export class PlaceDetailResDto {
   roadAddress: string;
 
   @ApiProperty({ type: RelatedCollectionDto, isArray: true })
-  myRelatedCollections: RelatedCollectionDto[];
+  linkedCollections: RelatedCollectionDto[];
 
   @ApiProperty({ type: PlaceImageRes, isArray: true })
   placeImages: PlaceImageRes[];
@@ -144,7 +144,7 @@ export class PlaceDetailResDto {
     this.ieumCategory = ieumCategory;
     this.address = place.address;
     this.roadAddress = place.roadAddress;
-    this.myRelatedCollections = myRelatedCollections;
+    this.linkedCollections = myRelatedCollections;
     this.isSaved = myRelatedCollections.some(
       (myRelatedCollection) => myRelatedCollection.isSaved,
     );

@@ -141,6 +141,7 @@ export class FolderComplexService {
       createFolderPlacesReqDto,
       defaultFolder.id,
     );
+    // 여기서
 
     return new CreateFolderPlaceResDto(createFolderPlacesReqDto.placeIds);
   }
