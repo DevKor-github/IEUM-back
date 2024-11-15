@@ -47,4 +47,16 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
       placeKeyword: placeKeyword,
     });
   }
+
+  async updateCollectionPlaceIsSavedToTrue(
+    collectionId: number,
+    placeId: number,
+  ) {
+    const collectionPlace = await this.findOne({
+      where: { collectionId, placeId },
+    });
+
+    collectionPlace.isSaved = true;
+    await this.save(collectionPlace);
+  }
 }

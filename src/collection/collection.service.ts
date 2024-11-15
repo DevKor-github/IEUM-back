@@ -134,4 +134,18 @@ export class CollectionService {
       placeKeyword,
     );
   }
+
+  async updateCollectionPlacesIsSavedToTrue(
+    collectionId: number,
+    placeIds: number[],
+  ): Promise<void> {
+    await Promise.all(
+      placeIds.map(async (placeId) => {
+        await this.collectionPlaceRepository.updateCollectionPlaceIsSavedToTrue(
+          collectionId,
+          placeId,
+        );
+      }),
+    );
+  }
 }
