@@ -32,4 +32,15 @@ export const PlaceComplexDocs: Record<
     }),
     ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],
+  getRelatedCollectionsFromOthersByPlaceId: [
+    ApiOperation({
+      summary: '특정 장소에 대한 다른 사용자의 컬렉션 조회',
+      description: '특정 장소에 대한 다른 사용자의 컬렉션 조회',
+    }),
+    ApiOkResponse({
+      description: '컬렉션 조회 성공',
+      type: [FoldersWithPlaceExistenceListResDto],
+    }),
+    ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
+  ],
 };

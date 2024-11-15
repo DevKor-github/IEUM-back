@@ -34,4 +34,16 @@ export class PlaceComplexController {
       parseInt(placeId),
     );
   }
+
+  @UseNicknameCheckingAccessGuard()
+  @Get('/:placeId/related-collections')
+  async getRelatedCollectionsFromOthersByPlaceId(
+    @Req() req,
+    @Param('placeId') placeId: string,
+  ) {
+    return await this.placeComplexService.getRelatedCollectionsFromOthers(
+      req.user.id,
+      parseInt(placeId),
+    );
+  }
 }

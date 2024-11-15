@@ -71,5 +71,15 @@ export class PlaceComplexService {
     // 폴더, 폴더명, 폴더에 대한 포함 여부 반환(boolean)
   }
 
-  async getCollectionsRelatedToPlace(userId: number, placeId: number) {}
+  async getRelatedCollectionsFromOthers(
+    userId: number,
+    placeId: number,
+  ): Promise<RelatedCollectionsListResDto> {
+    const RelatedCollectionsFromOthers: RelatedCollectionsListResDto =
+      await this.collectionService.getOthersRelatedCollectionsByPlaceId(
+        userId,
+        placeId,
+      );
+    return RelatedCollectionsFromOthers;
+  }
 }
