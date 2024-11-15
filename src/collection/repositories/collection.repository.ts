@@ -89,7 +89,7 @@ export class CollectionRepository extends Repository<Collection> {
       ])
       .where('collection.userId = :userId', { userId })
       .andWhere('collectionPlaces.placeId = :placeId', { placeId })
-      .groupBy('collection.id')
+      .groupBy('collection.id, collectionPlaces.isSaved')
       .orderBy('collection.id', 'DESC')
       .limit(COLLECTIONS_TAKE + 1);
 
@@ -117,7 +117,7 @@ export class CollectionRepository extends Repository<Collection> {
       ])
       .where('collection.userId != :userId', { userId })
       .andWhere('collectionPlaces.placeId = :placeId', { placeId })
-      .groupBy('collection.id')
+      .groupBy('collection.id, collectionPlaces.isSaved')
       .orderBy('collection.id', 'DESC')
       .limit(COLLECTIONS_TAKE + 1);
 

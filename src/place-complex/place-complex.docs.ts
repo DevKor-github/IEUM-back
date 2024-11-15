@@ -4,6 +4,7 @@ import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-re
 import { PlaceDetailResDto } from 'src/place/dtos/place-detail-res.dto';
 import { PlaceComplexController } from './place-complex.controller';
 import { FoldersWithPlaceExistenceListResDto } from 'src/folder/dtos/folders-list.res.dto';
+import { RelatedCollectionsListResDto } from 'src/collection/dtos/paginated-related-collections-list-res.dto';
 
 type PlaceComplexMethodName = MethodNames<PlaceComplexController>;
 
@@ -35,11 +36,12 @@ export const PlaceComplexDocs: Record<
   getRelatedCollectionsFromOthersByPlaceId: [
     ApiOperation({
       summary: '특정 장소에 대한 다른 사용자의 컬렉션 조회',
-      description: '특정 장소에 대한 다른 사용자의 컬렉션 조회',
+      description:
+        '특정 장소에 대한 다른 사용자의 컬렉션 조회. 커서 페이지네이션 지원.',
     }),
     ApiOkResponse({
       description: '컬렉션 조회 성공',
-      type: [FoldersWithPlaceExistenceListResDto],
+      type: [RelatedCollectionsListResDto],
     }),
     ApiIeumExceptionRes(['PLACE_NOT_FOUND']),
   ],
