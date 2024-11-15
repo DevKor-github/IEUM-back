@@ -7,6 +7,11 @@ import { PlaceImage } from '../entities/place-image.entity';
 import { Collection } from 'src/collection/entities/collection.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import { RawRelatedCollection } from 'src/common/interfaces/raw-related-collection.interface';
+import {
+  RelatedCollectionDto,
+  RelatedCollectionsListResDto,
+} from 'src/collection/dtos/paginated-related-collections-list-res.dto';
 
 export class PlaceImageRes {
   @ApiProperty()
@@ -27,37 +32,6 @@ export class PlaceImageRes {
   }
 }
 
-export class RelatedCollectionRes {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  link: string;
-
-  @ApiProperty({ enum: CollectionType })
-  collectionType: CollectionType;
-
-  @ApiProperty()
-  content: string;
-
-  @ApiProperty()
-  isViewed: boolean;
-
-  @ApiProperty()
-  isSaved: boolean;
-
-  @ApiProperty({ description: '조회 시간' })
-  updatedAt: Date;
-
-  constructor(relatedCollection: Collection) {
-    this.id = relatedCollection.id;
-    this.link = relatedCollection.link;
-    this.collectionType = relatedCollection.collectionType;
-    this.content = relatedCollection.content;
-    this.isViewed = relatedCollection.isViewed;
-    this.updatedAt = relatedCollection.updatedAt;
-  }
-}
 export class PlaceDetailResDto {
   @ApiProperty()
   id: number;
@@ -129,11 +103,8 @@ export class PlaceDetailResDto {
   @ApiProperty()
   roadAddress: string;
 
-  @ApiProperty({ type: RelatedCollectionRes, isArray: true })
-  myRelatedCollections: RelatedCollectionRes[];
-
-  @ApiProperty({ type: RelatedCollectionRes, isArray: true })
-  othersRelatedCollections: RelatedCollectionRes[];
+  @ApiProperty({ type: RelatedCollectionDto, isArray: true })
+  myRelatedCollections: RelatedCollectionDto[];
 
   @ApiProperty({ type: PlaceImageRes, isArray: true })
   placeImages: PlaceImageRes[];
@@ -141,8 +112,7 @@ export class PlaceDetailResDto {
   constructor(
     place: Place,
     placeImages: PlaceImage[],
-    myRelatedCollections: Collection[],
-    othersRelatedCollections: Collection[],
+    myRelatedCollections: RelatedCollectionDto[],
     ieumCategory: IeumCategory,
   ) {
     const { locationTags, categoryTags, customTags } = tagParser(
@@ -174,17 +144,10 @@ export class PlaceDetailResDto {
     this.ieumCategory = ieumCategory;
     this.address = place.address;
     this.roadAddress = place.roadAddress;
-
-    this.linkedCollections = linkedCollections.map((linkedCollection) => {
-      if (
-        linkedCollection.collectionPlaces.some(
-          (collectionPlace) => collectionPlace.isSaved,
-        )
-      ) {
-        this.isSaved = true;
-      }
-      return new LinkedCollectionRes(linkedCollection);
-    });
+    this.myRelatedCollections = myRelatedCollections;
+    this.isSaved = myRelatedCollections.some(
+      (myRelatedCollection) => myRelatedCollection.isSaved,
+    );
     this.placeImages = placeImages.map(
       (placeImage) => new PlaceImageRes(placeImage),
     );

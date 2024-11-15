@@ -215,6 +215,7 @@ export class PlaceService {
     return placeDetail;
   }
 
+
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
     const place = await this.placeRepository.getPlacePreviewInfoById(placeId);
     if (!place) {

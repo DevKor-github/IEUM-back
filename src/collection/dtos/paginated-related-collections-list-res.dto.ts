@@ -21,7 +21,7 @@ export class RelatedCollectionDto {
   content: string;
 
   @ApiProperty()
-  createdAt: Date;
+  updatedAt: Date;
 
   @ApiProperty()
   isSaved: boolean;
@@ -31,7 +31,7 @@ export class RelatedCollectionDto {
     this.collectionType = CollectionType[rawCollection.collection_type];
     this.link = rawCollection.link;
     this.content = rawCollection.content;
-    this.createdAt = rawCollection.created_at;
+    this.updatedAt = rawCollection.updated_at;
     this.isSaved = rawCollection.is_saved;
   }
 }

@@ -5,6 +5,6 @@ export interface RawRelatedCollection extends RawDataForCursorPagination {
   link: string;
   collection_type: CollectionType;
   content: string;
-  created_at: Date;
+  updated_at: Date;
   is_saved: boolean;
 }

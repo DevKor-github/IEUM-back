@@ -84,7 +84,7 @@ export class CollectionRepository extends Repository<Collection> {
         'collection.link AS link',
         'collection.collection_type AS collection_type',
         'collection.content AS content',
-        'collection.createdAt AS created_at',
+        'collection.updatedAt AS updated_at',
         'collectionPlaces.isSaved AS is_saved',
       ])
       .where('collection.userId = :userId', { userId })
@@ -112,7 +112,7 @@ export class CollectionRepository extends Repository<Collection> {
         'collection.link AS link',
         'collection.collection_type AS collection_type',
         'collection.content AS content',
-        'collection.createdAt AS created_at',
+        'collection.updatedAt AS updated_at',
         'collectionPlaces.isSaved AS is_saved',
       ])
       .where('collection.userId != :userId', { userId })
