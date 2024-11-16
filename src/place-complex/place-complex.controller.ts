@@ -4,6 +4,7 @@ import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-a
 import { ApiTags } from '@nestjs/swagger';
 import { ApplyDocs } from 'src/common/decorators/apply-docs.decorator';
 import { PlaceComplexDocs } from './place-complex.docs';
+import { PlaceDetailResDto } from 'src/place/dtos/place-detail-res.dto';
 
 @ApplyDocs(PlaceComplexDocs)
 @ApiTags('장소 API')
@@ -16,7 +17,7 @@ export class PlaceComplexController {
   async getPlaceDetailWithImagesAndCollectionsById(
     @Req() req,
     @Param('placeId') placeId: string,
-  ) {
+  ): Promise<PlaceDetailResDto> {
     return await this.placeComplexService.getPlaceDetailWithImagesAndCollectionsById(
       req.user.id,
       parseInt(placeId),
@@ -30,6 +31,18 @@ export class PlaceComplexController {
     @Param('placeId') placeId: string,
   ) {
     return await this.placeComplexService.getFoldersListWithPlaceExistence(
+      req.user.id,
+      parseInt(placeId),
+    );
+  }
+
+  @UseNicknameCheckingAccessGuard()
+  @Get('/:placeId/related-collections')
+  async getRelatedCollectionsFromOthersByPlaceId(
+    @Req() req,
+    @Param('placeId') placeId: string,
+  ) {
+    return await this.placeComplexService.getRelatedCollectionsFromOthers(
       req.user.id,
       parseInt(placeId),
     );

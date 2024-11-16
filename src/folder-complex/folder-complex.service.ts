@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CollectionService } from 'src/collection/collection.service';
 import { FolderType } from 'src/common/enums/folder-type.enum';
 import { CreateFolderPlaceEvent } from 'src/common/events/create-folder-place-event';
 import { throwIeumException } from 'src/common/utils/exception.util';
@@ -21,6 +22,7 @@ export class FolderComplexService {
   constructor(
     private readonly folderService: FolderService,
     private readonly placeService: PlaceService,
+    private readonly collectionService: CollectionService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -140,6 +142,12 @@ export class FolderComplexService {
       userId,
       createFolderPlacesReqDto,
       defaultFolder.id,
+    );
+    // 여기서 collection_place의 is_saved를 업데이트
+    const { collectionId, placeIds } = createFolderPlacesReqDto;
+    await this.collectionService.updateCollectionPlacesIsSavedToTrue(
+      collectionId,
+      placeIds,
     );
 
     return new CreateFolderPlaceResDto(createFolderPlacesReqDto.placeIds);

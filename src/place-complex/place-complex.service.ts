@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CollectionService } from 'src/collection/collection.service';
+import { RelatedCollectionsListResDto } from 'src/collection/dtos/paginated-related-collections-list-res.dto';
 import { FolderInfoWithPlaceExistence } from 'src/common/interfaces/raw-folder-info.interface';
 import { FoldersWithPlaceExistenceListResDto } from 'src/folder/dtos/folders-list.res.dto';
 import { FolderService } from 'src/folder/folder.service';
@@ -22,17 +23,18 @@ export class PlaceComplexService {
     const placeDetail = await this.placeService.getPlaceDetailById(placeId);
     const placeImages =
       await this.placeService.getPlaceImagesByPlaceId(placeId);
-    const linkedCollections = await this.collectionService.getLinkedCollections(
-      userId,
-      placeId,
-    );
+    const myRelatedCollections: RelatedCollectionsListResDto =
+      await this.collectionService.getMyRelatedCollectionsByPlaceId(
+        userId,
+        placeId,
+      );
     const ieumCategory = await this.placeService.getIeumCategoryByKakaoCategory(
       placeDetail.primaryCategory,
     );
     return new PlaceDetailResDto(
       placeDetail,
       placeImages,
-      linkedCollections,
+      myRelatedCollections.items,
       ieumCategory,
     );
   }
@@ -67,5 +69,17 @@ export class PlaceComplexService {
     // userId로 유저가 가진 폴더 가져오기 (디폴트, 사용자 생성 각각)
     // 각 폴더에 대해 folderPlaceRepository에서 folderId, placeId로 포함 여부 체크
     // 폴더, 폴더명, 폴더에 대한 포함 여부 반환(boolean)
+  }
+
+  async getRelatedCollectionsFromOthers(
+    userId: number,
+    placeId: number,
+  ): Promise<RelatedCollectionsListResDto> {
+    const RelatedCollectionsFromOthers: RelatedCollectionsListResDto =
+      await this.collectionService.getOthersRelatedCollectionsByPlaceId(
+        userId,
+        placeId,
+      );
+    return RelatedCollectionsFromOthers;
   }
 }

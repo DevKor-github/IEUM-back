@@ -4,10 +4,14 @@ import { categoryMapper } from 'src/common/utils/category-mapper.util';
 import { tagParser } from 'src/common/utils/tag-parser.util';
 import { Place } from 'src/place/entities/place.entity';
 import { PlaceImage } from '../entities/place-image.entity';
-import { RawLinkedColletion } from 'src/common/interfaces/raw-linked-collection.interface';
 import { Collection } from 'src/collection/entities/collection.entity';
 import { CollectionType } from 'src/common/enums/collection-type.enum';
 import { IeumCategory } from 'src/common/enums/ieum-category.enum';
+import { RawRelatedCollection } from 'src/common/interfaces/raw-related-collection.interface';
+import {
+  RelatedCollectionDto,
+  RelatedCollectionsListResDto,
+} from 'src/collection/dtos/paginated-related-collections-list-res.dto';
 
 export class PlaceImageRes {
   @ApiProperty()
@@ -28,37 +32,6 @@ export class PlaceImageRes {
   }
 }
 
-export class LinkedCollectionRes {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  link: string;
-
-  @ApiProperty({ enum: CollectionType })
-  collectionType: CollectionType;
-
-  @ApiProperty()
-  content: string;
-
-  @ApiProperty()
-  isViewed: boolean;
-
-  @ApiProperty()
-  isSaved: boolean;
-
-  @ApiProperty({ description: '조회 시간' })
-  updatedAt: Date;
-
-  constructor(linkedCollection: Collection) {
-    this.id = linkedCollection.id;
-    this.link = linkedCollection.link;
-    this.collectionType = linkedCollection.collectionType;
-    this.content = linkedCollection.content;
-    this.isViewed = linkedCollection.isViewed;
-    this.updatedAt = linkedCollection.updatedAt;
-  }
-}
 export class PlaceDetailResDto {
   @ApiProperty()
   id: number;
@@ -130,8 +103,8 @@ export class PlaceDetailResDto {
   @ApiProperty()
   roadAddress: string;
 
-  @ApiProperty({ type: LinkedCollectionRes, isArray: true })
-  linkedCollections: LinkedCollectionRes[];
+  @ApiProperty({ type: RelatedCollectionDto, isArray: true })
+  linkedCollections: RelatedCollectionDto[];
 
   @ApiProperty({ type: PlaceImageRes, isArray: true })
   placeImages: PlaceImageRes[];
@@ -139,7 +112,7 @@ export class PlaceDetailResDto {
   constructor(
     place: Place,
     placeImages: PlaceImage[],
-    linkedCollections: Collection[],
+    myRelatedCollections: RelatedCollectionDto[],
     ieumCategory: IeumCategory,
   ) {
     const { locationTags, categoryTags, customTags } = tagParser(
@@ -171,17 +144,10 @@ export class PlaceDetailResDto {
     this.ieumCategory = ieumCategory;
     this.address = place.address;
     this.roadAddress = place.roadAddress;
-
-    this.linkedCollections = linkedCollections.map((linkedCollection) => {
-      if (
-        linkedCollection.collectionPlaces.some(
-          (collectionPlace) => collectionPlace.isSaved,
-        )
-      ) {
-        this.isSaved = true;
-      }
-      return new LinkedCollectionRes(linkedCollection);
-    });
+    this.linkedCollections = myRelatedCollections;
+    this.isSaved = myRelatedCollections.some(
+      (myRelatedCollection) => myRelatedCollection.isSaved,
+    );
     this.placeImages = placeImages.map(
       (placeImage) => new PlaceImageRes(placeImage),
     );

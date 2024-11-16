@@ -7,6 +7,8 @@ import { Transactional } from 'typeorm-transactional';
 import { CollectionsListResDto } from './dtos/paginated-collections-list-res.dto';
 import { throwIeumException } from 'src/common/utils/exception.util';
 import { Collection } from './entities/collection.entity';
+import { RawRelatedCollection } from 'src/common/interfaces/raw-related-collection.interface';
+import { RelatedCollectionsListResDto } from './dtos/paginated-related-collections-list-res.dto';
 
 @Injectable()
 export class CollectionService {
@@ -21,7 +23,10 @@ export class CollectionService {
     cursorId?: number,
   ): Promise<CollectionsListResDto> {
     const unviewedCollections =
-      await this.collectionRepository.getUnviewedCollections(userId, cursorId);
+      await this.collectionRepository.getUnviewedCollectionsByUserId(
+        userId,
+        cursorId,
+      );
     return new CollectionsListResDto(unviewedCollections);
   }
 
@@ -30,18 +35,39 @@ export class CollectionService {
     cursorId?: number,
   ): Promise<CollectionsListResDto> {
     const viewedCollections =
-      await this.collectionRepository.getViewedCollections(userId, cursorId);
+      await this.collectionRepository.getViewedCollectionsByUserId(
+        userId,
+        cursorId,
+      );
     return new CollectionsListResDto(viewedCollections);
   }
 
-  async getLinkedCollections(
+  async getMyRelatedCollectionsByPlaceId(
     userId: number,
     placeId: number,
-  ): Promise<Collection[]> {
-    return await this.collectionRepository.getLinkedCollections(
-      userId,
-      placeId,
-    );
+    cursorId?: number,
+  ): Promise<RelatedCollectionsListResDto> {
+    const myRelatedCollections =
+      await this.collectionRepository.getMyRelatedCollectionsByPlaceId(
+        userId,
+        placeId,
+        cursorId,
+      );
+    return new RelatedCollectionsListResDto(myRelatedCollections);
+  }
+
+  async getOthersRelatedCollectionsByPlaceId(
+    userId: number,
+    placeId: number,
+    cursorId?: number,
+  ): Promise<RelatedCollectionsListResDto> {
+    const othersRelatedCollections =
+      await this.collectionRepository.getOthersRelatedCollectionsByPlaceId(
+        userId,
+        placeId,
+        cursorId,
+      );
+    return new RelatedCollectionsListResDto(othersRelatedCollections);
   }
 
   async getCollectionPlaceDetail(
@@ -106,6 +132,20 @@ export class CollectionService {
       collectionId,
       placeId,
       placeKeyword,
+    );
+  }
+
+  async updateCollectionPlacesIsSavedToTrue(
+    collectionId: number,
+    placeIds: number[],
+  ): Promise<void> {
+    await Promise.all(
+      placeIds.map(async (placeId) => {
+        await this.collectionPlaceRepository.updateCollectionPlaceIsSavedToTrue(
+          collectionId,
+          placeId,
+        );
+      }),
     );
   }
 }

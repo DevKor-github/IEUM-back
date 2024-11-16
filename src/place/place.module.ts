@@ -34,7 +34,6 @@ import { KakaoCategoryMappingService } from './services/kakao-category-mapping.s
   imports: [
     UserModule,
     TagModule,
-    CollectionModule,
     TypeOrmModule.forFeature([
       Place,
       PlaceDetail,
