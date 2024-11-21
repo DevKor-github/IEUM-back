@@ -39,6 +39,7 @@ export const AuthDocs: Record<AuthMethodName, MethodDecorator[]> = {
       'APPLE_ID_TOKEN_VERIFICATION_FAILED',
       'KAKAO_ACCESS_TOKEN_VERIFICATION_FAILED',
       'NAVER_ACCESS_TOKEN_VERIFICATION_FAILED',
+      //'SLACK_NOTIFICATION_FAILED',
     ]),
   ],
   handleAppleNotification: [
