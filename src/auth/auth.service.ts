@@ -135,7 +135,7 @@ export class AuthService {
     await this.slackAlertService.sendGeneralSlackNotification(
       newUser,
       '유저 정보',
-      '새로운 유저 ${user.id}의 회원가입 알람 입니다.',
+      '새로운 유저 ${newUser.id}의 회원가입 알람 입니다.',
     );
     return new UserLoginResDto(newUser, accessToken, refreshToken);
   }
