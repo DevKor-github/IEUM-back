@@ -20,6 +20,7 @@ import { KakaoAccessTokenData } from 'src/common/interfaces/kakao-jwt-format.int
 import { NaverAccessTokenData } from 'src/common/interfaces/naver-jwt-format.interface';
 import { User } from 'src/user/entities/user.entity';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { SlackAlertService } from 'src/crawling/services/slack-alert.service';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +34,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly slackAlertService: SlackAlertService,
   ) {}
 
   //AccessToken 발급
@@ -130,6 +132,11 @@ export class AuthService {
     if (fcmToken) {
       await this.userService.updateFCMToken(user.id, fcmToken);
     }
+    await this.slackAlertService.sendGeneralSlackNotification(
+      newUser,
+      '유저 정보',
+      '새로운 유저 ${user.id}의 회원가입 알람 입니다.',
+    );
     return new UserLoginResDto(newUser, accessToken, refreshToken);
   }
 
