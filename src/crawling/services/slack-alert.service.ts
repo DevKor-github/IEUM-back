@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RabbitMqXDeath } from 'src/common/interfaces/rabbitmq-xdeath.interface';
+import { winstonLogger } from 'src/common/logger/winston.logger';
 import { throwIeumException } from 'src/common/utils/exception.util';
+import { SlackFailureResDto } from '../dtos/slack-failure-res.dto';
 
 @Injectable()
 export class SlackAlertService {
@@ -61,15 +63,10 @@ export class SlackAlertService {
     try {
       await axios.post(process.env.WEBHOOK_URL_GENERAL_NOTIFICATION, payload);
     } catch (error) {
-      console.error(
-        'Failed to send Slack alert:',
-        error.response.status,
-        error.response.statusText,
-        error.response.data,
-      );
-      //큐 기반 동작을 통해 slack 알림 실패와 상관없이 메인 서비스 기능이 정상적으로 돌아갈 수 있을 때 활성화.
-      //현재는 slack 알림이 실패해도 메인 서비스 기능에 영향을 주지 않도록 비활성화 함.
-      //throwIeumException('SLACK_NOTIFICATION_FAILED');
+      //실행중인 서비스의 정상 작동과 무관하게 슬랙 알람 서비스가 동작하게 하기 위해 내부적으로 에러를 throw하지 않고, error level log만 남김.
+      //error log가 남으면 alertmanager에서 slack으로 에러 알람을 보냄.
+      const formattedError = new SlackFailureResDto(error);
+      winstonLogger.error(formattedError);
     }
   }
 }
