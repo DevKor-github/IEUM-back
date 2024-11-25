@@ -86,7 +86,7 @@ export class UserService {
     if (!user) {
       throwIeumException('USER_NOT_FOUND');
     }
-    await this.userRepository.softDeleteUser(id);
+    await this.userRepository.deleteUser(id);
   }
 
   //토큰 정보
