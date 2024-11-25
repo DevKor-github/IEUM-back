@@ -30,7 +30,10 @@ export class Collection extends BaseEntity {
   })
   collectionType: CollectionType;
 
-  @ManyToOne(() => User, (user) => user.collections, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.collections, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
   user: User;
 
   @RelationId((collection: Collection) => collection.user)
