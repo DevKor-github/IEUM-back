@@ -53,7 +53,7 @@ export class Trip {
   placeSchedules: PlaceSchedule[];
 
   //User Relation
-  @ManyToOne(() => User, (user) => user.trips)
+  @ManyToOne(() => User, (user) => user.trips, { onDelete: 'CASCADE' })
   user: User;
 
   @RelationId((trip: Trip) => trip.user)

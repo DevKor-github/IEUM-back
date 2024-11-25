@@ -80,8 +80,8 @@ export class UserRepository extends Repository<User> {
 
   //회원 탈퇴
 
-  async softDeleteUser(id: number) {
-    await this.softDelete({ id: id });
+  async deleteUser(id: number) {
+    await this.delete({ id: id });
   }
 
   // ----------------------------소셜 --------------------------------
