@@ -38,7 +38,7 @@ export class Collection extends BaseEntity {
 
   @RelationId((collection: Collection) => collection.user)
   @Exclude()
-  @Column()
+  @Column({ nullable: true })
   userId: number;
 
   @OneToMany(
