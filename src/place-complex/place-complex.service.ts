@@ -74,11 +74,13 @@ export class PlaceComplexService {
   async getRelatedCollectionsFromOthers(
     userId: number,
     placeId: number,
+    cursorId?: number,
   ): Promise<RelatedCollectionsListResDto> {
     const RelatedCollectionsFromOthers: RelatedCollectionsListResDto =
       await this.collectionService.getOthersRelatedCollectionsByPlaceId(
         userId,
         placeId,
+        cursorId,
       );
     return RelatedCollectionsFromOthers;
   }

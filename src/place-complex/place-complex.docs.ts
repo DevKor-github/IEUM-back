@@ -1,5 +1,5 @@
 import { MethodNames } from 'src/common/types/method-names.type';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { ApiIeumExceptionRes } from 'src/common/decorators/api-ieum-exception-res.decorator';
 import { PlaceDetailResDto } from 'src/place/dtos/place-detail-res.dto';
 import { PlaceComplexController } from './place-complex.controller';
@@ -39,6 +39,7 @@ export const PlaceComplexDocs: Record<
       description:
         '특정 장소에 대한 다른 사용자의 컬렉션 조회. 커서 페이지네이션 지원.',
     }),
+    ApiQuery({ name: 'cursorId', required: false }),
     ApiOkResponse({
       description: '컬렉션 조회 성공',
       type: [RelatedCollectionsListResDto],

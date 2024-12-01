@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req } from '@nestjs/common';
 import { PlaceComplexService } from './place-complex.service';
 import { UseNicknameCheckingAccessGuard } from 'src/auth/guards/nickname-check-access.guard';
 import { ApiTags } from '@nestjs/swagger';
@@ -41,10 +41,12 @@ export class PlaceComplexController {
   async getRelatedCollectionsFromOthersByPlaceId(
     @Req() req,
     @Param('placeId') placeId: string,
+    @Query('cursorId') cursorId?: string,
   ) {
     return await this.placeComplexService.getRelatedCollectionsFromOthers(
       req.user.id,
       parseInt(placeId),
+      parseInt(cursorId),
     );
   }
 }
