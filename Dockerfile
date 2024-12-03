@@ -28,7 +28,7 @@ COPY --from=builder /app/package.json /app/package-lock.json /app/
 RUN npm install --only=production
 
 # 애플리케이션 포트 노출
-EXPOSE 3030
+EXPOSE 3031
 
 # 애플리케이션 시작 명령
 ENTRYPOINT ["npm", "run", "start:prod"]
