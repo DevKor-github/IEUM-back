@@ -16,8 +16,14 @@ if (nodeMode !== 'local') {
     // error 레벨 로그를 별도로 저장
     new winstonDaily({
       level: 'error',
-      dirname: `${logDir}/error`,
-      filename: '%DATE%.error.log',
+      dirname:
+        nodeMode === 'production'
+          ? `${logDir}/error/prod`
+          : `${logDir}/error/dev`,
+      filename:
+        nodeMode === 'production'
+          ? '%DATE%.error.prod.log'
+          : '%DATE%.error.dev.log',
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxFiles: '30d',
@@ -25,9 +31,14 @@ if (nodeMode !== 'local') {
     }),
     new winstonDaily({
       level: nodeMode === 'production' ? 'info' : 'silly', // silly 레벨 이상 로그를 기록
-      dirname: nodeMode === 'production' ? `${logDir}/info` : `${logDir}/silly`, // 로그 파일 저장 경로
+      dirname:
+        nodeMode === 'production'
+          ? `${logDir}/info/prod`
+          : `${logDir}/silly/dev`, // 로그 파일 저장 경로
       filename:
-        nodeMode === 'production' ? `%DATE%.info.log` : '%DATE%.silly.log', // 파일 이름 형식
+        nodeMode === 'production'
+          ? `%DATE%.info.prod.log`
+          : '%DATE%.silly.dev.log', // 파일 이름 형식
       datePattern: 'YYYY-MM-DD', // 일별로 파일 생성
       zippedArchive: true, // 로그 파일을 압축
       maxFiles: '30d', // 30일치 로그 파일만 보관
