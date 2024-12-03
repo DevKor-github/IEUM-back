@@ -62,7 +62,25 @@ jobs:
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY}}" >> .env
           echo "SECRET_KEY_ACCESS=${{ secrets.SECRET_KEY_ACCESS}}" >> .env
           echo "SECRET_KEY_REFRESH=${{ secrets.SECRET_KEY_REFRESH}}" >> .env
+          echo "WEBHOOK_URL=${{ secrets.WEBHOOK_URL}}" >> .env
           echo "WEBHOOK_URL_GENERAL_NOTIFICATION_PROD=${{ secrets.WEBHOOK_URL_GENERAL_NOTIFICATION_PROD}}" >> .env
+          echo "RABBITMQ_URI=${{ secrets.RABBITMQ_URI}}" >> .env
+          echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY}}" >> .env
+          echo "AWS_REGION=${{ secrets.AWS_REGION}}" >> .env
+          echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME}}" >> .env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID}}" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY}}" >> .env
+          echo "FIREBASE_TYPE=${{ secrets.FIREBASE_TYPE}}" >> .env
+          echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID}}" >> .env
+          echo 'FIREBASE_PRIVATE_KEY_ID="${{ secrets.FIREBASE_PRIVATE_KEY_ID}}"' >> .env
+          echo "FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY}}" >> .env
+          echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL}}" >> .env
+          echo "FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID}}" >> .env
+          echo "FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI}}" >> .env
+          echo "FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI}}" >> .env
+          echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL}}" >> .env
+          echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL}}" >> .env
+          echo "FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN}}" >> .env
           echo "NODE_ENV=production" >> .env
 
           cat .env
