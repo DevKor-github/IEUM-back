@@ -85,6 +85,12 @@ jobs:
           echo "NODE_ENV=production" >> .env
 
           cat .env
+
+      - name: Debug Environment Variables
+        run: |
+          echo "HOST_PORT=${{ secrets.HOST_PORT }}"
+          echo "PORT=${{ secrets.PORT }}"
+
       - name: Run Docker for main
         run: |
           sudo docker stop ${{ env.DOCKER_CONTAINER_MAIN }} || true
