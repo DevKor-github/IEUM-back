@@ -70,7 +70,7 @@ jobs:
           sudo docker stop ${{ env.DOCKER_CONTAINER_MAIN }} || true
           sudo docker rm ${{ env.DOCKER_CONTAINER_MAIN }} || true
           sudo docker rmi ${{ env.DOCKER_IMAGE_MAIN }}:latest || true
-          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_MAIN }} --network host --restart always ${{ env.DOCKER_IMAGE_MAIN }}:latest
+          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_MAIN }} --network host --restart always -v /home/ec2-user/logs:/app/logs ${{ env.DOCKER_IMAGE_MAIN }}:latest
   deploy_dev:
     needs: build
     if: github.ref == 'refs/heads/develop'
