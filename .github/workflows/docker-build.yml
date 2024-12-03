@@ -86,17 +86,12 @@ jobs:
 
           cat .env
 
-      - name: Debug Environment Variables
-        run: |
-          echo "HOST_PORT=${{ secrets.HOST_PORT }}"
-          echo "PORT=${{ secrets.PORT }}"
-
       - name: Run Docker for main
         run: |
           sudo docker stop ${{ env.DOCKER_CONTAINER_MAIN }} || true
           sudo docker rm ${{ env.DOCKER_CONTAINER_MAIN }} || true
           sudo docker rmi ${{ env.DOCKER_IMAGE_MAIN }}:latest || true
-          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_MAIN }} --restart always -v /home/ec2-user/logs:/app/logs -p 3031 : 3030 ${{ env.DOCKER_IMAGE_MAIN }}:latest
+          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_MAIN }} --restart always -v /home/ec2-user/logs:/app/logs -p ${{ secrets.HOST_PORT }}:${{ secrets.PORT}} ${{ env.DOCKER_IMAGE_MAIN }}:latest
   deploy_dev:
     needs: build
     if: github.ref == 'refs/heads/develop'
