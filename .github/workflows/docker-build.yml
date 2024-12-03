@@ -59,6 +59,7 @@ jobs:
           echo "DB_USERNAME=${{ secrets.DB_USERNAME}}" >> .env
           echo "DB_DATABASE_PROD=${{ secrets.DB_DATABASE_PROD}}" >> .env
           echo "PORT=${{ secrets.PORT}}" >> .env
+          echo "HOST_PORT=${{ secrets.HOST_PORT}}" >> .env
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY}}" >> .env
           echo "SECRET_KEY_ACCESS=${{ secrets.SECRET_KEY_ACCESS}}" >> .env
           echo "SECRET_KEY_REFRESH=${{ secrets.SECRET_KEY_REFRESH}}" >> .env
@@ -89,7 +90,7 @@ jobs:
           sudo docker stop ${{ env.DOCKER_CONTAINER_MAIN }} || true
           sudo docker rm ${{ env.DOCKER_CONTAINER_MAIN }} || true
           sudo docker rmi ${{ env.DOCKER_IMAGE_MAIN }}:latest || true
-          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_MAIN }} --network host --restart always -v /home/ec2-user/logs:/app/logs ${{ env.DOCKER_IMAGE_MAIN }}:latest
+          sudo docker run --env-file ./.env --platform linux/amd64 -d --name ${{ env.DOCKER_CONTAINER_MAIN }} --restart always -v /home/ec2-user/logs:/app/logs -p ${{ env.HOST_PORT }} : ${{ env.PORT}} ${{ env.DOCKER_IMAGE_MAIN }}:latest
   deploy_dev:
     needs: build
     if: github.ref == 'refs/heads/develop'
