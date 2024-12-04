@@ -73,7 +73,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TripModule,
     FolderModule,
     CollectionModule,
-    //CrawlingModule,
+    CrawlingModule,
     CollectionComplexModule,
     PlaceComplexModule,
     FolderComplexModule,
