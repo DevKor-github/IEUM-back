@@ -46,6 +46,11 @@ export class SlackAlertService {
     dataDescription: string,
     title: string,
   ) {
+    const nodeMode = process.env.NODE_ENV ?? 'local';
+    const webhookURL =
+      nodeMode === 'production'
+        ? process.env.WEBHOOK_URL_GENERAL_NOTIFICATION_PROD
+        : process.env.WEBHOOK_URL_GENERAL_NOTIFICATION;
     const payload = {
       text: `💁‍♂️ ${title}`,
       attachments: [
@@ -61,10 +66,7 @@ export class SlackAlertService {
       ],
     };
     try {
-      await axios.post(
-        process.env.WEBHOOK_URL_GENERAL_NOTIFICATION_PROD,
-        payload,
-      );
+      await axios.post(webhookURL, payload);
     } catch (error) {
       //실행중인 서비스의 정상 작동과 무관하게 슬랙 알람 서비스가 동작하게 하기 위해 내부적으로 에러를 throw하지 않고, error level log만 남김.
       //error log가 남으면 alertmanager에서 slack으로 에러 알람을 보냄.
