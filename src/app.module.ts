@@ -31,19 +31,26 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
     EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_HOST,
-        port: parseInt(process.env.DB_PORT),
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        // entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        autoLoadEntities: true,
-        synchronize: true,
-        logging: false,
-        namingStrategy: new SnakeNamingStrategy(),
-      }),
+      useFactory: () => {
+        const nodeMode = process.env.NODE_ENV ?? 'local';
+        //console.log(nodeMode);
+        return {
+          type: 'postgres',
+          host: process.env.DB_HOST,
+          port: parseInt(process.env.DB_PORT),
+          username: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database:
+            nodeMode === 'production'
+              ? process.env.DB_DATABASE_PROD
+              : process.env.DB_DATABASE,
+          // entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          autoLoadEntities: true,
+          synchronize: true,
+          logging: false,
+          namingStrategy: new SnakeNamingStrategy(),
+        };
+      },
       async dataSourceFactory(options) {
         if (!options) {
           throw new Error('Invalid options passed');
