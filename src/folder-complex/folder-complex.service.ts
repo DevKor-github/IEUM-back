@@ -119,7 +119,7 @@ export class FolderComplexService {
     );
     //placeId에 대한 유효성 체크가 가능한가? -> placeService 주입.
     //
-    await Promise.all(
+    await Promise.allSettled(
       placeIds.map(async (placeId) => {
         await this.folderService.createFolderPlace(folderId, placeId);
         this.eventEmitter.emit(
@@ -140,15 +140,26 @@ export class FolderComplexService {
     const defaultFolder = await this.folderService.getDefaultFolder(userId);
     // 여기서 collection_place의 is_saved를 업데이트
     const { collectionId, placeIds } = createFolderPlacesReqDto;
-    await this.collectionService.updateCollectionPlacesIsSavedToTrue(
-      collectionId,
-      placeIds,
-    );
-    await this.createFolderPlacesIntoFolder(
-      userId,
-      createFolderPlacesReqDto,
-      defaultFolder.id,
-    );
+    try {
+      await this.collectionService.updateCollectionPlacesIsSavedToTrue(
+        collectionId,
+        placeIds,
+      );
+    } catch (e) {
+      this.logger.log(
+        'collectionService.updateCollectionPlacesIsSavedToTrue 에러 발생',
+      );
+    }
+
+    try {
+      await this.createFolderPlacesIntoFolder(
+        userId,
+        createFolderPlacesReqDto,
+        defaultFolder.id,
+      );
+    } catch (e) {
+      this.logger.log('createFolderPlacesIntoFolder 에러 발생');
+    }
 
     return new CreateFolderPlaceResDto(createFolderPlacesReqDto.placeIds);
   }
