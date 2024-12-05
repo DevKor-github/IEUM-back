@@ -7,6 +7,8 @@ export class ExporterMiddleware implements NestMiddleware {
   constructor(private readonly exporterService: ExporterService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
+    const node_env = process.env.NODE_ENV ?? 'local';
+
     const start = process.hrtime(); // 요청 시작 시간 //현재 시간의 [초, 나노초] 반환.
 
     res.on('finish', () => {
@@ -18,10 +20,16 @@ export class ExporterMiddleware implements NestMiddleware {
       const statusCode = res.statusCode.toString();
 
       // 요청 횟수 카운터 증가
-      this.exporterService.incrementHttpRequestCount(method, route, statusCode);
+      this.exporterService.incrementHttpRequestCount(
+        node_env,
+        method,
+        route,
+        statusCode,
+      );
 
       // 요청 시간 Gauge에 기록
       this.exporterService.recordHttpRequestDuration(
+        node_env,
         method,
         route,
         statusCode,
@@ -30,6 +38,7 @@ export class ExporterMiddleware implements NestMiddleware {
 
       // 요청 시간 Gauge에 합산
       this.exporterService.incrementHttpRequestDuration(
+        node_env,
         method,
         route,
         statusCode,
