@@ -109,7 +109,7 @@ export class CollectionRepository extends Repository<Collection> {
       .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
       .select([
         'collection.id AS id',
-        'collection.link AS link',
+        'DISTINCT collection.link AS link',
         'collection.collection_type AS collection_type',
         'collection.content AS content',
         'collection.updatedAt AS updated_at',
