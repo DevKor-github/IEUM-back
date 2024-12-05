@@ -108,8 +108,8 @@ export class CollectionRepository extends Repository<Collection> {
     const query = this.createQueryBuilder('collection')
       .leftJoinAndSelect('collection.collectionPlaces', 'collectionPlaces')
       .select([
+        'DISTINCT collection.link AS link',
         'collection.id AS id',
-        'collection.link AS link',
         'collection.collection_type AS collection_type',
         'collection.content AS content',
         'collection.updatedAt AS updated_at',

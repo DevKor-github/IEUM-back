@@ -35,14 +35,20 @@ export class RabbitMqService {
     //https://m.blog.naver.com/981jeju/223562563053
     //https://m.blog.naver.com/PostView.naver?blogId=981jeju&logNo=223562563053&proxyReferer=https:%2F%2Fm.search.naver.com%2F&trackingCode=nx
     let link = crawlingCollectionReqDto.link;
+    let url = new URL(link);
     let collectionType;
     switch (true) {
       case link.includes('blog.naver.com'):
         collectionType = CollectionType.NAVER;
-        const url = new URL(link);
         const params = url.searchParams;
 
+        if (link.includes('m.blog.naver.com')) {
+          // 모바일로 전송된 경우
+          link = link.replace('m.blog.naver.com', 'blog.naver.com');
+        }
+
         if (params.has('proxyReferer')) {
+          // share extension으로 전송된 경우
           const blogId = params.get('blogId');
           const logNo = params.get('logNo');
 
@@ -51,13 +57,14 @@ export class RabbitMqService {
           }
         }
         break;
-      case link.includes('instagram.com'):
+      case link.includes('instagram.com'): // 개인정보를 포함하지 않도록 표준화
         collectionType = CollectionType.INSTAGRAM;
+        url.searchParams.delete('igsh');
+        link = url.toString();
         break;
       default:
         throwIeumException('UNSUPPORTED_LINK');
     }
-    console.log(link);
     await this.amqpConnection.publish('ieum_exchange', 'request', {
       userId,
       link,
