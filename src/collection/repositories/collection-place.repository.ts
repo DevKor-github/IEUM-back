@@ -53,7 +53,7 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
     placeId: number,
   ) {
     const collectionPlace = await this.findOne({
-      where: { collectionId, placeId },
+      where: { collectionId: collectionId, placeId: placeId },
     });
 
     collectionPlace.isSaved = true;
