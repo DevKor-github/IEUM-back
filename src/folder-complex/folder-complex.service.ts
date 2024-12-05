@@ -138,16 +138,16 @@ export class FolderComplexService {
     createFolderPlacesReqDto: CreateFolderPlacesReqDto,
   ): Promise<CreateFolderPlaceResDto> {
     const defaultFolder = await this.folderService.getDefaultFolder(userId);
-    await this.createFolderPlacesIntoFolder(
-      userId,
-      createFolderPlacesReqDto,
-      defaultFolder.id,
-    );
     // 여기서 collection_place의 is_saved를 업데이트
     const { collectionId, placeIds } = createFolderPlacesReqDto;
     await this.collectionService.updateCollectionPlacesIsSavedToTrue(
       collectionId,
       placeIds,
+    );
+    await this.createFolderPlacesIntoFolder(
+      userId,
+      createFolderPlacesReqDto,
+      defaultFolder.id,
     );
 
     return new CreateFolderPlaceResDto(createFolderPlacesReqDto.placeIds);

@@ -126,10 +126,12 @@ export class PlaceService {
     //DB 내부의 장소 Entity 가져오기
     const place = await this.placeRepository.findOne({
       where: { id: placeId },
+      relations: ['placeDetail'],
     });
     if (!place) {
       throwIeumException('PLACE_NOT_FOUND');
     }
+    if (place.placeDetail) return;
 
     //Text Search를 위한 키워드 생성
     const simplifiedAddress = addressSimplifier(place.address);
@@ -157,11 +159,12 @@ export class PlaceService {
     const placeDetailsForTransferring = this.extractPlaceDetailsForTransferring(
       googlePlacesApiPlaceDetailsResult,
     );
-    return await this.placeDetailRepository.createPlaceDetailByGoogle(
+    await this.placeDetailRepository.createPlaceDetailByGoogle(
       place,
       placeDetailsForTransferring,
     );
   }
+
   async getPlaceImagesByPlaceId(placeId: number) {
     return await this.placeImageRepository.getPlaceImagesByPlaceId(placeId);
   }
@@ -214,7 +217,6 @@ export class PlaceService {
     }
     return placeDetail;
   }
-
 
   async getPlacePreviewInfoById(placeId: number): Promise<PlacePreviewResDto> {
     const place = await this.placeRepository.getPlacePreviewInfoById(placeId);
