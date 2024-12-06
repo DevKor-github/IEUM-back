@@ -59,4 +59,23 @@ export class CollectionPlaceRepository extends Repository<CollectionPlace> {
     collectionPlace.isSaved = true;
     await this.save(collectionPlace);
   }
+
+  async updateCollectionPlacesIsSavedToFalse(userId: number, placeId: number) {
+    return await this.createQueryBuilder()
+      .update(CollectionPlace)
+      .set({ isSaved: false })
+      .where(() => {
+        const subQuery = this.createQueryBuilder()
+          .subQuery()
+          .select('cp.id')
+          .from(CollectionPlace, 'cp')
+          .innerJoin('cp.collection', 'collection')
+          .where('collection.userId = :userId', { userId })
+          .andWhere('cp.placeId = :placeId', { placeId })
+          .getQuery();
+        return 'id IN ' + subQuery;
+      })
+      .setParameters({ userId, placeId })
+      .execute();
+  }
 }

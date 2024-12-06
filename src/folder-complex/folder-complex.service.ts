@@ -205,6 +205,11 @@ export class FolderComplexService {
       foldersList.forEach(async (folder) => {
         await this.folderService.deleteFolderPlaces(folder.id, placeIds);
       });
+      // 디폴트 폴더라면, 해당 장소들과 묶여있는 collectionPlace들도 다시 업데이트 해주어야 함.
+      await this.collectionService.updateCollectionPlacesIsSavedToFalse(
+        userId,
+        placeIds,
+      );
     }
 
     return await this.folderService.deleteFolderPlaces(

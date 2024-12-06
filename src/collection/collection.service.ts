@@ -148,4 +148,18 @@ export class CollectionService {
       }),
     );
   }
+
+  async updateCollectionPlacesIsSavedToFalse(
+    userId: number,
+    placeIds: number[],
+  ): Promise<void> {
+    await Promise.all(
+      placeIds.map((placeId) => {
+        this.collectionPlaceRepository.updateCollectionPlacesIsSavedToFalse(
+          userId,
+          placeId,
+        );
+      }),
+    );
+  }
 }
