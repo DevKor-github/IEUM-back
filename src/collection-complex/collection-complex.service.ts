@@ -10,4 +10,25 @@ export class CollectionComplexService {
     private readonly folderService: FolderService,
     private readonly placeService: PlaceService,
   ) {}
+
+  getCollectionPlaces(
+    id: any,
+    collectionId: number,
+  ):
+    | import('../collection/dtos/collection-places-list-res.dto').CollectionPlacesListResDto
+    | PromiseLike<
+        import('../collection/dtos/collection-places-list-res.dto').CollectionPlacesListResDto
+      > {
+    throw new Error('Method not implemented.');
+  }
+  getViewedCollections(
+    id: any,
+    cursorId: number,
+  ):
+    | import('../collection/dtos/paginated-collections-list-res.dto').CollectionsListResDto
+    | PromiseLike<
+        import('../collection/dtos/paginated-collections-list-res.dto').CollectionsListResDto
+      > {
+    throw new Error('Method not implemented.');
+  }
 }

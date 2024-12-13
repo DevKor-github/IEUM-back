@@ -25,26 +25,4 @@ export class CollectionController {
       cursorId,
     );
   }
-
-  @Get('viewed')
-  async getViewedCollection(
-    @Req() req,
-    @Query('cursorId') cursorId?: number,
-  ): Promise<CollectionsListResDto> {
-    return await this.collectionService.getViewedCollections(
-      req.user.id,
-      cursorId,
-    );
-  }
-
-  @Get(':collectionId/collection-places')
-  async getCollectionPlaces(
-    @Req() req,
-    @Param('collectionId') collectionId: number,
-  ): Promise<CollectionPlacesListResDto> {
-    return await this.collectionService.getCollectionPlaces(
-      req.user.id,
-      collectionId,
-    );
-  }
 }
