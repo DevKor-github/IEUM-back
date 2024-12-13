@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CollectionService } from 'src/collection/collection.service';
+import { CollectionPlacesListResDto } from 'src/collection/dtos/collection-places-list-res.dto';
+import { CollectionsListResDto } from 'src/collection/dtos/paginated-collections-list-res.dto';
 import { FolderService } from 'src/folder/folder.service';
 import { PlaceService } from 'src/place/services/place.service';
 
@@ -11,24 +13,28 @@ export class CollectionComplexService {
     private readonly placeService: PlaceService,
   ) {}
 
-  getCollectionPlaces(
+  async getCollectionPlaces(
     id: any,
     collectionId: number,
-  ):
-    | import('../collection/dtos/collection-places-list-res.dto').CollectionPlacesListResDto
-    | PromiseLike<
-        import('../collection/dtos/collection-places-list-res.dto').CollectionPlacesListResDto
-      > {
-    throw new Error('Method not implemented.');
+  ): Promise<CollectionPlacesListResDto> {
+    const collectionPlaces = await this.collectionService.getCollectionPlaces(
+      id,
+      collectionId,
+    );
+    collectionPlaces.items.map(async (collectionPlace) => {
+      const defaultFolder = await this.folderService.getDefaultFolder(id);
+      collectionPlace.isSaved =
+        await this.folderService.checkFolderPlaceExistence(
+          defaultFolder.id,
+          collectionPlace.placeId,
+        );
+    });
+    return collectionPlaces;
   }
-  getViewedCollections(
+  async getViewedCollections(
     id: any,
     cursorId: number,
-  ):
-    | import('../collection/dtos/paginated-collections-list-res.dto').CollectionsListResDto
-    | PromiseLike<
-        import('../collection/dtos/paginated-collections-list-res.dto').CollectionsListResDto
-      > {
-    throw new Error('Method not implemented.');
+  ): Promise<CollectionsListResDto> {
+    return this.collectionService.getViewedCollections(id, cursorId);
   }
 }
