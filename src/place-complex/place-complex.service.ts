@@ -28,6 +28,12 @@ export class PlaceComplexService {
         userId,
         placeId,
       );
+    const defaultFolder = await this.folderService.getDefaultFolder(userId);
+    const isFolderIncludingPlace =
+      await this.folderService.checkFolderPlaceExistence(
+        defaultFolder.id,
+        placeId,
+      );
     const ieumCategory = await this.placeService.getIeumCategoryByKakaoCategory(
       placeDetail.primaryCategory,
     );
@@ -36,6 +42,7 @@ export class PlaceComplexService {
       placeImages,
       myRelatedCollections.items,
       ieumCategory,
+      isFolderIncludingPlace,
     );
   }
 

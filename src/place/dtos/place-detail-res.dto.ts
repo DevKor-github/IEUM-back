@@ -114,6 +114,7 @@ export class PlaceDetailResDto {
     placeImages: PlaceImage[],
     myRelatedCollections: RelatedCollectionDto[],
     ieumCategory: IeumCategory,
+    isFolderIncludingPlace: boolean,
   ) {
     const { locationTags, categoryTags, customTags } = tagParser(
       place.placeTags,
@@ -145,9 +146,7 @@ export class PlaceDetailResDto {
     this.address = place.address;
     this.roadAddress = place.roadAddress;
     this.linkedCollections = myRelatedCollections;
-    this.isSaved = myRelatedCollections.some(
-      (myRelatedCollection) => myRelatedCollection.isSaved,
-    );
+    this.isSaved = isFolderIncludingPlace;
     this.placeImages = placeImages.map(
       (placeImage) => new PlaceImageRes(placeImage),
     );
