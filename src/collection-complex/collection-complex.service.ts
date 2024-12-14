@@ -24,14 +24,16 @@ export class CollectionComplexService {
       id,
       collectionId,
     );
-    collectionPlaces.items.map(async (collectionPlace) => {
-      const defaultFolder = await this.folderService.getDefaultFolder(id);
-      collectionPlace.isSaved =
-        await this.folderService.checkFolderPlaceExistence(
-          defaultFolder.id,
-          collectionPlace.placeId,
-        );
-    });
+    await Promise.all(
+      collectionPlaces.items.map(async (collectionPlace) => {
+        const defaultFolder = await this.folderService.getDefaultFolder(id);
+        collectionPlace.isSaved =
+          await this.folderService.checkFolderPlaceExistence(
+            defaultFolder.id,
+            collectionPlace.placeId,
+          );
+      }),
+    );
     return collectionPlaces;
   }
   async getViewedCollections(
