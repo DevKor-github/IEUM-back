@@ -42,13 +42,17 @@ export class CollectionComplexService {
       id,
       cursorId,
     );
-    viewedCollections.items.map(async (collection: CollectionDto) => {
-      const collectionPlaces: CollectionPlacesListResDto =
-        await this.getCollectionPlaces(id, collection.id);
-      collection.savedCollectionPlacesCount = collectionPlaces.items.filter(
-        (place) => place.isSaved,
-      ).length;
-    });
+    await Promise.all(
+      viewedCollections.items.map(async (collection: CollectionDto) => {
+        const collectionPlaces: CollectionPlacesListResDto =
+          await this.getCollectionPlaces(id, collection.id);
+        collection.savedCollectionPlacesCount = collectionPlaces.items.filter(
+          (place) => place.isSaved,
+        ).length;
+        console.log(collectionPlaces.items);
+        console.log(collection.savedCollectionPlacesCount);
+      }),
+    );
     return viewedCollections;
   }
 }
