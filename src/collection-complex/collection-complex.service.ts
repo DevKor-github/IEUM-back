@@ -49,6 +49,8 @@ export class CollectionComplexService {
         collection.savedCollectionPlacesCount = collectionPlaces.items.filter(
           (place) => place.isSaved,
         ).length;
+        console.log(collectionPlaces.items);
+        console.log(collection.savedCollectionPlacesCount);
       }),
     );
     return viewedCollections;
