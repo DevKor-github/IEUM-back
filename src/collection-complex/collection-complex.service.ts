@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CollectionService } from 'src/collection/collection.service';
 import { CollectionPlacesListResDto } from 'src/collection/dtos/collection-places-list-res.dto';
-import { CollectionsListResDto } from 'src/collection/dtos/paginated-collections-list-res.dto';
+import {
+  CollectionDto,
+  CollectionsListResDto,
+} from 'src/collection/dtos/paginated-collections-list-res.dto';
 import { FolderService } from 'src/folder/folder.service';
 import { PlaceService } from 'src/place/services/place.service';
 
@@ -35,6 +38,17 @@ export class CollectionComplexService {
     id: any,
     cursorId: number,
   ): Promise<CollectionsListResDto> {
-    return this.collectionService.getViewedCollections(id, cursorId);
+    const viewedCollections = await this.collectionService.getViewedCollections(
+      id,
+      cursorId,
+    );
+    viewedCollections.items.map(async (collection: CollectionDto) => {
+      const collectionPlaces: CollectionPlacesListResDto =
+        await this.getCollectionPlaces(id, collection.id);
+      collection.savedCollectionPlacesCount = collectionPlaces.items.filter(
+        (place) => place.isSaved,
+      ).length;
+    });
+    return viewedCollections;
   }
 }
