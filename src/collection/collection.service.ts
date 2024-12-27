@@ -140,9 +140,23 @@ export class CollectionService {
     placeIds: number[],
   ): Promise<void> {
     await Promise.all(
-      placeIds.map(async (placeId) => {
-        await this.collectionPlaceRepository.updateCollectionPlaceIsSavedToTrue(
+      placeIds.map((placeId) => {
+        this.collectionPlaceRepository.updateCollectionPlaceIsSavedToTrue(
           collectionId,
+          placeId,
+        );
+      }),
+    );
+  }
+
+  async updateCollectionPlacesIsSavedToFalse(
+    userId: number,
+    placeIds: number[],
+  ): Promise<void> {
+    await Promise.all(
+      placeIds.map((placeId) => {
+        this.collectionPlaceRepository.updateCollectionPlacesIsSavedToFalse(
+          userId,
           placeId,
         );
       }),

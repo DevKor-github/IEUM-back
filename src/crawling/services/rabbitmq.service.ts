@@ -92,11 +92,11 @@ export class RabbitMqService {
 
     const collection =
       await this.crawlingService.createCollection(createCollectionReq);
-    await this.firebaseService.sendPushNotification(
-      createCollectionReq.userId,
-      'SUCCESS',
-      collection.id,
-    );
+    // await this.firebaseService.sendPushNotification(
+    //   createCollectionReq.userId,
+    //   'SUCCESS',
+    //   collection.id,
+    // );
   }
 
   @RabbitSubscribe({
@@ -128,7 +128,7 @@ export class RabbitMqService {
       //FCM part
       this.logger.log('최대 재시도 횟수 초과, 실패 큐로 이동');
 
-      await this.firebaseService.sendPushNotification(msg.userId, 'FAILURE');
+      // await this.firebaseService.sendPushNotification(msg.userId, 'FAILURE');
 
       //Slack Alert Part
       const XDeath: RabbitMqXDeath =
